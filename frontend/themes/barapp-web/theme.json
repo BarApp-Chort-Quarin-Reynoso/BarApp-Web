@@ -1,0 +1,9 @@
+{
+  "lumoImports" : [ "typography", "color", "spacing", "badge", "utility" ],
+  "assets" : {
+    "@fontsource/nunito-sans" : {
+      "*.css" : "@fontsource/nunito-sans",
+      "files/*" : "@fontsource/nunito-sans/files"
+    }
+  }
+}
