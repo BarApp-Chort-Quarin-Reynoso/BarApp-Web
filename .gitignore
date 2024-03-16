@@ -50,3 +50,6 @@ drivers/
 error-screenshots/
 webpack.generated.js
 
+# Firebase key
+firebase-private-key.json
+

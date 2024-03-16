@@ -7,7 +7,7 @@ import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Push
+@SuppressWarnings("serial")
 @SpringBootApplication
 @Theme(value = "barapp-web")
 @NpmPackage(value = "@fontsource/nunito-sans", version = "4.5.0")
