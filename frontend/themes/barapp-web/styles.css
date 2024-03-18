@@ -29,6 +29,14 @@ html {
     --lumo-font-family: Nunito Sans;
 }
 
+vaadin-button[theme~="error"] {
+	background-color: var(--lumo-error-color-10pct);
+}
+
+vaadin-login-form-wrapper::part(form-title) {
+	text-align: center;
+}
+
 [theme~="dark"] {
 
 }

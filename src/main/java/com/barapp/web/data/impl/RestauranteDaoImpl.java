@@ -20,6 +20,7 @@ public class RestauranteDaoImpl extends BaseDaoImpl<RestauranteDto, RestauranteE
 	
 	this.firestore = firestore;
     }
+    
     @Override
     public CollectionReference getCollection() {
 	return firestore.collection("restaurantes");

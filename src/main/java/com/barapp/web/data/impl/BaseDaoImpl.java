@@ -11,13 +11,15 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Filter;
+import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 
 public abstract class BaseDaoImpl<D extends BaseDto, E extends BaseEntity> implements BaseDao<D, E> {
     public final Class<E> clazz;
 
-    public BaseDaoImpl(Class<E> entityClass) {
+    protected BaseDaoImpl(Class<E> entityClass) {
 	this.clazz = entityClass;
     }
 
@@ -60,6 +62,25 @@ public abstract class BaseDaoImpl<D extends BaseDto, E extends BaseEntity> imple
 	List<D> result = new ArrayList<>();
 	ApiFuture<QuerySnapshot> query = getCollection().get();
 	List<QueryDocumentSnapshot> documents = query.get().getDocuments();
+	for (QueryDocumentSnapshot doc : documents) {
+	    D object = getConverter().toDto(doc.toObject(clazz));
+	    object.setId(doc.getId());
+	    result.add(object);
+	}
+	return result;
+    }
+    
+    @Override
+    public List<D> getFiltered(Filter... filters) throws Exception {
+	if (filters.length == 0) throw new IllegalArgumentException("Method requires at least one filter");
+	
+	Query query = null;
+	for (Filter f : List.of(filters)) {
+	    if (query == null) query = getCollection().where(f);
+	    else query = query.where(f);
+	}
+	List<D> result = new ArrayList<>();
+	List<QueryDocumentSnapshot> documents = query.get().get().getDocuments();
 	for (QueryDocumentSnapshot doc : documents) {
 	    D object = getConverter().toDto(doc.toObject(clazz));
 	    object.setId(doc.getId());

@@ -10,9 +10,9 @@ import com.barapp.web.model.RestauranteDto;
 
 @Service
 public class RestauranteServiceImpl extends BaseServiceImpl<RestauranteDto> implements RestauranteService {
-    
+
     private final RestauranteDao restauranteDao;
-    
+
     public RestauranteServiceImpl(RestauranteDao restauranteDao) {
 	this.restauranteDao = restauranteDao;
     }

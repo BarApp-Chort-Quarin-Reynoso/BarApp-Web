@@ -1,6 +1,8 @@
 package com.barapp.web.views;
 
 import com.barapp.web.business.service.UsuarioService;
+import com.barapp.web.model.Rol;
+import com.barapp.web.security.SecurityService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -12,10 +14,16 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.security.RolesAllowed;
+
 @SuppressWarnings("serial")
 @PageTitle("Mi Bar")
 @Route(value = "mi-bar", layout = MainLayout.class)
+@RolesAllowed(value = {"BAR"})
 public class MiBarView extends VerticalLayout {
+    public static final Rol rolAllowed = Rol.BAR;
+    
+    private final SecurityService securityService;
 
     private final UsuarioService usuarioService;
 
@@ -27,16 +35,16 @@ public class MiBarView extends VerticalLayout {
     Button gestionarCapacidadButton;
     Button guardarButton;
     Button cancelarButton;
-    Button cargarUsuarios;
 
     FormLayout formLayout;
 
-    public MiBarView(UsuarioService usuarioService) {
+    public MiBarView(SecurityService securityService, UsuarioService usuarioService) {
+        this.securityService = securityService;
 	this.usuarioService = usuarioService;
-
+        
 	configurarElementos();
-	configurarLayout();
-	configurarBinders();
+        configurarLayout();
+        configurarBinders();
     }
 
     private void configurarElementos() {
@@ -57,7 +65,6 @@ public class MiBarView extends VerticalLayout {
 	guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 	cancelarButton = new Button(getTranslation("commons.cancel"));
-	cargarUsuarios = new Button(getTranslation("Cargar usuarios"));
     }
 
     private void configurarLayout() {
@@ -72,7 +79,7 @@ public class MiBarView extends VerticalLayout {
 		// Use two columns, if layout's width exceeds 500px
 		new ResponsiveStep("500px", 2));
 
-	HorizontalLayout layoutBotones = new HorizontalLayout(cancelarButton, guardarButton, cargarUsuarios);
+        HorizontalLayout layoutBotones = new HorizontalLayout(cancelarButton, guardarButton);
 
 	this.add(tituloH3, formLayout, layoutBotones);
     }

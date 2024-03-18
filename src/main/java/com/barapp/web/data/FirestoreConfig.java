@@ -11,14 +11,14 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.cloud.FirestoreClient;
 
 @Configuration
 public class FirestoreConfig {
-
     @Bean
     @Scope(scopeName = "singleton")
-    public Firestore firestore() throws Exception {
+    public FirebaseApp firebaseApp() throws Exception {
 	FileInputStream serviceAccount =
 		new FileInputStream("./firebase-private-key.json");
 
@@ -26,8 +26,18 @@ public class FirestoreConfig {
 		.setCredentials(GoogleCredentials.fromStream(serviceAccount))
 		.build();
 	
-	FirebaseApp firebaseApp = FirebaseApp.initializeApp(options, UUID.randomUUID().toString());
-	 
+	return FirebaseApp.initializeApp(options, UUID.randomUUID().toString());
+    }
+
+    @Bean
+    @Scope(scopeName = "singleton")
+    public Firestore firestore(FirebaseApp firebaseApp) throws Exception {	 
 	return FirestoreClient.getFirestore(firebaseApp);
+    }
+
+    @Bean
+    @Scope(scopeName = "singleton")
+    public FirebaseAuth firebaseAuth(FirebaseApp firebaseApp) throws Exception {	 
+	return FirebaseAuth.getInstance(firebaseApp);
     }
 }
