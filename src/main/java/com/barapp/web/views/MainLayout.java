@@ -1,7 +1,11 @@
 package com.barapp.web.views;
 
+import com.barapp.web.security.SecurityService;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
@@ -9,7 +13,14 @@ import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
 import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
@@ -27,9 +38,13 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import com.vaadin.flow.theme.lumo.LumoUtility.Whitespace;
 import com.vaadin.flow.theme.lumo.LumoUtility.Width;
 
+@SuppressWarnings("serial")
 public class MainLayout extends AppLayout {
 
-    public MainLayout() {
+    private final SecurityService securityService;
+
+    public MainLayout(SecurityService securityService) {
+        this.securityService = securityService;
         addToNavbar(createHeaderContent());
         setDrawerOpened(false);
     }
@@ -47,25 +62,51 @@ public class MainLayout extends AppLayout {
 
         Nav nav = new Nav();
         nav.addClassNames(Display.FLEX, Overflow.AUTO, Padding.Horizontal.MEDIUM, Padding.Vertical.XSMALL);
+        nav.getStyle().set("flex-grow", "1");
 
         UnorderedList list = new UnorderedList();
         list.addClassNames(Display.FLEX, Gap.SMALL, ListStyleType.NONE, Margin.NONE, Padding.NONE);
         nav.add(list);
 
-        for (MenuItemInfo menuItem : createMenuItems()) {
-            list.add(menuItem);
+        list.add(new MenuItemInfo(getTranslation("views.inicio.titulo"), LineAwesomeIcon.HOME_SOLID.create(),
+                InicioView.class));
+
+        HorizontalLayout navWrapper = new HorizontalLayout();
+        navWrapper.getStyle().setPadding("var(--lumo-space-s) var(--lumo-space-m)");
+        navWrapper.setWidthFull();
+        navWrapper.add(nav);
+        navWrapper.setBoxSizing(com.vaadin.flow.component.orderedlayout.BoxSizing.BORDER_BOX);
+
+        if (securityService.isAuthenticated()) {
+            for (MenuItemInfo menuItem : createMenuItemsForLoggedInUsers()) {
+                list.add(menuItem);
+            }
+
+            Button logoutButton = new Button(getTranslation("commons.logout"));
+            logoutButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            logoutButton.addClickListener(e -> securityService.logout());
+            navWrapper.add(logoutButton);
+        } else {
+            Button loginButton = new Button(getTranslation("commons.login"));
+            loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            loginButton.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+            navWrapper.add(loginButton);
         }
 
-        header.add(layout, nav);
+        header.add(layout, navWrapper);
 
         return header;
     }
 
-    private MenuItemInfo[] createMenuItems() {
-        return new MenuItemInfo[]{
-                new MenuItemInfo(getTranslation("views.inicio.titulo"), LineAwesomeIcon.HOME_SOLID.create(), InicioView.class),
-                new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), MiBarView.class),
-        };
+    private MenuItemInfo[] createMenuItemsForLoggedInUsers() {
+        UserDetails user = securityService.getAuthenticatedUser().get();
+        List<MenuItemInfo> items = new ArrayList<>();
+        if (user.getAuthorities()
+                .contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(),
+                    MiBarView.class));
+        }
+        return items.toArray(new MenuItemInfo[] {});
     }
 
     public static class MenuItemInfo extends ListItem {
