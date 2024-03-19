@@ -3,7 +3,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
-    "@fontsource/nunito-sans": "4.5.0",
+    "@fontsource/sansita-swashed": "5.0.17",
     "@polymer/polymer": "3.5.1",
     "@vaadin/a11y-base": "24.3.6",
     "@vaadin/accordion": "24.3.6",
@@ -92,7 +92,7 @@
   },
   "vaadin": {
     "dependencies": {
-      "@fontsource/nunito-sans": "4.5.0",
+      "@fontsource/sansita-swashed": "5.0.17",
       "@polymer/polymer": "3.5.1",
       "@vaadin/a11y-base": "24.3.6",
       "@vaadin/accordion": "24.3.6",
@@ -179,7 +179,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "15121c9d8b9ba1c83faa00d01d91e13c3ea33fde842f96d393805835e4072854"
+    "hash": "2664ffc8fc31dbb5f973b82c0c42190b429e83fa85c4b46748ffe87da457d0ee"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -249,6 +249,6 @@
     "@polymer/polymer": "$@polymer/polymer",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
-    "@fontsource/nunito-sans": "$@fontsource/nunito-sans"
+    "@fontsource/sansita-swashed": "$@fontsource/sansita-swashed"
   }
 }

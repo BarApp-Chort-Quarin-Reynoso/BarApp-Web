@@ -53,3 +53,5 @@ webpack.generated.js
 # Firebase key
 firebase-private-key.json
 
+
+src/main/resources/local.properties
