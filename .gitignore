@@ -50,3 +50,4 @@ drivers/
 error-screenshots/
 webpack.generated.js
 
+src/main/resources/local.properties
