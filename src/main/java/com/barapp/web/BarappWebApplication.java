@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Push
 @SpringBootApplication
 @Theme(value = "barapp-web")
-@NpmPackage(value = "@fontsource/nunito-sans", version = "4.5.0")
+@NpmPackage(value = "@fontsource/sansita-swashed", version = "5.0.17")
 public class BarappWebApplication implements AppShellConfigurator {
 
 	public static void main(String[] args) {
