@@ -1,25 +1,21 @@
 package com.barapp.web.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UsuarioDto extends BaseDto {
+public class UsuarioDto extends BaseModel {
     private String nombre;
     private String apellido;
     private String idUsuario;
     private String idDetalleUsuario;
     private String foto;
-    
+
     @Override
     public String toString() {
-	return "UsuarioDto [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + "]";
+        return "UsuarioDto [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + "]";
     }
 }	

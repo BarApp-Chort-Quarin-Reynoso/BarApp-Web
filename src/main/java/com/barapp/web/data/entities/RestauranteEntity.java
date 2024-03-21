@@ -1,17 +1,31 @@
 package com.barapp.web.data.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestauranteEntity extends BaseEntity {
-    private String nombre;
-    private Double puntuacion;
-    private String logo;
-    private String foto;
+    String nombre;
+    String correo;
+    Double puntuacion;
+    String logo;
+    String portada;
+    String telefono;
+    String cuit;
+
+    String idUbicacion;
+    String calle;
+    Integer numero;
+    Double latitud;
+    Double longitud;
+    String nombreLocalidad;
+    String nombreProvincia;
+    String nombrePais;
+
+    String idDetalleRestaurante;
 }

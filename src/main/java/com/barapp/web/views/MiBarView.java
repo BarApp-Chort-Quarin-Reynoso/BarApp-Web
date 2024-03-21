@@ -13,7 +13,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
 import jakarta.annotation.security.RolesAllowed;
 
 @SuppressWarnings("serial")
@@ -22,7 +21,7 @@ import jakarta.annotation.security.RolesAllowed;
 @RolesAllowed(value = {"BAR"})
 public class MiBarView extends VerticalLayout {
     public static final Rol rolAllowed = Rol.BAR;
-    
+
     private final SecurityService securityService;
 
     private final UsuarioService usuarioService;
@@ -40,48 +39,48 @@ public class MiBarView extends VerticalLayout {
 
     public MiBarView(SecurityService securityService, UsuarioService usuarioService) {
         this.securityService = securityService;
-	this.usuarioService = usuarioService;
-        
-	configurarElementos();
+        this.usuarioService = usuarioService;
+
+        configurarElementos();
         configurarLayout();
         configurarBinders();
     }
 
     private void configurarElementos() {
-	tituloH3 = new H3(getTranslation("views.mibar.titulo"));
+        tituloH3 = new H3(getTranslation("views.mibar.titulo"));
 
-	nombreTextfield = new TextField(getTranslation("views.mibar.nombre"));
+        nombreTextfield = new TextField(getTranslation("views.mibar.nombre"));
 
-	direccionTextfield = new TextField(getTranslation("views.mibar.direccion"));
+        direccionTextfield = new TextField(getTranslation("views.mibar.direccion"));
 
-	menuTextfield = new TextField(getTranslation("views.mibar.menu"));
-	menuTextfield.setWidthFull();
+        menuTextfield = new TextField(getTranslation("views.mibar.menu"));
+        menuTextfield.setWidthFull();
 
-	cargarMenuButton = new Button(getTranslation("views.mibar.cargarmenu"));
+        cargarMenuButton = new Button(getTranslation("views.mibar.cargarmenu"));
 
-	gestionarCapacidadButton = new Button(getTranslation("views.mibar.gestionarcapacidad"));
+        gestionarCapacidadButton = new Button(getTranslation("views.mibar.gestionarcapacidad"));
 
-	guardarButton = new Button(getTranslation("commons.save"));
-	guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        guardarButton = new Button(getTranslation("commons.save"));
+        guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-	cancelarButton = new Button(getTranslation("commons.cancel"));
+        cancelarButton = new Button(getTranslation("commons.cancel"));
     }
 
     private void configurarLayout() {
-	formLayout = new FormLayout();
+        formLayout = new FormLayout();
 
-	HorizontalLayout layoutCargarMenu = new HorizontalLayout(menuTextfield, cargarMenuButton);
-	layoutCargarMenu.setAlignItems(Alignment.END);
-	formLayout.add(nombreTextfield, direccionTextfield, layoutCargarMenu, gestionarCapacidadButton);
-	formLayout.setResponsiveSteps(
-		// Use one column by default
-		new ResponsiveStep("0", 1),
-		// Use two columns, if layout's width exceeds 500px
-		new ResponsiveStep("500px", 2));
+        HorizontalLayout layoutCargarMenu = new HorizontalLayout(menuTextfield, cargarMenuButton);
+        layoutCargarMenu.setAlignItems(Alignment.END);
+        formLayout.add(nombreTextfield, direccionTextfield, layoutCargarMenu, gestionarCapacidadButton);
+        formLayout.setResponsiveSteps(
+                // Use one column by default
+                new ResponsiveStep("0", 1),
+                // Use two columns, if layout's width exceeds 500px
+                new ResponsiveStep("500px", 2));
 
         HorizontalLayout layoutBotones = new HorizontalLayout(cancelarButton, guardarButton);
 
-	this.add(tituloH3, formLayout, layoutBotones);
+        this.add(tituloH3, formLayout, layoutBotones);
     }
 
     private void configurarBinders() {

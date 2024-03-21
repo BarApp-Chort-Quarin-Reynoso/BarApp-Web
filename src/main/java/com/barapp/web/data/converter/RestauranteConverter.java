@@ -1,19 +1,59 @@
 package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.RestauranteEntity;
-import com.barapp.web.model.RestauranteDto;
+import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.Ubicacion;
 
-public class RestauranteConverter implements BaseConverter<RestauranteDto, RestauranteEntity>{
+public class RestauranteConverter implements BaseConverter<Restaurante, RestauranteEntity> {
 
     @Override
-    public RestauranteEntity toEntity(RestauranteDto dto) {
-	return null;
+    public RestauranteEntity toEntity(Restaurante dto) {
+        RestauranteEntity entity = RestauranteEntity.builder()
+                                                    .nombre(dto.getNombre())
+                                                    .correo(dto.getCorreo())
+                                                    .puntuacion(dto.getPuntuacion())
+                                                    .logo(dto.getLogo())
+                                                    .portada(dto.getPortada())
+                                                    .telefono(dto.getTelefono())
+                                                    .cuit(dto.getCuit())
+                                                    .idUbicacion(dto.getUbicacion().getId())
+                                                    .calle(dto.getUbicacion().getCalle())
+                                                    .numero(dto.getUbicacion().getNumero())
+                                                    .latitud(dto.getUbicacion().getLatitud())
+                                                    .longitud(dto.getUbicacion().getLongitud())
+                                                    .nombreLocalidad(dto.getUbicacion().getNombreLocalidad())
+                                                    .nombreProvincia(dto.getUbicacion().getNombreProvincia())
+                                                    .nombrePais(dto.getUbicacion().getNombrePais())
+                                                    .idDetalleRestaurante(dto.getIdDetalleRestaurante())
+                                                    .build();
+
+        return entity;
     }
 
     @Override
-    public RestauranteDto toDto(RestauranteEntity entity) {
-	// TODO Auto-generated method stub
-	return null;
+    public Restaurante toDto(RestauranteEntity entity) {
+        Restaurante restaurante = Restaurante.builder()
+                                             .nombre(entity.getNombre())
+                                             .correo(entity.getCorreo())
+                                             .puntuacion(entity.getPuntuacion())
+                                             .portada(entity.getPortada())
+                                             .logo(entity.getLogo())
+                                             .telefono(entity.getTelefono())
+                                             .cuit(entity.getCuit())
+                                             .ubicacion(Ubicacion.builder()
+                                                                 .id(entity.getIdUbicacion())
+                                                                 .calle(entity.getCalle())
+                                                                 .numero(entity.getNumero())
+                                                                 .latitud(entity.getLatitud())
+                                                                 .longitud(entity.getLongitud())
+                                                                 .nombreLocalidad(entity.getNombreLocalidad())
+                                                                 .nombreProvincia(entity.getNombreProvincia())
+                                                                 .nombrePais(entity.getNombrePais())
+                                                                 .build())
+                                             .idDetalleRestaurante(entity.getIdDetalleRestaurante())
+                                             .build();
+
+        return restaurante;
     }
 
 }

@@ -1,19 +1,18 @@
 package com.barapp.web.business.impl;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.barapp.web.business.service.UsuarioWebService;
+import com.barapp.web.data.dao.BaseDao;
+import com.barapp.web.data.dao.UsuarioWebDao;
+import com.barapp.web.data.entities.BaseEntity;
+import com.barapp.web.model.UsuarioWebDto;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.barapp.web.business.service.UsuarioWebService;
-import com.barapp.web.data.dao.BaseDao;
-import com.barapp.web.data.dao.UsuarioWebDao;
-import com.barapp.web.data.entities.BaseEntity;
-import com.barapp.web.model.UsuarioWebDto;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioWebServiceImpl extends BaseServiceImpl<UsuarioWebDto> implements UsuarioWebService {
@@ -32,8 +31,7 @@ public class UsuarioWebServiceImpl extends BaseServiceImpl<UsuarioWebDto> implem
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UsuarioWebDto> userOpt = usuarioWebDao.findByEmail(username);
-        UsuarioWebDto user = userOpt
-                .orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
+        UsuarioWebDto user = userOpt.orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
 
         return new User(user.getEmail(), user.getHashedPassword(), getAuthorities(user));
     }

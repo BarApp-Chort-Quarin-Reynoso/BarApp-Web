@@ -1,21 +1,21 @@
 package com.barapp.web.data.dao;
 
-import java.util.List;
-
 import com.barapp.web.data.entities.BaseEntity;
-import com.barapp.web.model.BaseDto;
+import com.barapp.web.model.BaseModel;
 import com.google.cloud.firestore.Filter;
 
-public interface BaseDao<D extends BaseDto, E extends BaseEntity> {
+import java.util.List;
+
+public interface BaseDao<D extends BaseModel, E extends BaseEntity> {
     String save(D dto, String id) throws Exception;
-	
+
     String save(D dto) throws Exception;
-	
+
     void delete(String id) throws Exception;
-	
+
     D get(String id) throws Exception;
-	
+
     List<D> getAll() throws Exception;
-    
+
     List<D> getFiltered(Filter... filters) throws Exception;
 }

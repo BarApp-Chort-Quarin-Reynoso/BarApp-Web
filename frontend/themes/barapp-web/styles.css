@@ -1,5 +1,6 @@
 @import url('./main-layout.css');
-@import url('@fontsource/nunito-sans/index.css');
+@import url('./registro-bar.css');
+@import url('@fontsource/sansita-swashed/400.css');
 
 html {
     --lumo-shade-5pct: rgba(33, 33, 33, 0.05);
@@ -26,7 +27,7 @@ html {
     --lumo-success-color: hsl(159, 76%, 57%);
     --lumo-success-contrast-color: hsl(159, 29%, 10%);
     --lumo-success-text-color: hsl(159, 61%, 40%);
-    --lumo-font-family: Nunito Sans;
+    --lumo-font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
 vaadin-button[theme~="error"] {

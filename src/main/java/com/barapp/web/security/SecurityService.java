@@ -1,11 +1,10 @@
 package com.barapp.web.security;
 
 import com.vaadin.flow.spring.security.AuthenticationContext;
-
-import java.util.Optional;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class SecurityService {
@@ -19,7 +18,7 @@ public class SecurityService {
     public Optional<UserDetails> getAuthenticatedUser() {
         return authenticationContext.getAuthenticatedUser(UserDetails.class);
     }
-    
+
     public boolean isAuthenticated() {
         return authenticationContext.isAuthenticated();
     }

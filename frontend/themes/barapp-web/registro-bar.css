@@ -1,0 +1,97 @@
+#registro-top-layout {
+    background-color: var(--lumo-primary-color-10pct);
+}
+
+#barapp-titulo {
+    font-family: "Sansita Swashed";
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#registro-base-layout {
+    min-height: 650px;
+    max-width: 800px;
+/*    outline: 1px solid red;*/
+}
+
+#registro-formulario-informacionbasica {
+    justify-content: space-between;
+    min-height: 618px;
+    width: 100%;
+}
+
+#registro-formulario-ubicacion {
+    height: 618px;
+}
+
+iframe {
+    border-radius: 10px;
+}
+
+#registro-formulario-imagenes {
+    min-height: 618px;
+    justify-content: space-between;
+}
+
+#registro-formulario-confirmar {
+    min-height: 618px;
+    justify-content: space-between;
+    line-height: 0;
+}
+
+#registro-logo-layout {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#registro-upload-logo {
+    flex-grow: 1;
+}
+
+#registro-avatar-layout {
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+#registro-logo-avatar {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    outline: 1px solid var(--lumo-primary-color-10pct);
+}
+
+#registro-botones-layout {
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+#registro-portada-layout {
+    width: 100%;
+    justify-content: center;
+}
+
+#registro-imagen-portada {
+    width: 500px;
+    height: 200px;
+    max-width: 768px;
+    max-height: 500px;
+    border-radius: 10px;
+    object-fit: fill;
+    outline: 1px solid var(--lumo-primary-color-10pct);
+}
+
+@media only screen and (max-width: 700px) {
+    #registro-base-layout {
+        max-width: 800px;
+        justify-content: space-between;
+    }
+
+    #registro-ubicacion-layout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+    }
+}
+
