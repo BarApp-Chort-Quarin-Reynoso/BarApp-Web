@@ -1,42 +1,22 @@
 package com.barapp.web.views;
 
 import com.barapp.web.security.SecurityService;
+import com.barapp.web.views.registro.RegistroBarView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.Nav;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
-import com.vaadin.flow.theme.lumo.LumoUtility.BoxSizing;
-import com.vaadin.flow.theme.lumo.LumoUtility.Display;
-import com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontWeight;
-import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import com.vaadin.flow.theme.lumo.LumoUtility.Height;
-import com.vaadin.flow.theme.lumo.LumoUtility.ListStyleType;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.Overflow;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
-import com.vaadin.flow.theme.lumo.LumoUtility.Whitespace;
-import com.vaadin.flow.theme.lumo.LumoUtility.Width;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class MainLayout extends AppLayout {
@@ -68,8 +48,7 @@ public class MainLayout extends AppLayout {
         list.addClassNames(Display.FLEX, Gap.SMALL, ListStyleType.NONE, Margin.NONE, Padding.NONE);
         nav.add(list);
 
-        list.add(new MenuItemInfo(getTranslation("views.inicio.titulo"), LineAwesomeIcon.HOME_SOLID.create(),
-                InicioView.class));
+        list.add(new MenuItemInfo(getTranslation("views.inicio.titulo"), LineAwesomeIcon.HOME_SOLID.create(), InicioView.class));
 
         HorizontalLayout navWrapper = new HorizontalLayout();
         navWrapper.getStyle().setPadding("var(--lumo-space-s) var(--lumo-space-m)");
@@ -92,7 +71,11 @@ public class MainLayout extends AppLayout {
             loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             loginButton.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
             loginButton.setId("login-button");
-            navWrapper.add(loginButton);
+
+            Button registerButton = new Button(getTranslation("views.registro.registratubar"));
+            registerButton.addClickListener(e -> UI.getCurrent().navigate(RegistroBarView.class));
+
+            navWrapper.add(registerButton, loginButton);
         }
 
         header.add(layout, navWrapper);
@@ -103,12 +86,10 @@ public class MainLayout extends AppLayout {
     private MenuItemInfo[] createMenuItemsForLoggedInUsers() {
         UserDetails user = securityService.getAuthenticatedUser().get();
         List<MenuItemInfo> items = new ArrayList<>();
-        if (user.getAuthorities()
-                .contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
-            items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(),
-                    MiBarView.class));
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), MiBarView.class));
         }
-        return items.toArray(new MenuItemInfo[] {});
+        return items.toArray(new MenuItemInfo[]{});
     }
 
     public static class MenuItemInfo extends ListItem {
@@ -118,8 +99,7 @@ public class MainLayout extends AppLayout {
         public MenuItemInfo(String menuTitle, Component icon, Class<? extends Component> view) {
             this.view = view;
             RouterLink link = new RouterLink();
-            link.addClassNames(Display.FLEX, Gap.XSMALL, Height.MEDIUM, AlignItems.CENTER, Padding.Horizontal.SMALL,
-                    TextColor.BODY);
+            link.addClassNames(Display.FLEX, Gap.XSMALL, Height.MEDIUM, AlignItems.CENTER, Padding.Horizontal.SMALL, TextColor.BODY);
             link.setRoute(view);
 
             Span text = new Span(menuTitle);

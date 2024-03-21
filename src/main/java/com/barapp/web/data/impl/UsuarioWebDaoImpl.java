@@ -1,10 +1,5 @@
 package com.barapp.web.data.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.converter.UsuarioWebConverter;
 import com.barapp.web.data.dao.UsuarioWebDao;
@@ -13,37 +8,41 @@ import com.barapp.web.model.UsuarioWebDto;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UsuarioWebDaoImpl extends BaseDaoImpl<UsuarioWebDto, UsuarioWebEntity> implements UsuarioWebDao {
-    
+
     private final Firestore firestore;
-    
+
     public UsuarioWebDaoImpl(Firestore firestore) {
-	super(UsuarioWebEntity.class);
-	
-	this.firestore = firestore;
+        super(UsuarioWebEntity.class);
+
+        this.firestore = firestore;
     }
 
     @Override
     public CollectionReference getCollection() {
-	return firestore.collection("usuariosWeb");
+        return firestore.collection("usuariosWeb");
     }
 
     @Override
     public BaseConverter<UsuarioWebDto, UsuarioWebEntity> getConverter() {
-	return new UsuarioWebConverter();
+        return new UsuarioWebConverter();
     }
 
     @Override
     public Optional<UsuarioWebDto> findByEmail(String email) {
-	try {
-	    List<UsuarioWebDto> result = this.getFiltered(Filter.equalTo("email", email));
-	    if (result.isEmpty()) return Optional.empty();
-	    return Optional.of(result.get(0));
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    return Optional.empty();
-	}
+        try {
+            List<UsuarioWebDto> result = this.getFiltered(Filter.equalTo("email", email));
+            if (result.isEmpty()) return Optional.empty();
+            return Optional.of(result.get(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 }

@@ -8,19 +8,19 @@ public class UsuarioWebConverter implements BaseConverter<UsuarioWebDto, Usuario
 
     @Override
     public UsuarioWebEntity toEntity(UsuarioWebDto dto) {
-	return UsuarioWebEntity.builder()
-		.email(dto.getEmail())
-		.hashedPassword(dto.getHashedPassword())
-		.rol(dto.getRol().toString())
-		.build();
+        return UsuarioWebEntity.builder()
+                               .email(dto.getEmail())
+                               .hashedPassword(dto.getHashedPassword())
+                               .rol(dto.getRol().toString())
+                               .build();
     }
 
     @Override
     public UsuarioWebDto toDto(UsuarioWebEntity entity) {
-	return UsuarioWebDto.builder()
-		.email(entity.getEmail())
-		.hashedPassword(entity.getHashedPassword())
-		.rol(Rol.valueOf(entity.getRol()))
-		.build();
+        return UsuarioWebDto.builder()
+                            .email(entity.getEmail())
+                            .hashedPassword(entity.getHashedPassword())
+                            .rol(Rol.valueOf(entity.getRol()))
+                            .build();
     }
 }

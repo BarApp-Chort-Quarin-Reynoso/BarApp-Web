@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 
 public interface UsuarioDao extends BaseDao<UsuarioDto, UsuarioEntity> {
     UsuarioDto buscarPorEmailEnFirebaseAuth(String email, String contrasenia) throws FirebaseAuthException;
+
     String crearUsuarioEnFirebaseAuth();
-    
+
 }

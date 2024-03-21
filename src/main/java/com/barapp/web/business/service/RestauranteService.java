@@ -1,7 +1,12 @@
 package com.barapp.web.business.service;
 
-import com.barapp.web.model.RestauranteDto;
+import com.barapp.web.model.Restaurante;
 
-public interface RestauranteService extends BaseService<RestauranteDto> {
+import java.io.InputStream;
 
+public interface RestauranteService extends BaseService<Restaurante> {
+
+    String saveLogo(InputStream inputStream, String id, String contentType);
+
+    String savePortada(InputStream inputStream, String id, String contentType);
 }
