@@ -85,11 +85,13 @@ public class MainLayout extends AppLayout {
             Button logoutButton = new Button(getTranslation("commons.logout"));
             logoutButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             logoutButton.addClickListener(e -> securityService.logout());
+            logoutButton.setId("logout-button");
             navWrapper.add(logoutButton);
         } else {
             Button loginButton = new Button(getTranslation("commons.login"));
             loginButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             loginButton.addClickListener(e -> UI.getCurrent().navigate(LoginView.class));
+            loginButton.setId("login-button");
             navWrapper.add(loginButton);
         }
 
