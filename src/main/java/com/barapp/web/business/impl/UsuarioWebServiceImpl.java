@@ -1,9 +1,7 @@
 package com.barapp.web.business.impl;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,11 +33,14 @@ public class UsuarioWebServiceImpl extends BaseServiceImpl<UsuarioWebDto> implem
         UsuarioWebDto user = userOpt
                 .orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
 
-        return new User(user.getEmail(), user.getHashedPassword(), getAuthorities(user));
+        return new User(user.getEmail(), user.getHashedPassword(), user.getAuthorities());
     }
 
-    private static List<SimpleGrantedAuthority> getAuthorities(UsuarioWebDto user) {
-        return List.of(new SimpleGrantedAuthority(user.getRol().getGrantedAuthorityName()));
+    @Override
+    public UsuarioWebDto findByEmail(String username) {
+        return usuarioWebDao.findByEmail(username).orElse(null);
     }
+
+    
 
 }

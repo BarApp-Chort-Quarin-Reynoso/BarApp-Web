@@ -8,5 +8,4 @@ import com.barapp.web.model.UsuarioWebDto;
 public interface UsuarioWebDao extends BaseDao<UsuarioWebDto, UsuarioWebEntity> {
 
     Optional<UsuarioWebDto> findByEmail(String email);
-
 }
