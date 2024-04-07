@@ -23,6 +23,7 @@ public class Restaurante extends BaseModel {
     Ubicacion ubicacion;
     String idDetalleRestaurante;
     Optional<DetalleRestaurante> detalleRestaurante;
+    EstadoRestaurante estado;
 
     public Restaurante() {
         id = UUID.randomUUID().toString();
@@ -36,6 +37,7 @@ public class Restaurante extends BaseModel {
         ubicacion = new Ubicacion();
         detalleRestaurante = Optional.of(new DetalleRestaurante());
         idDetalleRestaurante = detalleRestaurante.get().getId();
+        estado = null;
     }
 
 }

@@ -36,6 +36,15 @@ vaadin-button[theme~="error"] {
 
 vaadin-login-form-wrapper::part(form-title) {
 	text-align: center;
+    font-family: "Sansita Swashed";
+    font-weight: 400;
+    font-style: normal;
+}
+
+.appname {
+    font-family: "Sansita Swashed";
+    font-weight: 400;
+    font-style: normal;
 }
 
 [theme~="dark"] {

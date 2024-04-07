@@ -24,16 +24,22 @@ public class UsuarioWebServiceImpl extends BaseServiceImpl<UsuarioWebDto> implem
     }
 
     @Override
-    public BaseDao<UsuarioWebDto, ? extends BaseEntity> getDao() throws Exception {
-        return usuarioWebDao;
-    }
+    public BaseDao<UsuarioWebDto, ? extends BaseEntity> getDao() throws Exception { return usuarioWebDao; }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UsuarioWebDto> userOpt = usuarioWebDao.findByEmail(username);
-        UsuarioWebDto user = userOpt.orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
+        UsuarioWebDto user = userOpt
+            .orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
 
         return new User(user.getEmail(), user.getHashedPassword(), getAuthorities(user));
+    }
+
+    @Override
+    public UsuarioWebDto getByUsername(String username) throws UsernameNotFoundException {
+        Optional<UsuarioWebDto> userOpt = usuarioWebDao.findByEmail(username);
+        return userOpt
+            .orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
     }
 
     private static List<SimpleGrantedAuthority> getAuthorities(UsuarioWebDto user) {

@@ -8,6 +8,8 @@ import com.barapp.web.model.UsuarioWebDto;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.TransactionOptions;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
