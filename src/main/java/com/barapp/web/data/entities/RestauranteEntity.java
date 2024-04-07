@@ -28,4 +28,5 @@ public class RestauranteEntity extends BaseEntity {
     String nombrePais;
 
     String idDetalleRestaurante;
+    String estado;
 }

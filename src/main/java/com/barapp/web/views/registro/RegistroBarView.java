@@ -3,6 +3,7 @@ package com.barapp.web.views.registro;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.business.service.UsuarioWebService;
+import com.barapp.web.model.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.Rol;
 import com.barapp.web.model.UsuarioWebDto;
@@ -127,6 +128,7 @@ public class RegistroBarView extends VerticalLayout {
             restaurante.setLogo(restauranteService.saveLogo(new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(), formularioImagenes.getLogoMimeType()));
             restaurante.setPortada(restauranteService.savePortada(new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(), formularioImagenes.getPortadaMimeType()));
 
+            restaurante.setEstado(EstadoRestaurante.ESPERANDO_HABILITACION);
             // Guardar informacion de restaurante en Firestore
             // TODO: Crear excepcion personalizada
             try {

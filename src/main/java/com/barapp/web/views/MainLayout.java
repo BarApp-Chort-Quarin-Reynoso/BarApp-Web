@@ -36,8 +36,8 @@ public class MainLayout extends AppLayout {
         Div layout = new Div();
         layout.addClassNames(Display.FLEX, AlignItems.CENTER, Padding.Horizontal.LARGE);
 
-        H1 appName = new H1(getTranslation("commons.apptitle"));
-        appName.addClassNames(Margin.Vertical.MEDIUM, Margin.End.AUTO, FontSize.LARGE);
+        H1 appName = new H1(getTranslation("commons.titulo"));
+        appName.addClassNames(Margin.Vertical.MEDIUM, Margin.End.AUTO, FontSize.XLARGE, "appname");
         layout.add(appName);
 
         Nav nav = new Nav();
@@ -88,6 +88,9 @@ public class MainLayout extends AppLayout {
         List<MenuItemInfo> items = new ArrayList<>();
         if (user.getAuthorities().contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
             items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), MiBarView.class));
+        }
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(ListaBaresView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.bares.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), ListaBaresView.class));
         }
         return items.toArray(new MenuItemInfo[]{});
     }

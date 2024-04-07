@@ -35,4 +35,8 @@ public class Ubicacion extends BaseModel {
     public String getFullFormatUbicacion() {
         return String.format("%s %d, %s, %s, %s", calle, numero, nombreLocalidad, nombreProvincia, nombrePais);
     }
+
+    public String getDireccion() {
+        return String.format("%s %d", calle, numero);
+    }
 }
