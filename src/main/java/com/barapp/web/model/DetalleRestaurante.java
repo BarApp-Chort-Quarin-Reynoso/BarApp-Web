@@ -1,28 +1,29 @@
 package com.barapp.web.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class DetalleRestaurante extends BaseModel {
-    String id;
     Integer capacidadPorHorario;
     String descripcion;
-//    List<Horarios> listaHorarios;
-//    List<Opiniones> listaOpiniones;
+    List<Horario> listaHorarios;
+    List<Opinion> listaOpiniones;
     String menu;
 
     public DetalleRestaurante() {
         this.id = UUID.randomUUID().toString();
         this.capacidadPorHorario = 1;
         this.descripcion = "";
+        this.listaHorarios = new ArrayList<>();
+        this.listaOpiniones = new ArrayList<>();
         this.menu = "";
     }
 }

@@ -1,6 +1,7 @@
 package com.barapp.web.views.registro;
 
 import com.barapp.web.business.ImageContainer;
+import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.business.service.UsuarioWebService;
@@ -50,13 +51,17 @@ public class RegistroBarView extends VerticalLayout {
     UbicacionService ubicacionService;
     UsuarioWebService usuarioWebService;
     RestauranteService restauranteService;
+    DetalleRestauranteService detalleRestauranteService;
 
     @Autowired
-    public RegistroBarView(UbicacionService ubicacionService, UsuarioWebService usuarioWebService, RestauranteService restauranteService, PasswordEncoder passwordEncoder) {
+    public RegistroBarView(UbicacionService ubicacionService, UsuarioWebService usuarioWebService,
+                           RestauranteService restauranteService, PasswordEncoder passwordEncoder,
+                           DetalleRestauranteService detalleRestauranteService) {
         this.binder = new Binder<>(Restaurante.class);
         this.usuarioWebService = usuarioWebService;
         this.ubicacionService = ubicacionService;
         this.restauranteService = restauranteService;
+        this.detalleRestauranteService = detalleRestauranteService;
         this.passwordEncoder = passwordEncoder;
         configurarElementos();
         configurarLayout();
@@ -125,6 +130,13 @@ public class RegistroBarView extends VerticalLayout {
             ImageContainer portada = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(), formularioImagenes.getPortadaMimeType());
             try {
                 restauranteService.saveConUsuario(restaurante, usuarioWeb, logo, portada);
+            } catch (Exception e) {
+                CustomErrorWindow.showError(e);
+            }
+
+            // Guardar información del detalle restaurante
+            try {
+                detalleRestauranteService.save(restaurante.getDetalleRestaurante(), restaurante.getIdDetalleRestaurante());
             } catch (Exception e) {
                 CustomErrorWindow.showError(e);
             }

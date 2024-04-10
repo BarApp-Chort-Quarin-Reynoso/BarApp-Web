@@ -31,7 +31,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
     TextField nombreTextfield;
     TextField direccionTextfield;
     TextField menuTextfield;
-    Button cargarMenuButton;
     Button gestionarCapacidadButton;
     Button guardarButton;
     Button cancelarButton;
@@ -54,10 +53,8 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
 
         direccionTextfield = new TextField(getTranslation("views.mibar.direccion"));
 
-        menuTextfield = new TextField(getTranslation("views.mibar.menu"));
+        menuTextfield = new TextField(getTranslation("views.mibar.linkmenu"));
         menuTextfield.setWidthFull();
-
-        cargarMenuButton = new Button(getTranslation("views.mibar.cargarmenu"));
 
         gestionarCapacidadButton = new Button(getTranslation("views.mibar.gestionarcapacidad"));
 
@@ -70,7 +67,7 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
     private void configurarLayout() {
         formLayout = new FormLayout();
 
-        HorizontalLayout layoutCargarMenu = new HorizontalLayout(menuTextfield, cargarMenuButton);
+        HorizontalLayout layoutCargarMenu = new HorizontalLayout(menuTextfield);
         layoutCargarMenu.setAlignItems(Alignment.END);
         formLayout.add(nombreTextfield, direccionTextfield, layoutCargarMenu, gestionarCapacidadButton);
         formLayout
