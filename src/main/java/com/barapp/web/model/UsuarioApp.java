@@ -10,8 +10,13 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+<<<<<<< HEAD:src/main/java/com/barapp/web/model/UsuarioApp.java
 @SuperBuilder
 public class UsuarioApp extends BaseModel {
+=======
+@Builder
+public class UsuarioMobileDto extends BaseModel {
+>>>>>>> 7cfdfa7 (Agregar menu al bar):src/main/java/com/barapp/web/model/UsuarioMobileDto.java
     private String nombre;
     private String apellido;
     private String idUsuario;

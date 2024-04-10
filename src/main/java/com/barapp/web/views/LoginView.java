@@ -64,18 +64,27 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.setI18n(i18n);
 
         login.addLoginListener(e -> {
+            System.out.println(e.getPassword());
+            System.out.println(e.getUsername());
             if (securityService.getAuthenticatedUser().isPresent()) {
                 Optional<Restaurante> restauranteOpt = restauranteService.getByCorreo(
                         securityService.getAuthenticatedUser().get().getUsername());
 
                 if (restauranteOpt.isPresent()) {
                     Restaurante restaurante = restauranteOpt.get();
+                    System.out.println(restaurante);
                     if (restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION)) {
                         UI.getCurrent().navigate(BarEsperandoHabilitacionView.class);
                     }
                 }
             }
         });
+
+//        login.addLoginListener(loginEvent -> {
+//            System.out.println("login");
+//            System.out.println(loginEvent.getUsername());
+//            System.out.println(loginEvent.getPassword());
+//        });
 
         add(login);
     }

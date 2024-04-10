@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @SuperBuilder
+@ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Restaurante extends BaseModel {
@@ -39,14 +40,14 @@ public class Restaurante extends BaseModel {
     String idDetalleRestaurante = "";
 
     @Builder.Default
-    Optional<DetalleRestaurante> detalleRestaurante = Optional.of(new DetalleRestaurante());
+    DetalleRestaurante detalleRestaurante = new DetalleRestaurante();
     EstadoRestaurante estado;
 
     public Restaurante() {
         id = UUID.randomUUID().toString();
         ubicacion = new Ubicacion();
-        detalleRestaurante = Optional.of(new DetalleRestaurante());
-        idDetalleRestaurante = detalleRestaurante.get().getId();
+        detalleRestaurante = new DetalleRestaurante();
+        idDetalleRestaurante = detalleRestaurante.getId();
         estado = null;
     }
 
