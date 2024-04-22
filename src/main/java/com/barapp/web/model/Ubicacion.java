@@ -1,9 +1,6 @@
 package com.barapp.web.model;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -13,21 +10,22 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class Ubicacion extends BaseModel {
     String calle;
-    Integer numero;
-    Double latitud;
-    Double longitud;
-    String nombreLocalidad;
-    String nombreProvincia;
-    String nombrePais;
+    @Builder.Default
+    Integer numero = 0;
+    @Builder.Default
+    Double latitud = 0.0;
+    @Builder.Default
+    Double longitud = 0.0;
+    @Builder.Default
+    String nombreLocalidad = "";
+    @Builder.Default
+    String nombreProvincia = "";
+    @Builder.Default
+    String nombrePais = "";
 
     public Ubicacion() {
         calle = "";
         numero = 0;
-        latitud = 0.0;
-        longitud = 0.0;
-        nombreLocalidad = "";
-        nombreProvincia = "";
-        nombrePais = "";
     }
 
     public String getFullFormatUbicacion() {

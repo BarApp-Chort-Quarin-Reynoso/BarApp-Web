@@ -23,4 +23,10 @@ public class LoginViewPO {
         this.loginButton = page.locator("vaadin-button[slot='submit']");
         this.errorDiv = page.locator("section[part='form'] > div[part='error-message']");
     }
+
+    public void login(String correo, String contrasenia) {
+        emailField.fill(correo);
+        passwordField.fill(contrasenia);
+        loginButton.click();
+    }
 }

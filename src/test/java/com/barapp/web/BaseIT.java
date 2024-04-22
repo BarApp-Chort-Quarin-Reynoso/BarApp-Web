@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.barapp.web.elements.views.HomeViewPO;
+import com.barapp.web.model.EstadoRestaurante;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
@@ -14,7 +15,7 @@ import com.microsoft.playwright.Playwright;
 
 public abstract class BaseIT {
     protected Page page;
-    private static String rootUrl;
+    protected static String rootUrl;
     private static Playwright playwright;
     private static Browser browser;
     private BrowserContext context;
@@ -23,11 +24,11 @@ public abstract class BaseIT {
     protected static void launchBrowser() {
         playwright = Playwright.create();
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(400));
-        rootUrl = "http://localhost:8080";
+        rootUrl = "http://localhost:8080/";
     }
 
     @BeforeEach
-    protected void createContextAndPage() {
+    protected void beforeEach() {
         context = browser.newContext(new Browser.NewContextOptions());
         page = context.newPage();
 
@@ -48,5 +49,21 @@ public abstract class BaseIT {
         page.navigate(rootUrl);
         
         return new HomeViewPO(page);
+    }
+    
+    protected String crearBarConEstado(String username, EstadoRestaurante estado) {
+        String estadoString = estado.toString();
+        String route = rootUrl + "fakeview/crearUsuarioBarConEstado?params=" + username
+                + "&params=" + estadoString;
+        page.navigate(route);
+        page.waitForURL(route);
+
+        return page.locator("#return-span").textContent();
+    }
+
+    protected void eliminarUsuarioBar(String correo) {
+        String route = rootUrl + "fakeview/eliminarUsuarioBar?params=" + correo;
+        page.navigate(route);
+        page.waitForURL(route);
     }
 }
