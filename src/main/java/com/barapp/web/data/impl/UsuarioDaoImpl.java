@@ -4,7 +4,7 @@ import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.converter.UsuarioConverter;
 import com.barapp.web.data.dao.UsuarioDao;
 import com.barapp.web.data.entities.UsuarioEntity;
-import com.barapp.web.model.UsuarioDto;
+import com.barapp.web.model.UsuarioApp;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsuarioDaoImpl extends BaseDaoImpl<UsuarioDto, UsuarioEntity> implements UsuarioDao {
+public class UsuarioDaoImpl extends BaseDaoImpl<UsuarioApp, UsuarioEntity> implements UsuarioDao {
 
     private final Firestore firestore;
     private final FirebaseAuth firebaseAuth;
@@ -30,12 +30,12 @@ public class UsuarioDaoImpl extends BaseDaoImpl<UsuarioDto, UsuarioEntity> imple
     }
 
     @Override
-    public BaseConverter<UsuarioDto, UsuarioEntity> getConverter() {
+    public BaseConverter<UsuarioApp, UsuarioEntity> getConverter() {
         return new UsuarioConverter();
     }
 
     @Override
-    public UsuarioDto buscarPorEmailEnFirebaseAuth(String email, String contrasenia) throws FirebaseAuthException {
+    public UsuarioApp buscarPorEmailEnFirebaseAuth(String email, String contrasenia) throws FirebaseAuthException {
         firebaseAuth.getUserByEmail(contrasenia);
         return null;
     }

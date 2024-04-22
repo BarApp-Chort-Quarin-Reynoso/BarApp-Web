@@ -1,13 +1,16 @@
 package com.barapp.web.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@SuperBuilder
 public class DetalleRestaurante extends BaseModel {
     String id;
     Integer capacidadPorHorario;

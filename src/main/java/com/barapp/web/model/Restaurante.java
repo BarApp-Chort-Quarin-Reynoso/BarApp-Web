@@ -1,15 +1,17 @@
 package com.barapp.web.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Data
-@Builder
+@Getter
+@Setter
+@SuperBuilder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Restaurante extends BaseModel {

@@ -1,18 +1,23 @@
 package com.barapp.web.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 public abstract class BaseModel {
-    protected String id;
+    @Builder.Default
+    protected String id = UUID.randomUUID().toString();
 
     @Override
     public int hashCode() {

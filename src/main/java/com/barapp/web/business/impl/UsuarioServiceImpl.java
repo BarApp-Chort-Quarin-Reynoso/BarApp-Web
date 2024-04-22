@@ -4,11 +4,11 @@ import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.UsuarioDao;
 import com.barapp.web.data.entities.UsuarioEntity;
-import com.barapp.web.model.UsuarioDto;
+import com.barapp.web.model.UsuarioApp;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioDto> implements UsuarioService {
+public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements UsuarioService {
 
     private final UsuarioDao usuarioDao;
 
@@ -17,7 +17,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioDto> implements U
     }
 
     @Override
-    public BaseDao<UsuarioDto, UsuarioEntity> getDao() {
+    public BaseDao<UsuarioApp, UsuarioEntity> getDao() {
         return usuarioDao;
     }
 }
