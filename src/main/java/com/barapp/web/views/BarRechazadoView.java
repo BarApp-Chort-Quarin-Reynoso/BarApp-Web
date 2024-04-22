@@ -23,6 +23,8 @@ import jakarta.annotation.security.RolesAllowed;
 @RolesAllowed(value = {"BAR"})
 public class BarRechazadoView extends VerticalLayout implements BeforeEnterObserver {
     public static final Rol rolAllowed = Rol.BAR;
+    
+    Span returnSpan = new Span();
 
     private final SecurityService securityService;
 
@@ -56,4 +58,6 @@ public class BarRechazadoView extends VerticalLayout implements BeforeEnterObser
             event.forwardTo(InicioView.class);
         }
     }
+    
+    
 }

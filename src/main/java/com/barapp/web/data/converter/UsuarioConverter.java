@@ -1,12 +1,12 @@
 package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.UsuarioEntity;
-import com.barapp.web.model.UsuarioDto;
+import com.barapp.web.model.UsuarioApp;
 
-public class UsuarioConverter implements BaseConverter<UsuarioDto, UsuarioEntity> {
+public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity> {
 
     @Override
-    public UsuarioEntity toEntity(UsuarioDto dto) {
+    public UsuarioEntity toEntity(UsuarioApp dto) {
         UsuarioEntity entity = UsuarioEntity.builder()
                                             .nombre(dto.getNombre())
                                             .apellido(dto.getApellido())
@@ -18,8 +18,8 @@ public class UsuarioConverter implements BaseConverter<UsuarioDto, UsuarioEntity
     }
 
     @Override
-    public UsuarioDto toDto(UsuarioEntity entity) {
-        UsuarioDto dto = UsuarioDto.builder()
+    public UsuarioApp toDto(UsuarioEntity entity) {
+        UsuarioApp dto = UsuarioApp.builder()
                                    .nombre(entity.getNombre())
                                    .apellido(entity.getApellido())
                                    .idUsuario(entity.getIdUsuario())

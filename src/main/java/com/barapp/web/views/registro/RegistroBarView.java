@@ -6,7 +6,7 @@ import com.barapp.web.business.service.UsuarioWebService;
 import com.barapp.web.model.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.Rol;
-import com.barapp.web.model.UsuarioWebDto;
+import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.views.InicioView;
 import com.barapp.web.views.registro.formularios.*;
 import com.barapp.web.views.utils.components.CustomErrorWindow;
@@ -114,7 +114,7 @@ public class RegistroBarView extends VerticalLayout {
 
             // Guardar usuario web como bar
             // TODO: Crear excepcion personalizada
-            UsuarioWebDto usuarioWeb = new UsuarioWebDto(restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()), Rol.BAR);
+            UsuarioWeb usuarioWeb = new UsuarioWeb(restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()), Rol.BAR);
             try {
                 usuarioWebService.save(usuarioWeb, usuarioWeb.getId());
             } catch (Exception e) {
