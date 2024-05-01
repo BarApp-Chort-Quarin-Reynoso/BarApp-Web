@@ -8,9 +8,15 @@ import com.barapp.web.model.BaseModel;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> implements BaseDao<D, E> {
     public final Class<E> clazz;
@@ -54,7 +60,7 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
     }
 
     @Override
-    public List<D> getAll() throws Exception {
+    public List<D> getAll(Set<Entry<String, String>> allParams) throws Exception {
         List<D> result = new ArrayList<>();
         ApiFuture<QuerySnapshot> query = getCollection().get();
         List<QueryDocumentSnapshot> documents = query.get().getDocuments();
@@ -63,6 +69,63 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
             object.setId(doc.getId());
             result.add(object);
         }
+
+        String order = null;
+        String sortBy = null;
+        if (allParams != null && !allParams.isEmpty()) {
+          for (Entry<String, String> entry : allParams) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if("continue".equals(key)){
+              continue;
+            }
+            if ("order".equals(key)) {
+              order = value;
+              continue;
+            }
+            if ("sortBy".equals(key)) {
+                sortBy = value;
+                continue;
+            }
+            result = result.stream().filter(obj -> {
+                try {
+                  Field field = obj.getClass().getDeclaredField(key);
+                  field.setAccessible(true);
+                  Object fieldValue = field.get(obj);
+                  if (fieldValue instanceof String) {
+                    return ((String) fieldValue).toLowerCase().contains(value.toLowerCase());
+                  } else {
+                      return fieldValue != null && fieldValue.toString().equals(value);
+                  }
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    return false;
+                }
+            }).collect(Collectors.toList());
+          }
+        }
+
+        if (sortBy != null) {
+          final String finalSortBy = sortBy;
+          @SuppressWarnings("unchecked")
+          Comparator<D> comparator = Comparator.comparing(obj -> {
+            try {
+                  Field field = obj.getClass().getDeclaredField(finalSortBy);
+                  field.setAccessible(true);
+                  Object fieldValue = field.get(obj);
+                  if (!(fieldValue instanceof Comparable)) {
+                      throw new RuntimeException("Field value is not Comparable");
+                  }
+                  return (Comparable) fieldValue;
+              } catch (NoSuchFieldException | IllegalAccessException e) {
+                  throw new RuntimeException(e);
+              }
+          });
+          if ("desc".equals(order)) {
+              comparator = comparator.reversed();
+          }
+          result.sort(comparator);
+        }
+
         return result;
     }
 

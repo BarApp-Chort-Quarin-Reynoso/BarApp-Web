@@ -49,7 +49,7 @@ public class ListaBaresView extends VerticalLayout {
 
         try {
             List<Restaurante> restaurantes = restauranteService
-                .getAll()
+                .getAll(null)
                     .stream()
                     .sorted((r1, r2) -> r1.getEstado().compareTo(r2.getEstado()))
                     .toList();

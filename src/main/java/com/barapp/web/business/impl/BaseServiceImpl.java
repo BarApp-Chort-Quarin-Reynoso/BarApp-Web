@@ -5,6 +5,8 @@ import com.barapp.web.model.BaseModel;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public abstract class BaseServiceImpl<D extends BaseModel> implements BaseService<D> {
 
@@ -32,7 +34,7 @@ public abstract class BaseServiceImpl<D extends BaseModel> implements BaseServic
     }
 
     @Override
-    public List<D> getAll() throws Exception {
-        return getDao().getAll();
+    public List<D> getAll(Set<Entry<String, String>> allParams) throws Exception {
+        return getDao().getAll(allParams);
     }
 }

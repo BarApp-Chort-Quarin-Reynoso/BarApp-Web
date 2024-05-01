@@ -8,6 +8,8 @@ import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Filter;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public interface BaseDao<D extends BaseModel, E extends BaseEntity> {
     String save(D dto, String id) throws Exception;
@@ -18,7 +20,7 @@ public interface BaseDao<D extends BaseModel, E extends BaseEntity> {
 
     D get(String id) throws Exception;
 
-    List<D> getAll() throws Exception;
+    List<D> getAll(Set<Entry<String, String>> allParams) throws Exception;
 
     List<D> getFiltered(Filter... filters) throws Exception;
 
