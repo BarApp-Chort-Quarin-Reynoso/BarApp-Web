@@ -5,10 +5,13 @@ import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.ConfiguradorHorarioDao;
 import com.barapp.web.data.dao.ImageDao;
+import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.dao.RestauranteDao;
 import com.barapp.web.data.entities.RestauranteEntity;
+import com.barapp.web.model.EstadoRestaurante;
 import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.Horario;
+import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.model.enums.EstadoRestaurante;
@@ -36,19 +39,21 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     private final RestauranteDao restauranteDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
+    private final DetalleRestauranteDao detalleRestauranteDao;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
     @Autowired
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, ConfiguradorHorarioDao configuradorHorarioDao, StorageClient storageClient, ImageDao imageDao) {
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
         this.configuradorHorarioDao = configuradorHorarioDao;
+        this.detalleRestauranteDao = detalleRestauranteDao;
         this.storageClient = storageClient;
         this.imageDao = imageDao;
     }
 
     @Override
-    public BaseDao<Restaurante, RestauranteEntity> getDao() {return restauranteDao;}
+    public BaseDao<Restaurante, RestauranteEntity> getDao() { return restauranteDao; }
 
     @Override
     public String saveLogo(InputStream inputStream, String id, String contentType) {
@@ -63,7 +68,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private String saveImage(String dest, InputStream inputStream, String id, String contentType) {
         String blobString = String.format(dest, id, contentType.substring(contentType.indexOf("/") + 1));
         Blob blob = storageClient
-                .bucket()
+            .bucket()
                 .create(blobString, inputStream, contentType, Bucket.BlobWriteOption.userProject("barapp-b1bc0"));
         URL signedUrl = blob.signUrl(32850, TimeUnit.DAYS);
 
@@ -105,7 +110,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public void rechazarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))
             throw new RuntimeException("El restaurante %s ya ha pasado la etapa de verificación"
-                    .formatted(restaurante.getNombre()));
+                .formatted(restaurante.getNombre()));
 
         try {
             restaurante.setEstado(EstadoRestaurante.RECHAZADO);
@@ -119,7 +124,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public void aceptarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))
             throw new RuntimeException("El restaurante %s ya ha pasado la etapa de verificación"
-                    .formatted(restaurante.getNombre()));
+                .formatted(restaurante.getNombre()));
 
         try {
             restaurante.setEstado(EstadoRestaurante.HABILITADO);
@@ -134,7 +139,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         try {
             List<Restaurante> restaurantes = restauranteDao.getFiltered(Filter.equalTo("correo", correo));
             if (restaurantes.isEmpty()) return Optional.empty();
-
+            
             return Optional.of(restaurantes.get(0));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -173,5 +178,15 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         }
 
         return horarios;
+    }
+
+    @Override
+    public Optional<DetalleRestaurante> getRestaurantDetail(String id) {
+        try {
+            return Optional.ofNullable(detalleRestauranteDao.get(id));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
     }
 }
