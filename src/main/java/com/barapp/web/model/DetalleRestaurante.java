@@ -1,6 +1,7 @@
 package com.barapp.web.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)

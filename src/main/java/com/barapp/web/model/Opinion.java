@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Opinion extends BaseModel {
     String comentario;
     Double nota;
-    UsuarioMobileDto usuario;
+    UsuarioApp usuario;
 
     public Opinion() {
         this.id = UUID.randomUUID().toString();

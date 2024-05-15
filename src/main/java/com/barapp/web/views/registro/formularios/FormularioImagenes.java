@@ -1,6 +1,7 @@
 package com.barapp.web.views.registro.formularios;
 
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.utils.BarappUtils;
 import com.barapp.web.views.utils.events.SiguienteFormularioEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -69,6 +70,8 @@ public class FormularioImagenes extends VerticalLayout {
 
         seleccionaLogo = new Paragraph(getTranslation("views.registro.selecionalogo"));
 
+        logoImage = new Image();
+        logoImage.setId("registro-logo-avatar");
         logoBuffer = new MemoryBuffer();
         logoUpload = new Upload(logoBuffer);
         logoUpload.setId("registro-upload-logo");
@@ -80,7 +83,7 @@ public class FormularioImagenes extends VerticalLayout {
             logoMimeType = event.getMIMEType();
 
             try {
-                logoByteArray = convertInputStreamToByteArray(logoInputStream);
+                logoByteArray = BarappUtils.convertInputStreamToByteArray(logoInputStream);
                 logoInputStream.reset();
 
                 StreamResource streamResource = new StreamResource(restaurante.getId(), () -> logoInputStream);
@@ -96,14 +99,11 @@ public class FormularioImagenes extends VerticalLayout {
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         });
 
-        logoImage = new Image();
-        logoImage.setId("registro-logo-avatar");
-
         InputStream defaultLogoInputStream = getClass().getResourceAsStream("/META-INF.resources/images/ic_barapp.png");
         this.logoMimeType = "image/png";
         defaultLogoInputStream.mark(40960);
         try {
-            logoByteArray = convertInputStreamToByteArray(defaultLogoInputStream);
+            logoByteArray = BarappUtils.convertInputStreamToByteArray(defaultLogoInputStream);
             defaultLogoInputStream.reset();
 
             StreamResource avatarDefaultResource = new StreamResource("ic_barapp.png", () -> defaultLogoInputStream);
@@ -114,6 +114,8 @@ public class FormularioImagenes extends VerticalLayout {
 
         seleccionaPortada = new Paragraph(getTranslation("views.registro.selecionaportada"));
 
+        portadaImage = new Image();
+        portadaImage.setId("registro-imagen-portada");
         portadaBuffer = new MemoryBuffer();
         portadaUpload = new Upload(portadaBuffer);
         portadaUpload.setWidthFull();
@@ -125,7 +127,7 @@ public class FormularioImagenes extends VerticalLayout {
             portadaMimeType = event.getMIMEType();
 
             try {
-                portadaByteArray = convertInputStreamToByteArray(portadaInputStream);
+                portadaByteArray = BarappUtils.convertInputStreamToByteArray(portadaInputStream);
                 portadaInputStream.reset();
 
                 StreamResource streamResource = new StreamResource(restaurante.getId(), () -> portadaInputStream);
@@ -141,14 +143,11 @@ public class FormularioImagenes extends VerticalLayout {
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         });
 
-        portadaImage = new Image();
-        portadaImage.setId("registro-imagen-portada");
-
         InputStream defaultPortadaInputStream = getClass().getResourceAsStream("/META-INF.resources/images/portada_barapp.png");
         this.portadaMimeType = "image/png";
         defaultPortadaInputStream.mark(5242880);
         try {
-            portadaByteArray = convertInputStreamToByteArray(defaultPortadaInputStream);
+            portadaByteArray = BarappUtils.convertInputStreamToByteArray(defaultPortadaInputStream);
             defaultPortadaInputStream.reset();
 
             StreamResource portadaDefaultResource = new StreamResource("portada_barapp.png", () -> defaultPortadaInputStream);
@@ -191,7 +190,6 @@ public class FormularioImagenes extends VerticalLayout {
         HorizontalLayout portadaLayout = new HorizontalLayout(portadaImage);
         portadaLayout.setId("registro-portada-layout");
 
-
         botonesLayout = new HorizontalLayout(volverButton, siguienteButton);
         botonesLayout.setId("registro-botones-layout");
         botonesLayout.setWidthFull();
@@ -203,15 +201,5 @@ public class FormularioImagenes extends VerticalLayout {
         this.siguienteFormularioListeners.add(listener);
     }
 
-    private byte[] convertInputStreamToByteArray(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[40960];
-        int bytesRead;
 
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-
-        return outputStream.toByteArray();
-    }
 }

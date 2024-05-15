@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
+@ToString
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Ubicacion extends BaseModel {

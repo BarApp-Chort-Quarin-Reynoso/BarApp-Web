@@ -111,6 +111,13 @@
             <version>4.0.0</version>
         </dependency>
 
+        <!-- Apache Commons Validator -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
         <!-- Input Mask Add-on -->
         <dependency>
             <groupId>org.vaadin.addons.componentfactory</groupId>

@@ -1,0 +1,38 @@
+.mi-bar-view {
+    display:flex;
+    align-items: center;
+    gap: 65px;
+}
+
+.mi-bar-view section {
+    max-width: 600px;
+}
+
+.info-basica-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.detalle-bar-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.ubicacion-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.ubicacion-section__iframe {
+    margin-top: 15px;
+}
+
+.imagenes-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+}
