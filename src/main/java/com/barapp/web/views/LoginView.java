@@ -2,6 +2,8 @@ package com.barapp.web.views;
 
 import java.util.Optional;
 
+import com.barapp.web.security.LoginListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 
@@ -20,6 +22,7 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 
 @SuppressWarnings("serial")
 @PageTitle("Login")
@@ -31,10 +34,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final RestauranteService restauranteService;
     private final SecurityService securityService;
+    private final LoginListener loginListener;
 
-    public LoginView(RestauranteService restauranteService, SecurityService securityService) {
+    @Autowired
+    public LoginView(RestauranteService restauranteService, SecurityService securityService, LoginListener loginListener) {
         this.restauranteService = restauranteService;
         this.securityService = securityService;
+        this.loginListener = loginListener;
 
         addClassName("login-view");
         setSizeFull();
@@ -64,8 +70,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.setI18n(i18n);
 
         login.addLoginListener(e -> {
-            System.out.println(e.getPassword());
-            System.out.println(e.getUsername());
             if (securityService.getAuthenticatedUser().isPresent()) {
                 Optional<Restaurante> restauranteOpt = restauranteService.getByCorreo(
                         securityService.getAuthenticatedUser().get().getUsername());
@@ -79,12 +83,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
                 }
             }
         });
-
-//        login.addLoginListener(loginEvent -> {
-//            System.out.println("login");
-//            System.out.println(loginEvent.getUsername());
-//            System.out.println(loginEvent.getPassword());
-//        });
 
         add(login);
     }

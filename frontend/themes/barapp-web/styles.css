@@ -1,5 +1,7 @@
 @import url('./main-layout.css');
 @import url('./registro-bar.css');
+@import url('./components/footer.css');
+@import url('./components/main-element.css');
 @import url('@fontsource/sansita-swashed/400.css');
 
 html {
@@ -32,6 +34,10 @@ html {
 
 vaadin-button[theme~="error"] {
 	background-color: var(--lumo-error-color-10pct);
+}
+
+vaadin-button {
+    cursor: pointer;
 }
 
 vaadin-login-form-wrapper::part(form-title) {
