@@ -1,0 +1,22 @@
+.footer {
+    background-color: var(--lumo-primary-color-10pct);
+    height: 125px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+}
+
+.footer-item {
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.footer-item:hover {
+    text-decoration: underline;
+}
+
+.footer-copy {
+    font-size: 0.75em;
+    color: #a6a6a6;
+}
