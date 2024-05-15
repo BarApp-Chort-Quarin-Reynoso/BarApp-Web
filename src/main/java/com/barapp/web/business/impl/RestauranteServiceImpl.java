@@ -78,6 +78,21 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
+    public String saveConFotos(Restaurante restaurante, ImageContainer logo, ImageContainer portada) {
+        try {
+            String logoUrl = imageDao.saveImage("images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
+            String portadaUrl = imageDao.saveImage("images/fotos/%s.%s",portada.getInputStream(), portada.getId(), portada.getContentType());
+            restaurante.setLogo(logoUrl);
+            restaurante.setPortada(portadaUrl);
+
+            return restauranteDao.save(restaurante, restaurante.getId());
+        } catch (Exception e) {
+            // TODO eliminar foto si falla
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     @Transactional
     public void rechazarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))

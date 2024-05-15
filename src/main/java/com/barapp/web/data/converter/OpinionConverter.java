@@ -2,7 +2,7 @@ package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.OpinionUsuarioEntity;
 import com.barapp.web.model.Opinion;
-import com.barapp.web.model.UsuarioMobileDto;
+import com.barapp.web.model.UsuarioApp;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class OpinionConverter {
         Opinion opinion = Opinion.builder()
                                  .comentario(entity.getComentario())
                                  .nota(entity.getNota())
-                                 .usuario(UsuarioMobileDto.builder()
+                                 .usuario(UsuarioApp.builder()
                                                           .idUsuario(entity.getIdUsuario())
                                                           .nombre(entity.getNombreUsuario())
                                                           .apellido(entity.getApellidoUsuario())

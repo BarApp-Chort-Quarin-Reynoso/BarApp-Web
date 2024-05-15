@@ -1,5 +1,7 @@
 @import url('./main-layout.css');
 @import url('./registro-bar.css');
+@import url('./mi-bar.css');
+@import url('./inicio.css');
 @import url('./components/footer.css');
 @import url('./components/main-element.css');
 @import url('@fontsource/sansita-swashed/400.css');

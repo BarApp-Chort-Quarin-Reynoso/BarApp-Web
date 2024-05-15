@@ -27,6 +27,8 @@
 
 iframe {
     border-radius: 10px;
+    border: none;
+    outline: 1px solid var(--lumo-primary-color-50pct);
 }
 
 #registro-formulario-imagenes {
@@ -59,7 +61,7 @@ iframe {
     height: 80px;
     width: 80px;
     border-radius: 50%;
-    outline: 1px solid var(--lumo-primary-color-10pct);
+    outline: 1px solid var(--lumo-primary-color-50pct);
 }
 
 #registro-botones-layout {
@@ -79,7 +81,7 @@ iframe {
     max-height: 500px;
     border-radius: 10px;
     object-fit: fill;
-    outline: 1px solid var(--lumo-primary-color-10pct);
+    outline: 1px solid var(--lumo-primary-color-50pct);
 }
 
 @media only screen and (max-width: 700px) {
