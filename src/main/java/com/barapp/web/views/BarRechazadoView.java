@@ -1,13 +1,12 @@
 package com.barapp.web.views;
 
-import com.barapp.web.model.EstadoRestaurante;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.EstadoRestaurante;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.dom.ElementFactory;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;

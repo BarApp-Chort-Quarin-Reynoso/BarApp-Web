@@ -2,7 +2,7 @@ package com.barapp.web.its;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.utils.TestConsts;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

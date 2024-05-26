@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@fontsource/sansita-swashed": "5.0.17",
+    "@polymer/iron-a11y-keys-behavior": "3.0.1",
     "@polymer/polymer": "3.5.1",
     "@vaadin/a11y-base": "24.3.6",
     "@vaadin/accordion": "24.3.6",
@@ -71,7 +72,7 @@
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
     "imask": "7.1.3",
-    "lit": "3.1.2"
+    "lit": "2.5.0"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "5.0.5",
@@ -94,6 +95,7 @@
   "vaadin": {
     "dependencies": {
       "@fontsource/sansita-swashed": "5.0.17",
+      "@polymer/iron-a11y-keys-behavior": "3.0.1",
       "@polymer/polymer": "3.5.1",
       "@vaadin/a11y-base": "24.3.6",
       "@vaadin/accordion": "24.3.6",
@@ -161,7 +163,7 @@
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
       "imask": "7.1.3",
-      "lit": "3.1.2"
+      "lit": "2.5.0"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "5.0.5",
@@ -181,7 +183,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "5739d50db1d5fd1ff809fb7021f512653fd20356163b73b9c568e2d31b2a594f"
+    "hash": "3b5321eeb1d4fa7978d2bbe21da829003abb44c897a44876fb606def42c10073"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -252,6 +254,7 @@
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
     "@fontsource/sansita-swashed": "$@fontsource/sansita-swashed",
-    "imask": "$imask"
+    "imask": "$imask",
+    "@polymer/iron-a11y-keys-behavior": "$@polymer/iron-a11y-keys-behavior"
   }
 }

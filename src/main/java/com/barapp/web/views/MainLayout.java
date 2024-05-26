@@ -89,6 +89,9 @@ public class MainLayout extends AppLayout {
         if (user.getAuthorities().contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
             items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), MiBarView.class));
         }
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(MisHorariosView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.mishorarios.titulo"), LineAwesomeIcon.CALENDAR.create(), MisHorariosView.class));
+        }
         if (user.getAuthorities().contains(new SimpleGrantedAuthority(ListaBaresView.rolAllowed.getGrantedAuthorityName()))) {
             items.add(new MenuItemInfo(getTranslation("views.bares.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), ListaBaresView.class));
         }

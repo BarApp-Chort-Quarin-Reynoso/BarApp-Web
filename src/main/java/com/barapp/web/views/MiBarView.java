@@ -6,7 +6,7 @@ import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.Ubicacion;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.BarappUtils;

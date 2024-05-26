@@ -5,9 +5,9 @@ import java.util.List;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.Rol;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
