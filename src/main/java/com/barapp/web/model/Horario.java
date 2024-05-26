@@ -1,20 +1,21 @@
 package com.barapp.web.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.barapp.web.model.enums.TipoComida;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalTime;
-import java.util.UUID;
 
-@Data
-@Builder
+@Getter
+@Setter
+@SuperBuilder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Horario extends BaseModel {
-    LocalTime hora;
-    TipoComida tipoComida;
+    private LocalTime horario;
+    private TipoComida tipoComida;
 
     public Horario() {
         this.id = UUID.randomUUID().toString();

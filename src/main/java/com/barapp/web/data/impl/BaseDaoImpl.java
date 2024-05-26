@@ -1,5 +1,6 @@
 package com.barapp.web.data.impl;
 
+import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.entities.BaseEntity;
@@ -9,6 +10,7 @@ import com.google.cloud.firestore.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> implements BaseDao<D, E> {
     public final Class<E> clazz;
@@ -29,7 +31,7 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
         }
 
         DocumentReference reference = getCollection().document(id);
-        reference.set(getConverter().toEntity(dto));
+        reference.set(getConverter().toEntity(dto)).get();
         return reference.getId();
     }
 
@@ -72,6 +74,25 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
         for (Filter f : List.of(filters)) {
             if (query == null) query = getCollection().where(f);
             else query = query.where(f);
+        }
+        List<D> result = new ArrayList<>();
+        List<QueryDocumentSnapshot> documents = query.get().get().getDocuments();
+        for (QueryDocumentSnapshot doc : documents) {
+            D object = getConverter().toDto(doc.toObject(clazz));
+            object.setId(doc.getId());
+            result.add(object);
+        }
+        return result;
+    }
+
+    @Override
+    public List<D> getByParams(QueryParams params) throws Exception {
+        Query query = getCollection();
+        for (Filter f : params.getFilters()) {
+            query = query.where(f);
+        }
+        for (Map.Entry<String, Query.Direction> o : params.getOrders()) {
+            query = query.orderBy(o.getKey(), o.getValue());
         }
         List<D> result = new ArrayList<>();
         List<QueryDocumentSnapshot> documents = query.get().get().getDocuments();

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.barapp.web.BaseIT;
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 
 import java.util.HashSet;
 import java.util.Set;

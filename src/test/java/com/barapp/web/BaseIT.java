@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.barapp.web.elements.views.HomeViewPO;
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
