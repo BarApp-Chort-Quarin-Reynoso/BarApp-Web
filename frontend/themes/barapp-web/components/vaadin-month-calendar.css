@@ -1,0 +1,23 @@
+[part~='date'].disabled {
+    color: var(--lumo-disabled-text-color);
+}
+
+[part~='date'].disabled::before {
+    background-color: transparent;
+}
+
+[part~='date'].disabled:not(:empty):not([part~='disabled']):not([part~='selected']):hover::before {
+    background-color: transparent; 
+}
+
+[part='date'].open:not(:hover) {
+    color: var(--lumo-primary-contrast-color);
+}
+
+[part~='date']:not([part~='selected']).open::before {
+    background-color: var(--lumo-primary-color-50pct);
+}
+
+div[part=month-header] {
+    display: none;
+}

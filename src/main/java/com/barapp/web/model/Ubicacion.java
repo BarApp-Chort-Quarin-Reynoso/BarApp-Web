@@ -1,13 +1,15 @@
 package com.barapp.web.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @SuperBuilder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Ubicacion extends BaseModel {
     String calle;
     @Builder.Default

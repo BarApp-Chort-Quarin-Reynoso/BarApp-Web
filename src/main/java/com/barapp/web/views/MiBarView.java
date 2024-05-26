@@ -1,7 +1,7 @@
 package com.barapp.web.views;
 
 import com.barapp.web.business.service.UsuarioService;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

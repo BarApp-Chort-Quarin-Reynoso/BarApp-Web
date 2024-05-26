@@ -1,8 +1,7 @@
 package com.barapp.web.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
@@ -11,6 +10,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @SuperBuilder
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetalleRestaurante extends BaseModel {
     String id;
     Integer capacidadPorHorario;

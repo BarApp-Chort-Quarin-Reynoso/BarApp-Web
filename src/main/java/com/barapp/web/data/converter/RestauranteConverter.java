@@ -1,7 +1,7 @@
 package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.RestauranteEntity;
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.Ubicacion;
 

@@ -2,11 +2,8 @@ package com.barapp.web.views;
 
 import java.util.Optional;
 
-import org.springframework.context.ApplicationListener;
-import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
-
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.security.SecurityService;
 import com.vaadin.flow.component.UI;
@@ -15,8 +12,6 @@ import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;

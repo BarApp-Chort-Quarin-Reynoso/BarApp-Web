@@ -1,7 +1,7 @@
 package com.barapp.web.views;
 
-import com.barapp.web.model.EstadoRestaurante;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.EstadoRestaurante;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;

@@ -1,6 +1,8 @@
 package com.barapp.web.model;
 
+import com.barapp.web.model.enums.EstadoRestaurante;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Optional;
@@ -10,7 +12,8 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Restaurante extends BaseModel {
     @Builder.Default
     String nombre = "";

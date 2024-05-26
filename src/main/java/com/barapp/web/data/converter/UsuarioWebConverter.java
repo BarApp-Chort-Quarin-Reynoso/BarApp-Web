@@ -1,7 +1,7 @@
 package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.UsuarioWebEntity;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.UsuarioWeb;
 
 public class UsuarioWebConverter implements BaseConverter<UsuarioWeb, UsuarioWebEntity> {

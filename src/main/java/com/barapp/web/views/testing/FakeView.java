@@ -7,9 +7,9 @@ import java.util.Optional;
 
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UsuarioWebService;
-import com.barapp.web.model.EstadoRestaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.Rol;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.Ubicacion;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.utils.TestConsts;

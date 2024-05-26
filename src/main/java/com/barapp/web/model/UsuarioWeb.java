@@ -1,8 +1,8 @@
 package com.barapp.web.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.barapp.web.model.enums.Rol;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
@@ -11,6 +11,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsuarioWeb extends BaseModel {
     private String email;
     private String hashedPassword;

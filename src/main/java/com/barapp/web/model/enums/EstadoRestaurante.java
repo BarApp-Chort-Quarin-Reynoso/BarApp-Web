@@ -1,4 +1,4 @@
-package com.barapp.web.model;
+package com.barapp.web.model.enums;
 
 import lombok.Getter;
 
