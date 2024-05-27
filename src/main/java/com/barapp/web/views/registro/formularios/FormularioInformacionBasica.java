@@ -4,6 +4,7 @@ import com.barapp.web.business.service.UsuarioWebService;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.views.InicioView;
 import com.barapp.web.views.utils.events.SiguienteFormularioEvent;
+import com.vaadin.componentfactory.addons.inputmask.InputMask;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -92,6 +93,8 @@ public class FormularioInformacionBasica extends VerticalLayout {
         confirmarContraseniaTextfield = new PasswordField(getTranslation("views.registro.confirmacontrasenia"));
         telefonoTextfield = new TextField(getTranslation("views.registro.telefono"));
         cuitTextfield = new TextField(getTranslation("views.registro.cuit"));
+        InputMask cuitTextfieldMask = new InputMask("00-00000000-0");
+        cuitTextfieldMask.extend(cuitTextfield);
 
         siguienteButton = new Button(getTranslation("commons.siguiente"));
         siguienteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

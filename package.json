@@ -70,6 +70,7 @@
     "@vaadin/virtual-list": "24.3.6",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
+    "imask": "7.1.3",
     "lit": "3.1.2"
   },
   "devDependencies": {
@@ -159,6 +160,7 @@
       "@vaadin/virtual-list": "24.3.6",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
+      "imask": "7.1.3",
       "lit": "3.1.2"
     },
     "devDependencies": {
@@ -179,7 +181,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "2664ffc8fc31dbb5f973b82c0c42190b429e83fa85c4b46748ffe87da457d0ee"
+    "hash": "5739d50db1d5fd1ff809fb7021f512653fd20356163b73b9c568e2d31b2a594f"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -249,6 +251,7 @@
     "@polymer/polymer": "$@polymer/polymer",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
-    "@fontsource/sansita-swashed": "$@fontsource/sansita-swashed"
+    "@fontsource/sansita-swashed": "$@fontsource/sansita-swashed",
+    "imask": "$imask"
   }
 }
