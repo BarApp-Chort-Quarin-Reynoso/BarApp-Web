@@ -1,10 +1,8 @@
 package com.barapp.web.model;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import java.time.LocalDate;
 import java.util.UUID;
 

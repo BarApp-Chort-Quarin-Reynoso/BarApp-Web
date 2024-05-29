@@ -1,6 +1,6 @@
 package com.barapp.web.data.converter;
-
 import com.barapp.web.data.entities.DetalleRestauranteEntity;
+
 import com.barapp.web.model.DetalleRestaurante;
 
 import java.util.ArrayList;
