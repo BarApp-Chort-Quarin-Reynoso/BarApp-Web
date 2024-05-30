@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -12,8 +13,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Opinion extends BaseModel {
+    String idRestaurante;
     String comentario;
     Double nota;
+    LocalDate fecha;
     UsuarioApp usuario;
 
     public Opinion() {

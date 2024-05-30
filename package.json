@@ -253,8 +253,8 @@
     "@polymer/polymer": "$@polymer/polymer",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
-    "@fontsource/sansita-swashed": "$@fontsource/sansita-swashed",
     "imask": "$imask",
-    "@polymer/iron-a11y-keys-behavior": "$@polymer/iron-a11y-keys-behavior"
+    "@polymer/iron-a11y-keys-behavior": "$@polymer/iron-a11y-keys-behavior",
+    "@fontsource/sansita-swashed": "$@fontsource/sansita-swashed"
   }
 }

@@ -9,29 +9,23 @@ import java.util.LinkedHashSet;
 public class DetalleRestauranteConverter implements BaseConverter<DetalleRestaurante, DetalleRestauranteEntity> {
     @Override
     public DetalleRestauranteEntity toEntity(DetalleRestaurante dto) {
-        DetalleRestauranteEntity entity = DetalleRestauranteEntity.builder()
-                                                                  .idDetalleRestaurante(dto.getId())
-                                                                  .descripcion(dto.getDescripcion())
-                                                                  .menu(dto.getMenu())
-                                                                  .capacidadTotal(new ArrayList<>(dto.getCapacidadTotal()))
-                                                                  .listaHorarioEntities(HorarioConverter.toEntityList(dto.getListaHorarios()))
-                                                                  .listaOpinionEntities(OpinionConverter.toEntityList(dto.getListaOpiniones()))
-                                                                  .build();
-
-        return entity;
+        return DetalleRestauranteEntity.builder()
+                .idDetalleRestaurante(dto.getId())
+                .descripcion(dto.getDescripcion())
+                .menu(dto.getMenu())
+                .capacidadTotal(new ArrayList<>(dto.getCapacidadTotal()))
+                .caracteristicas(dto.getCaracteristicas())
+                .build();
     }
 
     @Override
     public DetalleRestaurante toDto(DetalleRestauranteEntity entity) {
-        DetalleRestaurante detalleRestaurante = DetalleRestaurante.builder()
-                                                                  .descripcion(entity.getDescripcion())
-                                                                  .menu(entity.getMenu())
-                                                                  .capacidadTotal(new LinkedHashSet<>(entity.getCapacidadTotal()))
-                                                                  .listaHorarios(HorarioConverter.toModelList(entity.getListaHorarioEntities()))
-                                                                  .listaOpiniones(OpinionConverter.toModelList(entity.getListaOpinionEntities()))
-                                                                  .build();
-
-        detalleRestaurante.setId(entity.getIdDetalleRestaurante());
-        return detalleRestaurante;
+        return DetalleRestaurante.builder()
+                .id(entity.getIdDetalleRestaurante())
+                .descripcion(entity.getDescripcion())
+                .capacidadTotal(new LinkedHashSet<>(entity.getCapacidadTotal()))
+                .menu(entity.getMenu())
+                .caracteristicas(entity.getCaracteristicas())
+                .build();
     }
 }

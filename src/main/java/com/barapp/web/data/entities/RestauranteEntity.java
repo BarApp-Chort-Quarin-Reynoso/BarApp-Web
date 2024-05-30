@@ -14,6 +14,7 @@ public class RestauranteEntity extends BaseEntity {
     String nombre;
     String correo;
     Double puntuacion;
+    Integer cantidadOpiniones;
     String logo;
     String portada;
     String telefono;

@@ -9,13 +9,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OpinionUsuarioEntity extends BaseEntity {
-    String idOpinion;
+public class OpinionEntity extends BaseEntity {
     String comentario;
     Double nota;
     String idUsuario;
+    String idRestaurante;
     String nombreUsuario;
     String apellidoUsuario;
-    String fotoUsuario;
-    String idDetalleUsuario;
+    String foto;
+    String fecha;
 }
