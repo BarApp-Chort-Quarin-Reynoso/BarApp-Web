@@ -3,6 +3,7 @@ package com.barapp.web.data;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Query;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,12 @@ import java.util.Map.Entry;
 public class QueryParams {
     private final List<Filter> filters = new ArrayList<>();
     private final List<Entry<String, Query.Direction>> orders = new ArrayList<>();
+    @Setter
+    private Integer limit;
+
+    @Setter
+    private Integer offset;
+
 
     public void addFilter(Filter filter) {
         filters.add(filter);

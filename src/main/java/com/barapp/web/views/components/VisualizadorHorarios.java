@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VisualizadorHorarios extends CustomField<List<Horario>> {
-
-    VerticalLayout layout;
+public class VisualizadorHorarios extends VerticalLayout {
 
     Span emptyText = new Span(getTranslation("comp.visualizadorhorarios.emptytext"));
 
@@ -29,24 +27,16 @@ public class VisualizadorHorarios extends CustomField<List<Horario>> {
 
     public VisualizadorHorarios() {
         this.setWidthFull();
-        layout = new VerticalLayout();
-        layout.add(emptyText);
 
-        add(layout);
+        add(emptyText);
     }
 
-    @Override
-    protected List<Horario> generateModelValue() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    protected void setPresentationValue(List<Horario> newValue) {
-        layout.removeAll();
+    public void setValue(List<Horario> newValue) {
+        removeAll();
         horarios.clear();
 
         if (newValue.isEmpty()) {
-            layout.add(emptyText);
+            add(emptyText);
             return;
         }
 
@@ -70,7 +60,7 @@ public class VisualizadorHorarios extends CustomField<List<Horario>> {
                 badgesHorarios.setWidthFull();
                 badgesHorarios.addThemeName("contrast");
 
-                layout.add(tipoComidaTitle, badgesHorarios);
+                add(tipoComidaTitle, badgesHorarios);
             }
         }
     }

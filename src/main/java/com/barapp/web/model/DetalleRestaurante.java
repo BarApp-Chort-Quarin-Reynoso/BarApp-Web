@@ -18,6 +18,7 @@ public class DetalleRestaurante extends BaseModel {
     List<Opinion> listaOpiniones;
     String menu;
     Set<Mesa> capacidadTotal;
+    Map<String, Double> caracteristicas;
 
     public DetalleRestaurante() {
         this.id = UUID.randomUUID().toString();
@@ -26,5 +27,6 @@ public class DetalleRestaurante extends BaseModel {
         this.listaOpiniones = new ArrayList<>();
         this.menu = "";
         this.capacidadTotal = new LinkedHashSet<>();
+        this.caracteristicas = new LinkedHashMap<>();
     }
 }

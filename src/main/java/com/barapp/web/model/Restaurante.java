@@ -25,6 +25,9 @@ public class Restaurante extends BaseModel {
     Double puntuacion = 0.0;
 
     @Builder.Default
+    Integer cantidadOpiniones = 0;
+
+    @Builder.Default
     String portada = "";
 
     @Builder.Default

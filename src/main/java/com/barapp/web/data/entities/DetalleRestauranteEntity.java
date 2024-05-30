@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -19,5 +20,6 @@ public class DetalleRestauranteEntity extends BaseEntity {
     String menu;
     List<Mesa> capacidadTotal;
     List<HorarioEntity> listaHorarioEntities;
-    List<OpinionUsuarioEntity> listaOpinionEntities;
+    List<OpinionEntity> listaOpinionEntities;
+    Map<String, Double> caracteristicas;
 }

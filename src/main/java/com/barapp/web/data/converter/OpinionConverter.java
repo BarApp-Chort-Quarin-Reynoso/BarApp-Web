@@ -1,51 +1,41 @@
 package com.barapp.web.data.converter;
 
-import com.barapp.web.data.entities.OpinionUsuarioEntity;
+import com.barapp.web.data.entities.OpinionEntity;
+import com.barapp.web.data.entities.UsuarioEntity;
 import com.barapp.web.model.Opinion;
 import com.barapp.web.model.UsuarioApp;
+import com.barapp.web.utils.FormatUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 
-public class OpinionConverter {
+public class OpinionConverter implements BaseConverter<Opinion, OpinionEntity> {
 
-    public static OpinionUsuarioEntity toEntity(Opinion dto) {
-        OpinionUsuarioEntity entity = OpinionUsuarioEntity.builder()
-                                                          .idOpinion(dto.getId())
-                                                          .comentario(dto.getComentario())
-                                                          .nota(dto.getNota())
-                                                          .idUsuario(dto.getUsuario().getIdUsuario())
-                                                          .nombreUsuario(dto.getUsuario().getNombre())
-                                                          .apellidoUsuario(dto.getUsuario().getApellido())
-                                                          .fotoUsuario(dto.getUsuario().getFoto())
-                                                          .idDetalleUsuario(dto.getUsuario().getIdDetalleUsuario())
-                                                          .build();
-
-        return entity;
+    public OpinionEntity toEntity(Opinion dto) {
+        return OpinionEntity.builder()
+                .comentario(dto.getComentario())
+                .nota(dto.getNota())
+                .idUsuario(dto.getUsuario().getIdUsuario())
+                .idRestaurante(dto.getIdRestaurante())
+                .nombreUsuario(dto.getUsuario().getNombre())
+                .apellidoUsuario(dto.getUsuario().getApellido())
+                .foto(dto.getUsuario().getFoto())
+                .fecha(dto.getFecha().format(FormatUtils.dateFormatter()))
+                .build();
     }
 
-    public static Opinion toDto(OpinionUsuarioEntity entity) {
-        Opinion opinion = Opinion.builder()
-                                 .comentario(entity.getComentario())
-                                 .nota(entity.getNota())
-                                 .usuario(UsuarioApp.builder()
-                                                          .idUsuario(entity.getIdUsuario())
-                                                          .nombre(entity.getNombreUsuario())
-                                                          .apellido(entity.getApellidoUsuario())
-                                                          .idDetalleUsuario(entity.getIdDetalleUsuario())
-                                                          .foto(entity.getFotoUsuario())
-                                                          .build())
-                                 .build();
-
-        opinion.setId(entity.getIdOpinion());
-
-        return opinion;
-    }
-
-    public static List<OpinionUsuarioEntity> toEntityList(List<Opinion> listaOpiniones) {
-        return listaOpiniones.stream().map(OpinionConverter::toEntity).toList();
-    }
-
-    public static List<Opinion> toModelList(List<OpinionUsuarioEntity> listaOpinionesEntity) {
-        return listaOpinionesEntity.stream().map(OpinionConverter::toDto).toList();
+    public Opinion toDto(OpinionEntity entity) {
+        return Opinion.builder()
+                .idRestaurante(entity.getIdRestaurante())
+                .comentario(entity.getComentario())
+                .nota(entity.getNota())
+                .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.dateFormatter()))
+                .usuario(UsuarioApp.builder()
+                        .idUsuario(entity.getIdUsuario())
+                        .nombre(entity.getNombreUsuario())
+                        .apellido(entity.getApellidoUsuario())
+                        .foto(entity.getFoto())
+                        .build())
+                .build();
     }
 }
