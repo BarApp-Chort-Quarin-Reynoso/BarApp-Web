@@ -64,4 +64,16 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void updateFoto(String id, String foto) {
+        try {
+            UsuarioApp usuario = this.get(id);
+            usuario.setFoto(foto);
+            usuarioDao.save(usuario);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
 }
