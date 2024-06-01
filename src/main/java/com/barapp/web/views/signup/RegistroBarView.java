@@ -1,4 +1,4 @@
-package com.barapp.web.views.registro;
+package com.barapp.web.views.signup;
 
 import com.barapp.web.business.ImageContainer;
 import com.barapp.web.business.service.DetalleRestauranteService;
@@ -10,7 +10,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.views.InicioView;
-import com.barapp.web.views.registro.formularios.*;
+import com.barapp.web.views.signup.formularios.*;
 import com.barapp.web.views.utils.components.CustomErrorWindow;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
