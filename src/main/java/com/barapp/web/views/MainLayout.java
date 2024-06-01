@@ -1,7 +1,8 @@
 package com.barapp.web.views;
 
 import com.barapp.web.security.SecurityService;
-import com.barapp.web.views.registro.RegistroBarView;
+import com.barapp.web.views.login.LoginView;
+import com.barapp.web.views.signup.RegistroBarView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;

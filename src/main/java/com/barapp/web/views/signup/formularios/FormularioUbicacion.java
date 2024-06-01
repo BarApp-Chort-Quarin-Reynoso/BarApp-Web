@@ -1,4 +1,4 @@
-package com.barapp.web.views.registro.formularios;
+package com.barapp.web.views.signup.formularios;
 
 import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.model.Restaurante;

@@ -1,6 +1,5 @@
 package com.barapp.web.security;
 
-import com.barapp.web.views.LoginView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.WebStorage;
 import org.slf4j.Logger;

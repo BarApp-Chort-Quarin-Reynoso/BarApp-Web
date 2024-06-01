@@ -1,11 +1,9 @@
-package com.barapp.web.views;
+package com.barapp.web.views.login;
 
 import java.util.Optional;
 
 import com.barapp.web.security.LoginListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.enums.EstadoRestaurante;
@@ -20,7 +18,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 
 @SuppressWarnings("serial")
 @PageTitle("Login")
