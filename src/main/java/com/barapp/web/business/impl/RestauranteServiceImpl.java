@@ -1,11 +1,16 @@
 package com.barapp.web.business.impl;
 
+import com.barapp.web.business.ImageContainer;
 import com.barapp.web.business.service.RestauranteService;
+import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.data.dao.BaseDao;
+import com.barapp.web.data.dao.ImageDao;
 import com.barapp.web.data.dao.RestauranteDao;
+import com.barapp.web.data.dao.UsuarioWebDao;
 import com.barapp.web.data.entities.RestauranteEntity;
 import com.barapp.web.model.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.UsuarioWeb;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
@@ -25,11 +30,13 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     private final RestauranteDao restauranteDao;
     private final StorageClient storageClient;
+    private final ImageDao imageDao;
 
     @Autowired
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, StorageClient storageClient) {
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
         this.storageClient = storageClient;
+        this.imageDao = imageDao;
     }
 
     @Override
@@ -53,6 +60,21 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         URL signedUrl = blob.signUrl(32850, TimeUnit.DAYS);
 
         return signedUrl.toString();
+    }
+
+    @Override
+    public String saveConUsuario(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada) {
+        try {
+            String logoUrl = imageDao.saveImage("images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
+            String portadaUrl = imageDao.saveImage("images/fotos/%s.%s",portada.getInputStream(), portada.getId(), portada.getContentType());
+            restaurante.setLogo(logoUrl);
+            restaurante.setPortada(portadaUrl);
+
+            return restauranteDao.saveConUsuario(restaurante, usuario);
+        } catch (Exception e) {
+            // TODO eliminar foto si falla
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

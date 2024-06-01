@@ -1,5 +1,6 @@
 package com.barapp.web.views.registro;
 
+import com.barapp.web.business.ImageContainer;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.business.service.UsuarioWebService;
@@ -112,27 +113,18 @@ public class RegistroBarView extends VerticalLayout {
     private void configurarListenersFormularioConfirmar() {
         formularioConfirmar.addSiguienteFormularioListener(restaurante -> {
 
-            // Guardar usuario web como bar
+            // Guardar restaurante en base de datos
             // TODO: Crear excepcion personalizada
-            UsuarioWeb usuarioWeb = new UsuarioWeb(restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()), Rol.BAR);
-            try {
-                usuarioWebService.save(usuarioWeb, usuarioWeb.getId());
-            } catch (Exception e) {
-                CustomErrorWindow.showError(e);
-            }
-
+            restaurante.setEstado(EstadoRestaurante.ESPERANDO_HABILITACION);
             // Buscar ubicacion y pasar la info de latitud y longitud
             ubicacionService.setLatitudLongitud(restaurante.getUbicacion());
 
-            // Guardar imágenes en Firebase Storage
-            restaurante.setLogo(restauranteService.saveLogo(new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(), formularioImagenes.getLogoMimeType()));
-            restaurante.setPortada(restauranteService.savePortada(new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(), formularioImagenes.getPortadaMimeType()));
-
-            restaurante.setEstado(EstadoRestaurante.ESPERANDO_HABILITACION);
-            // Guardar informacion de restaurante en Firestore
-            // TODO: Crear excepcion personalizada
+            // Crear usuario web e Image Containers con la info de las fotos a guardar
+            UsuarioWeb usuarioWeb = new UsuarioWeb(restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()), Rol.BAR);
+            ImageContainer logo = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(), formularioImagenes.getLogoMimeType());
+            ImageContainer portada = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(), formularioImagenes.getPortadaMimeType());
             try {
-                restauranteService.save(restaurante, restaurante.getId());
+                restauranteService.saveConUsuario(restaurante, usuarioWeb, logo, portada);
             } catch (Exception e) {
                 CustomErrorWindow.showError(e);
             }

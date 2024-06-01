@@ -1,6 +1,8 @@
 package com.barapp.web.business.service;
 
+import com.barapp.web.business.ImageContainer;
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.UsuarioWeb;
 
 import java.io.InputStream;
 import java.util.Optional;
@@ -16,4 +18,6 @@ public interface RestauranteService extends BaseService<Restaurante> {
     void aceptarRestaurante(Restaurante restaurante);
     
     Optional<Restaurante> getByCorreo(String correo);
+
+    String saveConUsuario(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada);
 }
