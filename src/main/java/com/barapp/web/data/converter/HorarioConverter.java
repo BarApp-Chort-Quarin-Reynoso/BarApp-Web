@@ -2,7 +2,7 @@ package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.HorarioEntity;
 import com.barapp.web.model.Horario;
-import com.barapp.web.model.TipoComida;
+import com.barapp.web.model.enums.TipoComida;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -12,7 +12,7 @@ public class HorarioConverter {
     public static HorarioEntity toEntity(Horario dto) {
         HorarioEntity entity = HorarioEntity.builder()
                                             .idHorario(dto.getId())
-                                            .hora(dto.getHora().toString())
+                                            .hora(dto.getHorario().toString())
                                             .tipoComida(dto.getTipoComida().toString())
                                             .build();
 
@@ -21,7 +21,7 @@ public class HorarioConverter {
 
     public static Horario toDto(HorarioEntity entity) {
         Horario horario = Horario.builder()
-                                 .hora(LocalTime.parse(entity.getHora()))
+                                 .horario(LocalTime.parse(entity.getHora()))
                                  .tipoComida(TipoComida.valueOf(entity.getTipoComida()))
                                  .build();
 

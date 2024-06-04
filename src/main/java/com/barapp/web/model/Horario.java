@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Getter
 @Setter

@@ -13,7 +13,6 @@ import java.util.UUID;
 @ToString
 @AllArgsConstructor
 @SuperBuilder
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetalleRestaurante extends BaseModel {
     Integer capacidadPorHorario;

@@ -145,12 +145,18 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
                                     .map(c -> (ConfiguradorHorarioNoLaboral) c)
                                     .toList()
                     );
-                    editorDialog.addSaveListener(e -> guardarConfigurador(e.getBean()));
+                    editorDialog.addSaveListener(e -> {
+                        guardarConfigurador(e.getBean());
+                        visualizadorDialog.actualizarElemento(e.getBean());
+                    });
                     editorDialog.open();
                 } else {
                     EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
                             event.getBean(), configuradores);
-                    editorDialog.addSaveListener(e -> guardarConfigurador(e.getBean()));
+                    editorDialog.addSaveListener(e -> {
+                        guardarConfigurador(e.getBean());
+                        visualizadorDialog.actualizarElemento(e.getBean());
+                    });
                     editorDialog.open();
                 }
             });

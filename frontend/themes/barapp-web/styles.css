@@ -66,6 +66,11 @@ vaadin-login-form-wrapper::part(form-title) {
     font-weight: 500;
 }
 
+.empty-label {
+    font-style: italic;
+    color: var(--lumo-secondary-text-color);
+}
+
 .dialog-title {
     font-size: var(--lumo-font-size-xl);
     font-weight: 600;

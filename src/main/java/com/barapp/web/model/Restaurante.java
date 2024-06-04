@@ -13,7 +13,6 @@ import java.util.UUID;
 @SuperBuilder
 @ToString
 @AllArgsConstructor
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Restaurante extends BaseModel {
     @Builder.Default

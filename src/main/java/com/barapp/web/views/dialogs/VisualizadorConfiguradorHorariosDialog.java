@@ -23,6 +23,8 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -37,15 +39,15 @@ public class VisualizadorConfiguradorHorariosDialog extends Dialog {
     final Button closeButton;
     final ComboBox<TipoConfigurador> tipoConfiguradorCombo;
     final VirtualList<ConfiguradorHorario> listaHorarios;
-    final List<ConfiguradorHorario> configuradoresHorario;
+    final Span emptyLabel;
+    ListDataProvider<ConfiguradorHorario> dataProvider;
 
     public VisualizadorConfiguradorHorariosDialog(List<ConfiguradorHorario> configuradoresHorario) {
-        this.configuradoresHorario = configuradoresHorario;
-
         closeButton = new Button(LineAwesomeIcon.TIMES_SOLID.create(), e -> this.close());
         tipoConfiguradorCombo = new ComboBox<>(getTranslation("comp.editarhorariodialog.tipoconfigurador"));
         listaHorarios = new VirtualList<>();
-        listaHorarios.setItems(configuradoresHorario);
+        configurarVirtualList(configuradoresHorario);
+        emptyLabel = new Span();
 
         configurarUI();
     }
@@ -58,35 +60,67 @@ public class VisualizadorConfiguradorHorariosDialog extends Dialog {
         return addListener(EditEvent.class, listener);
     }
 
+    public void actualizarElemento(ConfiguradorHorario configuradorHorario) {
+        dataProvider.refreshItem(configuradorHorario);
+    }
+
+    private void configurarVirtualList(List<ConfiguradorHorario> configuradoresHorario) {
+        dataProvider =
+                DataProvider.ofCollection(configuradoresHorario);
+        dataProvider.setFilter(configuradorHorario -> {
+            if (tipoConfiguradorCombo.getValue() == null) {
+                return true;
+            }
+
+            return configuradorHorario.getTipo().equals(tipoConfiguradorCombo.getValue());
+        });
+        listaHorarios.setDataProvider(dataProvider);
+    }
+
     private void configurarUI() {
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         tipoConfiguradorCombo.setItems(TipoConfigurador.values());
         tipoConfiguradorCombo.setItemLabelGenerator(t -> getTranslation(t.getTranslationKey()));
         tipoConfiguradorCombo.setClearButtonVisible(true);
         tipoConfiguradorCombo.addValueChangeListener(vce -> {
-            if (vce.getValue() == null) {
-                listaHorarios.setItems(configuradoresHorario);
-            } else {
-                listaHorarios.setItems(configuradoresHorario.stream()
-                        .filter(configuradorHorario -> configuradorHorario.getTipo().equals(vce.getValue()))
-                        .toList());
+            dataProvider.refreshAll();
+            emptyLabel.removeAll();
+
+            if (dataProvider.getItems().isEmpty()) {
+                emptyLabel.setText(getTranslation("comp.visualizadorhorarios.ningunconfigurador"));
+            } else if (vce.getValue() != null
+                    && listaHorarios.getDataCommunicator().getItemCount() == 0) {
+                emptyLabel.setText(
+                        getTranslation("comp.visualizadorhorarios.ningunconfiguradordetipo"));
             }
         });
+        dataProvider.addDataProviderListener(event -> {
+            emptyLabel.removeAll();
+            if (dataProvider.getItems().isEmpty()) {
+                emptyLabel.setText(getTranslation("comp.visualizadorhorarios.ningunconfigurador"));
+            }
+        });
+        if (dataProvider.getItems().isEmpty()) {
+            emptyLabel.setText(getTranslation("comp.visualizadorhorarios.ningunconfigurador"));
+        }
+        emptyLabel.setClassName("empty-label");
 
         listaHorarios.setRenderer(getRenderer());
-        listaHorarios.setMaxWidth("500px");
         listaHorarios.setHeight("400px");
+
 
         setHeaderTitle(getTranslation("views.mishorarios.verhorarios"));
         getHeader().add(closeButton);
 
         VerticalLayout contentLayout = new VerticalLayout();
-        contentLayout.setWidth("80%");
+        contentLayout.setPadding(false);
+        contentLayout.setMaxWidth("600px");
+        contentLayout.setMaxHeight("540px");
         contentLayout.getStyle().setMargin("auto");
-        contentLayout.add(tipoConfiguradorCombo, listaHorarios);
+        contentLayout.add(tipoConfiguradorCombo, emptyLabel, listaHorarios);
 
         add(contentLayout);
-        setWidth("50%");
+        setWidth("60%");
     }
 
     private ComponentRenderer<Component, ConfiguradorHorario> getRenderer() {
@@ -97,15 +131,16 @@ public class VisualizadorConfiguradorHorariosDialog extends Dialog {
             eliminarHorarioButton.addThemeVariants(
                     ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY);
             eliminarHorarioButton.setIcon(LineAwesomeIcon.TRASH_SOLID.create());
-            eliminarHorarioButton.addClickListener(event -> {
+            eliminarHorarioButton.addClickListener(ce -> {
                 ConfirmDeleteDialog dialog = new ConfirmDeleteDialog(
                         getTranslation("comp.visualizadorconfiguradorhorarios.eliminardialog.title"),
                         getTranslation("comp.visualizadorconfiguradorhorarios.eliminardialog.text")
                 );
                 dialog.open();
-                dialog.addConfirmListener(event2 -> {
+                dialog.addConfirmListener(event -> {
                     this.fireEvent(new DeleteEvent(this, true, configuradorHorario));
-                    this.close();
+                    dataProvider.getItems().remove(configuradorHorario);
+                    dataProvider.refreshAll();
                 });
             });
 
@@ -115,7 +150,6 @@ public class VisualizadorConfiguradorHorariosDialog extends Dialog {
             editarHorarioButton.setIcon(LineAwesomeIcon.PEN_SOLID.create());
             editarHorarioButton.addClickListener(event -> {
                 this.fireEvent(new EditEvent(this, true, configuradorHorario));
-                this.close();
             });
 
             Component dataLayout = new VerticalLayout();
@@ -150,6 +184,7 @@ public class VisualizadorConfiguradorHorariosDialog extends Dialog {
         daysSelector.setValue(configurador.getDaysOfWeek());
         daysSelector.setReadOnly(true);
         daysSelector.getStyle().setPadding("0");
+        daysSelector.setWeekDaysShort(List.of("D", "L", "M", "X", "J", "V", "S"));
         dataLayout.add(daysSelector);
 
         configurador.getHorarios().forEach(((tipoComida, intervaloTiempo) -> {
