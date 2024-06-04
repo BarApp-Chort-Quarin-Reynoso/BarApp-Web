@@ -17,20 +17,21 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.icon.SvgIcon;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.dom.ElementFactory;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -41,7 +42,8 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EditorConfigurardorHorarioDialog extends Dialog {
     final H2 title;
-    final SvgIcon infoIcon;
+    final Paragraph infotext;
+    final Details details;
 
     final Button cancelarButton;
     final Button guardarButton;
@@ -74,7 +76,8 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         title = new H2(configuradorHorario.getHorarios().isEmpty() ?
                 getTranslation("comp.editarhorariodialog.title.agregar") :
                 getTranslation("comp.editarhorariodialog.title.editar"));
-        infoIcon = LineAwesomeIcon.INFO_CIRCLE_SOLID.create();
+        infotext = new Paragraph();
+        details = new Details();
 
         fieldDesayuno = new IntervaloTiempoSelector(TipoComida.DESAYUNO);
         fieldAlmuerzo = new IntervaloTiempoSelector(TipoComida.ALMUERZO);
@@ -130,17 +133,17 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                 }
             }
         });
+        tipoConfiguradorCombo.getStyle().setPaddingTop("0");
 
         dayOfWeekSelector.getStyle().setPadding("0");
         dayOfWeekSelector.setVisible(false);
+        dayOfWeekSelector.setWeekDaysShort(List.of("D", "L", "M", "X", "J", "V", "S"));
         datePicker.setMin(LocalDate.now());
         datePicker.setVisible(false);
         cancelarButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         errorLabel.addClassNames(LumoUtility.TextColor.ERROR, LumoUtility.FontSize.XSMALL);
-
-        infoIcon.setTooltipText(getTranslation("comp.editarhorariodialog.info"));
 
         HorizontalLayout daysSelectorLayout = new HorizontalLayout();
         daysSelectorLayout.setWidthFull();
@@ -150,11 +153,30 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         daysSelectorLayout.getStyle().setAlignItems(Style.AlignItems.END);
         daysSelectorLayout.add(tipoConfiguradorCombo, dayOfWeekSelector, datePicker);
 
+        configurarInfoText();
+        infotext.setWidthFull();
+        infotext.getStyle().setBoxSizing(Style.BoxSizing.BORDER_BOX);
+        infotext.getStyle().setPadding("var(--lumo-space-m)");
+        infotext.getStyle().setMargin("0");
+        infotext.getStyle().set("font-size", "var(--lumo-font-size-s)");
+
+        details.setSummaryText("Información");
+        details.add(infotext);
+
+        VerticalLayout innerContentLayout = new VerticalLayout();
+        innerContentLayout.add(daysSelectorLayout, fieldDesayuno, fieldAlmuerzo, fieldMerienda, fieldCena, errorLabel);
+        innerContentLayout.setPadding(false);
+        innerContentLayout.setWidth("80%");
+
         VerticalLayout contentLayout = new VerticalLayout();
-        contentLayout.add(daysSelectorLayout, fieldDesayuno, fieldAlmuerzo, fieldMerienda, fieldCena, errorLabel);
+        contentLayout.add(
+                details, innerContentLayout);
         contentLayout.setAlignItems(FlexComponent.Alignment.START);
-        contentLayout.setMaxWidth("500px");
-        contentLayout.getStyle().setMargin("auto");
+        contentLayout.setMinWidth("450px");
+        contentLayout.setWidthFull();
+        contentLayout.setPadding(false);
+        contentLayout.getStyle().setPadding("0 var(--lumo-space-xl)");
+        contentLayout.setAlignSelf(FlexComponent.Alignment.CENTER, innerContentLayout);
         add(contentLayout);
 
         title.addClassName("dialog-title");
@@ -162,7 +184,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         HorizontalLayout headerLayout = new HorizontalLayout();
         headerLayout.setWidthFull();
         headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        headerLayout.add(title, infoIcon);
+        headerLayout.add(title);
         getHeader().add(headerLayout);
 
         HorizontalLayout footerLayout = new HorizontalLayout();
@@ -170,7 +192,6 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         footerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
         footerLayout.add(cancelarButton, guardarButton);
         getFooter().add(footerLayout);
-
 
         setWidth("50%");
     }
@@ -209,10 +230,11 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldDesayuno.isHorarioAgregado() || value
-                                .getDesde()
-                                .plusMinutes(value.getDuracionReserva())
-                                .isBefore(value.getHasta()),
+                        value -> !fieldDesayuno.isHorarioAgregado() ||
+                                !value
+                                        .getDesde()
+                                        .plusMinutes(value.getDuracionReserva())
+                                        .isAfter(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
                 )
                 .bind(
@@ -235,10 +257,11 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldAlmuerzo.isHorarioAgregado() || value
-                                .getDesde()
-                                .plusMinutes(value.getDuracionReserva())
-                                .isBefore(value.getHasta()),
+                        value -> !fieldAlmuerzo.isHorarioAgregado() || !
+                                value
+                                        .getDesde()
+                                        .plusMinutes(value.getDuracionReserva())
+                                        .isAfter(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
                 )
                 .bind(
@@ -261,10 +284,11 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldMerienda.isHorarioAgregado() || value
-                                .getDesde()
-                                .plusMinutes(value.getDuracionReserva())
-                                .isBefore(value.getHasta()),
+                        value -> !fieldMerienda.isHorarioAgregado() ||
+                                !value
+                                        .getDesde()
+                                        .plusMinutes(value.getDuracionReserva())
+                                        .isAfter(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
                 )
                 .bind(
@@ -287,10 +311,11 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldCena.isHorarioAgregado() || value
-                                .getDesde()
-                                .plusMinutes(value.getDuracionReserva())
-                                .isBefore(value.getHasta()),
+                        value -> !fieldCena.isHorarioAgregado() ||
+                                !value
+                                        .getDesde()
+                                        .plusMinutes(value.getDuracionReserva())
+                                        .isAfter(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
                 )
                 .bind(
@@ -364,6 +389,16 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         }
 
         return true;
+    }
+
+    private void configurarInfoText() {
+        infotext.add(getTranslation("comp.editarhorariodialog.info.text1"));
+        infotext.getStyle().set("text-align", "justify");
+        infotext
+                .getElement()
+                .appendChild(ElementFactory.createListItem(getTranslation("comp.editarhorariodialog.info.codicion1")));
+        infotext.getElement()
+                .appendChild(ElementFactory.createListItem(getTranslation("comp.editarhorariodialog.info.codicion2")));
     }
 
     public static class SaveEvent extends CrudEvent<EditorConfigurardorHorarioDialog, ConfiguradorHorario> {
