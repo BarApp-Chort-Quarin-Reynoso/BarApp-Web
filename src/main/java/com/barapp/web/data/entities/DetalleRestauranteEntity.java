@@ -1,9 +1,11 @@
 package com.barapp.web.data.entities;
 
+import com.barapp.web.model.Mesa;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,7 +17,7 @@ public class DetalleRestauranteEntity extends BaseEntity {
     String idDetalleRestaurante;
     String descripcion;
     String menu;
-    Integer capacidadPorHorario;
+    List<Mesa> capacidadTotal;
     List<HorarioEntity> listaHorarioEntities;
     List<OpinionUsuarioEntity> listaOpinionEntities;
 }

@@ -36,3 +36,11 @@
     width: 100%;
     gap: 10px;
 }
+
+.mi-bar-view-gestionar-capacidad-dialog {
+    padding: 10px 0;
+}
+
+.mi-bar-view-gestionar-capacidad-dialog__button {
+    align-self: flex-end;
+}
