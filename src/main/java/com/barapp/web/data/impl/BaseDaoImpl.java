@@ -72,6 +72,7 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
 
         String order = null;
         String sortBy = null;
+        int limit = Integer.MAX_VALUE;
         if (allParams != null && !allParams.isEmpty()) {
           for (Entry<String, String> entry : allParams) {
             String key = entry.getKey();
@@ -86,6 +87,10 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
             if ("sortBy".equals(key)) {
                 sortBy = value;
                 continue;
+            }
+            if ("limit".equals(key)) {
+              limit = Integer.parseInt(value);
+              continue;
             }
             result = result.stream().filter(obj -> {
                 try {
@@ -106,7 +111,7 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
 
         if (sortBy != null) {
           final String finalSortBy = sortBy;
-          @SuppressWarnings("unchecked")
+          @SuppressWarnings({ "unchecked", "rawtypes" })
           Comparator<D> comparator = Comparator.comparing(obj -> {
             try {
                   Field field = obj.getClass().getDeclaredField(finalSortBy);
@@ -125,6 +130,8 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
           }
           result.sort(comparator);
         }
+
+        result = result.stream().limit(limit).collect(Collectors.toList());
 
         return result;
     }
