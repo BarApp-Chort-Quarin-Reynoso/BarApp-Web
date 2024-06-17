@@ -94,6 +94,12 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
         for (Map.Entry<String, Query.Direction> o : params.getOrders()) {
             query = query.orderBy(o.getKey(), o.getValue());
         }
+        if (params.getLimit() != null) {
+            query = query.limit(params.getLimit());
+        }
+        if (params.getOffset() != null) {
+            query = query.offset(params.getOffset());
+        }
         List<D> result = new ArrayList<>();
         List<QueryDocumentSnapshot> documents = query.get().get().getDocuments();
         for (QueryDocumentSnapshot doc : documents) {

@@ -18,7 +18,7 @@ public class DetalleRestaurante extends BaseModel {
     List<Opinion> listaOpiniones;
     String menu;
     Set<Mesa> capacidadTotal;
-    Map<String, Double> caracteristicas;
+    Map<String, CalificacionPromedio> caracteristicas;
 
     public DetalleRestaurante() {
         this.id = UUID.randomUUID().toString();

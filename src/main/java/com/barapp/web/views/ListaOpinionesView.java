@@ -3,6 +3,7 @@ package com.barapp.web.views;
 import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.OpinionService;
 import com.barapp.web.business.service.RestauranteService;
+import com.barapp.web.model.CalificacionPromedio;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Opinion;
 import com.barapp.web.model.Restaurante;
@@ -10,12 +11,12 @@ import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.views.components.EstrellasPuntuacion;
 import com.barapp.web.views.components.VisualizadorOpinion;
+import com.barapp.web.views.dialogs.OpinionesDialog;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.virtuallist.VirtualList;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -48,9 +49,11 @@ public class ListaOpinionesView extends HorizontalLayout implements BeforeEnterO
 
     private final VerticalLayout caracteristicasLayout;
 
-    private final Button botonGestionarOpinion;
+    private final Button gestionarOpinionesButton;
+    private final Button verListaOpinionesButton;
 
-    private final VirtualList<Opinion> virtualListOpiniones;
+    private final VisualizadorOpinion opinion1;
+    private final VisualizadorOpinion opinion2;
 
     public ListaOpinionesView(SecurityService securityService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService, OpinionService opinionService) {
         this.securityService = securityService;
@@ -62,8 +65,10 @@ public class ListaOpinionesView extends HorizontalLayout implements BeforeEnterO
         puntuacion = new Span();
         cantidadOpiniones = new Span();
         caracteristicasLayout = new VerticalLayout();
-        botonGestionarOpinion = new Button(getTranslation("views.opiniones.gestionaropinion"));
-        virtualListOpiniones = new VirtualList<>();
+        gestionarOpinionesButton = new Button(getTranslation("views.opiniones.gestionaropinion"));
+        verListaOpinionesButton = new Button(getTranslation("views.opiniones.verlistaopiniones"));
+        opinion1 = new VisualizadorOpinion();
+        opinion2 = new VisualizadorOpinion();
 
         configurarUI();
         cargarDatos();
@@ -84,28 +89,38 @@ public class ListaOpinionesView extends HorizontalLayout implements BeforeEnterO
         caracteristicasLayout.getThemeList().clear();
         caracteristicasLayout.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Padding.Bottom.MEDIUM);
 
-        botonGestionarOpinion.addClassNames(LumoUtility.Margin.MEDIUM);
+        gestionarOpinionesButton.addClassNames(LumoUtility.Margin.MEDIUM);
 
         VerticalLayout primeraColumnaLayout = new VerticalLayout();
         primeraColumnaLayout.setSpacing(false);
         primeraColumnaLayout.setWidth("300px");
-        primeraColumnaLayout.add(puntuacionLayout, caracteristicasLayout, botonGestionarOpinion);
+        primeraColumnaLayout.add(puntuacionLayout, caracteristicasLayout, gestionarOpinionesButton);
 
-        virtualListOpiniones.setWidth("400px");
-        virtualListOpiniones.setHeight("400px");
-        virtualListOpiniones.setRenderer(new ComponentRenderer<>(opinion -> {
-            VisualizadorOpinion visualizadorOpinion = new VisualizadorOpinion(opinion);
-            visualizadorOpinion.setWidthFull();
-            visualizadorOpinion.addClassNames(LumoUtility.Padding.MEDIUM);
-            return visualizadorOpinion;
-        }));
-        virtualListOpiniones.addClassNames(LumoUtility.Padding.MEDIUM);
+        VerticalLayout opinionesLayout = new VerticalLayout();
+        opinionesLayout.setHeightFull();
+        opinionesLayout.setWidth("300px");
+        opinionesLayout.setFlexGrow(1.0);
 
-        add(primeraColumnaLayout, virtualListOpiniones);
-        this.setWidth("70%");
-        this.setMinWidth("800px");
+        opinion1.setWidthFull();
+        opinion1.addClassName(LumoUtility.Padding.MEDIUM);
+        opinion2.setWidthFull();
+        opinion2.addClassName(LumoUtility.Padding.MEDIUM);
+        verListaOpinionesButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        verListaOpinionesButton.addClassName(LumoUtility.Margin.MEDIUM);
+        verListaOpinionesButton.addClickListener(ce -> {
+            List<Opinion> opiniones = opinionService.getAllOpinionesByRestaurante(restaurante.getId());
+            OpinionesDialog opinionesDialog = new OpinionesDialog(opiniones);
+            opinionesDialog.open();
+        });
+
+        opinionesLayout.addClassNames(LumoUtility.Padding.MEDIUM);
+        opinionesLayout.add(opinion1, opinion2, verListaOpinionesButton);
+
+        add(primeraColumnaLayout, opinionesLayout);
+        this.setWidth("80%");
+        this.setMinWidth("600px");
         this.getStyle().setMargin("auto");
-        this.setFlexGrow(1, virtualListOpiniones);
+        this.setFlexGrow(1, opinionesLayout);
     }
 
     private void cargarDatos() {
@@ -124,10 +139,10 @@ public class ListaOpinionesView extends HorizontalLayout implements BeforeEnterO
         stars.setValue(restaurante.getPuntuacion());
         cantidadOpiniones.add(getTranslation("views.opiniones.cantidadopiniones", restaurante.getCantidadOpiniones()));
 
-        for (Map.Entry<String, Double> entry : detalleRestaurante.getCaracteristicas().entrySet()) {
+        for (Map.Entry<String, CalificacionPromedio> entry : detalleRestaurante.getCaracteristicas().entrySet()) {
             EstrellasPuntuacion estrellasPuntuacion = new EstrellasPuntuacion();
             estrellasPuntuacion.setLabel(entry.getKey());
-            estrellasPuntuacion.setValue(entry.getValue());
+            estrellasPuntuacion.setValue(entry.getValue().getPuntuacion());
             estrellasPuntuacion.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM);
             caracteristicasLayout.add(estrellasPuntuacion);
         }
@@ -136,7 +151,16 @@ public class ListaOpinionesView extends HorizontalLayout implements BeforeEnterO
             caracteristicasLayout.setVisible(false);
         }
 
-        virtualListOpiniones.setItems(opinionesRecientes);
+        if (opinionesRecientes.isEmpty()) {
+            opinion1.setVisible(false);
+            opinion2.setVisible(false);
+        } else if (opinionesRecientes.size() == 1) {
+            opinion1.setValue(opinionesRecientes.get(0));
+            opinion2.setVisible(false);
+        } else {
+            opinion1.setValue(opinionesRecientes.get(0));
+            opinion2.setValue(opinionesRecientes.get(1));
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.barapp.web.data.entities;
 
+import com.barapp.web.model.CalificacionPromedio;
 import com.barapp.web.model.Mesa;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +20,5 @@ public class DetalleRestauranteEntity extends BaseEntity {
     String descripcion;
     String menu;
     List<Mesa> capacidadTotal;
-    List<HorarioEntity> listaHorarioEntities;
-    List<OpinionEntity> listaOpinionEntities;
-    Map<String, Double> caracteristicas;
+    Map<String, CalificacionPromedio> caracteristicas;
 }

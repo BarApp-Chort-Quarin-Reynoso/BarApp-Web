@@ -20,7 +20,6 @@ public class QueryParams {
     @Setter
     private Integer offset;
 
-
     public void addFilter(Filter filter) {
         filters.add(filter);
     }
