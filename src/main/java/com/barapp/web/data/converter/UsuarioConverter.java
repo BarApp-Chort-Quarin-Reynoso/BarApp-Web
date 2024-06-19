@@ -1,6 +1,7 @@
 package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.UsuarioEntity;
+import com.barapp.web.model.DetalleUsuario;
 import com.barapp.web.model.UsuarioApp;
 
 public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity> {
@@ -25,6 +26,12 @@ public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity
                                    .idUsuario(entity.getIdUsuario())
                                    .idDetalleUsuario(entity.getIdDetalleUsuario())
                                    .foto(entity.getFoto())
+                                   .detalleUsuario(DetalleUsuario.builder()
+                                                  .busquedasRecientes(entity.getBusquedasRecientes())
+                                                  .idRestaurantesFavoritos(entity.getIdRestaurantesFavoritos())
+                                                  .mail(entity.getMail())
+                                                  .telefono(entity.getTelefono())
+                                                  .build())
                                    .build();
         return dto;
     }
