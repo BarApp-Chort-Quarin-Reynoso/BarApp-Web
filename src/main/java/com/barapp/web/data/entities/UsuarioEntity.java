@@ -1,5 +1,7 @@
 package com.barapp.web.data.entities;
 
+import java.util.List;
+
 import lombok.*;
 
 @Getter
@@ -13,4 +15,8 @@ public class UsuarioEntity extends BaseEntity {
     private String idUsuario;
     private String idDetalleUsuario;
     private String foto;
+    private List<String> busquedasRecientes;
+    private List<String> idRestaurantesFavoritos;
+    private String mail;
+    private String telefono;
 }

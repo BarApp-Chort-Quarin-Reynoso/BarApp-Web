@@ -16,6 +16,7 @@ public class UsuarioApp extends BaseModel {
     private String idUsuario;
     private String idDetalleUsuario;
     private String foto;
+    private DetalleUsuario detalleUsuario;
 
     @Override
     public String toString() {
