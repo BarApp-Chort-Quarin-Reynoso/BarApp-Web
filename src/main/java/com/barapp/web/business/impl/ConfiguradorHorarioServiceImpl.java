@@ -20,7 +20,7 @@ public class ConfiguradorHorarioServiceImpl extends BaseServiceImpl<Configurador
     }
 
     @Override
-    public BaseDao<ConfiguradorHorario, ? extends BaseEntity> getDao() throws Exception {
+    public BaseDao<ConfiguradorHorario, ? extends BaseEntity> getDao() {
         return configuradorHorarioDao;
     }
 

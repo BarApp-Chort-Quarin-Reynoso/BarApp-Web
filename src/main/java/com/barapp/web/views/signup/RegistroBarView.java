@@ -11,7 +11,7 @@ import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.views.InicioView;
 import com.barapp.web.views.signup.formularios.*;
-import com.barapp.web.views.utils.components.CustomErrorWindow;
+import com.barapp.web.views.components.CustomErrorWindow;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;

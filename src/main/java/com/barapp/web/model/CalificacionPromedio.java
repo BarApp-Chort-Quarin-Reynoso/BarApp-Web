@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class CalificacionPromedio extends BaseModel {
+public class CalificacionPromedio {
     Double puntuacion;
     Integer cantidadOpiniones;
 }

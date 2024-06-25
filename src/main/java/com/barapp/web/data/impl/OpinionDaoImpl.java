@@ -53,7 +53,7 @@ public class OpinionDaoImpl extends BaseDaoImpl<Opinion, OpinionEntity> implemen
             QueryParams queryParams = new QueryParams();
             queryParams.addFilter(Filter.equalTo("idRestaurante", idRestaurante));
             queryParams.addOrder("fecha", Query.Direction.ASCENDING);
-            queryParams.setLimit(2);
+            queryParams.setLimit(3);
 
             return this.getByParams(queryParams);
         } catch (Exception e) {

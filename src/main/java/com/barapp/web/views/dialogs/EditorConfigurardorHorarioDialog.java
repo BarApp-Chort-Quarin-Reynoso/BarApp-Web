@@ -187,11 +187,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         headerLayout.add(title);
         getHeader().add(headerLayout);
 
-        HorizontalLayout footerLayout = new HorizontalLayout();
-        footerLayout.setWidthFull();
-        footerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
-        footerLayout.add(cancelarButton, guardarButton);
-        getFooter().add(footerLayout);
+        getFooter().add(cancelarButton, guardarButton);
 
         setWidth("50%");
     }

@@ -1,3 +1,13 @@
 .main-element {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    background-color: white;
+    width: 80%;
+    min-width: 600px;
+    margin: auto;
+    margin-bottom: var(--lumo-space-xl);
+    padding: var(--lumo-space-m);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .2);
 }
