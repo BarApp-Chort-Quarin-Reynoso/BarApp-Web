@@ -6,7 +6,7 @@ import com.vaadin.flow.component.ComponentEvent;
 import lombok.Getter;
 
 @Getter
-public abstract class CrudEvent<T extends Component, O extends BaseModel> extends ComponentEvent<T> {
+public abstract class CrudEvent<T extends Component, O> extends ComponentEvent<T> {
     private final O bean;
 
     public CrudEvent(T source, boolean fromClient, O bean) {

@@ -100,7 +100,7 @@ public class FormularioInformacionBasica extends VerticalLayout {
         siguienteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         siguienteButton.addClickListener(e -> {
 
-            Restaurante bean = new Restaurante();
+            Restaurante bean = Restaurante.builder().build();
             if (binder.writeBeanIfValid(bean)) {
                 binder.setBean(bean);
 

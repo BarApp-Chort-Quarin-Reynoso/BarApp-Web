@@ -9,6 +9,8 @@ import com.barapp.web.model.Horario;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.FormatUtils;
+import com.barapp.web.views.components.Footer;
+import com.barapp.web.views.components.MainElement;
 import com.barapp.web.views.components.VisualizadorHorarios;
 import com.barapp.web.views.dialogs.EditorConfigurardorHorarioDialog;
 import com.barapp.web.views.dialogs.EditorDiaNoLaboralDialog;
@@ -163,11 +165,6 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             visualizadorDialog.open();
         });
 
-        setPadding(true);
-        setSpacing(true);
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-
         VerticalLayout calendarioWrapper = new VerticalLayout(calendarioTitle, monthField, calendar);
         calendarioWrapper.setMinWidth("0");
         calendarioWrapper.getStyle().setFlexBasis("400px");
@@ -178,7 +175,8 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         horariosWrapper.getStyle().setFlexShrink("1");
 
         HorizontalLayout visualizacionLayout = new HorizontalLayout();
-        visualizacionLayout.setWidth("70%");
+        visualizacionLayout.setWidth("100%");
+        visualizacionLayout.setMaxWidth("850px");
         visualizacionLayout.setPadding(true);
         visualizacionLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
         visualizacionLayout.getStyle().set("gap", "var(--lumo-space-xl)");
@@ -190,9 +188,15 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         buttonsLayout.setSpacing(true);
         buttonsLayout.add(agregarHorarioButton, horarioNoLaborableButton, verHorariosButton);
 
-        add(visualizacionLayout, buttonsLayout);
-
         actualizarMes(YearMonth.now());
+
+        MainElement mainElement = new MainElement(visualizacionLayout, buttonsLayout);
+        mainElement.addClassName("mis-horarios-view");
+
+        this.add(mainElement, new Footer());
+        this.setPadding(false);
+        this.setSpacing(false);
+        this.setSizeFull();
     }
 
     private void guardarConfigurador(ConfiguradorHorario configuradorHorario) {

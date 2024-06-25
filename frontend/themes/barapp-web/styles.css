@@ -2,6 +2,8 @@
 @import url('./registro-bar.css');
 @import url('./mi-bar.css');
 @import url('./inicio.css');
+@import url('./mis-horarios.css');
+@import url('./mis-opiniones.css');
 @import url('./components/footer.css');
 @import url('./components/main-element.css');
 @import url('@fontsource/sansita-swashed/400.css');
@@ -34,6 +36,8 @@ html {
     --lumo-success-contrast-color: hsl(159, 29%, 10%);
     --lumo-success-text-color: hsl(159, 61%, 40%);
     --lumo-font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+
+    background-color: #ededed;
 }
 
 h4 {
@@ -41,7 +45,7 @@ h4 {
 }
 
 vaadin-button[theme~="error"] {
-	background-color: var(--lumo-error-color-10pct);
+    background-color: var(--lumo-error-color-10pct);
 }
 
 vaadin-button {
@@ -49,7 +53,7 @@ vaadin-button {
 }
 
 vaadin-login-form-wrapper::part(form-title) {
-	text-align: center;
+    text-align: center;
     font-family: "Sansita Swashed";
     font-weight: 400;
     font-style: normal;

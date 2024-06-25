@@ -19,7 +19,7 @@ public class OpinionServiceImpl extends BaseServiceImpl<Opinion> implements Opin
     }
 
     @Override
-    public BaseDao<Opinion, ? extends BaseEntity> getDao() throws Exception {
+    public BaseDao<Opinion, ? extends BaseEntity> getDao() {
         return opinionDao;
     }
 

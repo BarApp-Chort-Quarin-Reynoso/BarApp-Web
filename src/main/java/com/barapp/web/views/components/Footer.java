@@ -1,14 +1,9 @@
-package com.barapp.web.views.utils.components;
+package com.barapp.web.views.components;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.server.StreamResource;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 public class Footer extends VerticalLayout {
