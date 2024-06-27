@@ -4,6 +4,7 @@ import com.barapp.web.data.entities.DetalleRestauranteEntity;
 import com.barapp.web.model.DetalleRestaurante;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 
 public class DetalleRestauranteConverter implements BaseConverter<DetalleRestaurante, DetalleRestauranteEntity> {
