@@ -27,4 +27,8 @@ public interface ReservaService extends BaseService<Reserva> {
     void inicializarNotificaciones();
 
     Opinion reviewOnBooking(String idReserva, Opinion opinion);
+
+    Reserva cancelarReserva(String idReserva, String estado, String motivo);
+
+    Reserva concretarReserva(String idReserva, String idUsuario, String idRestaurante);
 }

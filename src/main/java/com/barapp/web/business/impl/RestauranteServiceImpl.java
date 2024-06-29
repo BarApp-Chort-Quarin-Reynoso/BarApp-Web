@@ -169,6 +169,34 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
+    public void pausarRestaurante(Restaurante restaurante) {
+        if (!restaurante.getEstado().equals(EstadoRestaurante.HABILITADO))
+            throw new RuntimeException("El restaurante %s debe estar habilitado"
+                    .formatted(restaurante.getNombre()));
+
+        try {
+            restaurante.setEstado(EstadoRestaurante.PAUSADO);
+            restauranteDao.save(restaurante, restaurante.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void activarRestaurante(Restaurante restaurante) {
+        if (!restaurante.getEstado().equals(EstadoRestaurante.PAUSADO))
+            throw new RuntimeException("El restaurante %s debe estar pausado"
+                    .formatted(restaurante.getNombre()));
+
+        try {
+            restaurante.setEstado(EstadoRestaurante.HABILITADO);
+            restauranteDao.save(restaurante, restaurante.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public Optional<Restaurante> getByCorreo(String correo) {
         try {
             List<Restaurante> restaurantes = restauranteDao.getFiltered(Filter.equalTo("correo", correo));
