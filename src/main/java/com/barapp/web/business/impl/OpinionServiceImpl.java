@@ -24,12 +24,12 @@ public class OpinionServiceImpl extends BaseServiceImpl<Opinion> implements Opin
     }
 
     @Override
-    public List<Opinion> getOpinionesByRestaurante(String idRestaurante) {
+    public List<Opinion> getAllOpinionesByRestaurante(String idRestaurante) {
         return opinionDao.getOpinionesByRestaurante(idRestaurante);
     }
 
     @Override
     public List<Opinion> getOpinionesRecientesByRestaurante(String idRestaurante) {
-        return opinionDao.getOpinionesRecientesByRestaurante(idRestaurante);
+        return opinionDao.getAllOpinionesRecientesByRestaurante(idRestaurante);
     }
 }

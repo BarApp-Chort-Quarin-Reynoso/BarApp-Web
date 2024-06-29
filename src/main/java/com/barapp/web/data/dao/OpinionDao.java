@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OpinionDao extends BaseDao<Opinion, OpinionEntity> {
     List<Opinion> getOpinionesByRestaurante(String idRestaurante);
-    List<Opinion> getOpinionesRecientesByRestaurante(String idRestaurante);
+    List<Opinion> getAllOpinionesRecientesByRestaurante(String idRestaurante);
 }

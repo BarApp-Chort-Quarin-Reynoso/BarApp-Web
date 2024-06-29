@@ -48,12 +48,12 @@ public class OpinionDaoImpl extends BaseDaoImpl<Opinion, OpinionEntity> implemen
     }
 
     @Override
-    public List<Opinion> getOpinionesRecientesByRestaurante(String idRestaurante) {
+    public List<Opinion> getAllOpinionesRecientesByRestaurante(String idRestaurante) {
         try {
             QueryParams queryParams = new QueryParams();
             queryParams.addFilter(Filter.equalTo("idRestaurante", idRestaurante));
             queryParams.addOrder("fecha", Query.Direction.ASCENDING);
-            queryParams.setLimit(3);
+            queryParams.setLimit(2);
 
             return this.getByParams(queryParams);
         } catch (Exception e) {
