@@ -1,0 +1,132 @@
+.mis-reservas-view {
+    height: 100%;
+    margin: auto;
+}
+
+.mis-reservas-card {
+    gap: 15px;
+}
+
+.mis-reservas-view vaadin-tabsheet {
+    border-radius: var(--lumo-border-radius-l);
+}
+
+.mis-reservas-view vaadin-tabs::part(tabs) {
+    background-color: #f3e4db;
+    margin: 0;
+    border-radius: var(--lumo-border-radius-l) var(--lumo-border-radius-l) 0 0;
+}
+
+.mis-reservas-view vaadin-text-field::part(input-field) {
+    background-color: #efefef66;
+    outline: 1px solid #dcdbdb;
+    margin: 0 1px;
+}
+
+.mis-reservas-view vaadin-tabsheet::part(content) {
+    padding: 0;
+    background-color: #fff;
+}
+
+.mis-reservas-view vaadin-grid::part(es-hoy) {
+    background-color: rgba(235, 89, 5, 0.03);
+}
+
+.mis-reservas-view vaadin-grid-sorter::part(indicators) {
+    align-self: baseline;
+}
+
+.mis-reservas-view vaadin-menu-bar-item, .mis-reservas-view vaadin-menu-bar-item.bg-error-10 {
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.empty-state-container {
+    padding: 40px;
+    gap: 30px;
+}
+
+.empty-state-image {
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(-5px 5px 4px rgba(0,0,0,0.10));
+}
+
+.empty-state-text {
+    font-size: 20px;
+    color: var(--lumo-body-text-color);
+}
+
+.concretar-content {
+    padding: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 500px;
+}
+
+.marcar-no-cumplida-content {
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.cancelar-reserva-content {
+    max-width: 500px;
+    gap: 0;
+}
+
+.dialog-icon {
+    width: 70px;
+    height: 70px;
+}
+
+.reservas-pausadas-container {
+    background-color: #ffbaba28;
+    outline: 1px solid #ff0000a9;
+    border-radius: var(--lumo-border-radius-l);
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.reservas-activadas-container {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.pausa-content {
+    align-items: center;
+    flex-grow: 1;
+}
+
+.atencion-icon {
+    width: 35px;
+    height: 35px;
+}
+
+.pausa-textos {
+    gap: 5px;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+
+.pausar-estado {
+    font-weight: 600;
+}
+
+.pausar-limitacion {
+}
+
+.pausa-button {
+    font-weight: 600;
+    padding: 0 14px;
+    width: 150px;
+}

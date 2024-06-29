@@ -24,6 +24,10 @@ public interface RestauranteService extends BaseService<Restaurante> {
 
     void aceptarRestaurante(Restaurante restaurante);
 
+    void pausarRestaurante(Restaurante restaurante);
+
+    void activarRestaurante(Restaurante restaurante);
+    
     Optional<Restaurante> getByCorreo(String correo);
 
     String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada);

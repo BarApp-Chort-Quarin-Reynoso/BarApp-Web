@@ -97,6 +97,26 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
+    public Reserva concretarReserva(String idReserva, String idUsuario, String idRestaurante) {
+        try {
+            Reserva reserva = reservaDao.get(idReserva);
+
+            if (!reserva.getRestaurante().getId().equals(idRestaurante) ||
+                !reserva.getUsuario().getId().equals(idUsuario)) {
+                return null;
+            }
+
+            reserva.setEstado(EstadoReserva.CONCRETADA);
+            this.save(reserva, idReserva);
+
+            return reserva;
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<Reserva> getReservasByRestaurante(String idRestaurante) {
         try {
             return reservaDao.getFiltered(Filter.equalTo("idRestaurante", idRestaurante));
@@ -297,6 +317,21 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
 
         if (!detalleRestaurante.getCaracteristicas().keySet().containsAll(opinion.getCaracteristicas().keySet())) {
             throw new RuntimeException("La opinion tiene caracteristicas que el restaurante no tiene");
+        }
+    }
+
+    @Override
+    public Reserva cancelarReserva(String id, String estado, String motivo) {
+        try {
+            Reserva reserva = this.get(id);
+            reserva.setEstado(EstadoReserva.valueOf(estado));
+            reserva.setMotivoCancelacion(motivo);
+            this.save(reserva, id);
+
+            return reserva;
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
         }
     }
 }

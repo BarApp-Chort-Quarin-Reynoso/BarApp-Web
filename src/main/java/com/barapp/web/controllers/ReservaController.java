@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/reservas")
 @CrossOrigin("*")
-public class ReservaController extends BaseController<Reserva> {
+public class  ReservaController extends BaseController<Reserva> {
 
     private final ReservaService reservaService;
 
@@ -26,6 +26,16 @@ public class ReservaController extends BaseController<Reserva> {
     @RequestMapping(value = "/usuario/{idUsuario}")
     public List<Reserva> getReservasByUsuario(@PathVariable("idUsuario") String idUsuario) {
         return getService().getReservasByUsuario(idUsuario);
+    }
+
+    @RequestMapping(value = "/{idReserva}/concretar")
+    public ResponseEntity<Reserva> concretarReserva(@PathVariable("idReserva") String idReserva, @RequestParam("idUsuario") String idUsuario, @RequestParam("idRestaurante") String idRestaurante) {
+        try {
+            return new ResponseEntity<>(getService().concretarReserva(idReserva, idUsuario, idRestaurante), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping(value = "/{id}/estado")

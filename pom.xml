@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <vaadin.version>24.3.5</vaadin.version>
+        <vaadin.version>24.4.11</vaadin.version>
     </properties>
 
     <repositories>
@@ -150,6 +150,26 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>2.3.2</version>
+        </dependency>
+
+        <!-- Zxing QR Generator -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+
+        <!-- File Download Wrapper -->
+        <dependency>
+            <groupId>org.vaadin.olli</groupId>
+            <artifactId>file-download-wrapper</artifactId>
+            <version>7.1.0</version>
         </dependency>
     </dependencies>
 

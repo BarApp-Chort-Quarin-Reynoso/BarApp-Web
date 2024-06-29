@@ -117,6 +117,9 @@ public class MainLayout extends AppLayout {
                     ListaBaresView.class
             ));
         }
+        if (user.getAuthorities().contains(new SimpleGrantedAuthority(MisReservasView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.misreservas.titulo"), LineAwesomeIcon.CONCIERGE_BELL_SOLID.create(), MisReservasView.class));
+        }
         return items.toArray(new MenuItemInfo[]{});
     }
 
