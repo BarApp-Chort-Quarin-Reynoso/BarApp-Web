@@ -1,0 +1,12 @@
+vaadin-tabsheet::part(content) {
+    padding: 0;
+}
+
+vaadin-grid-sorter::part(indicators) {
+    align-self: baseline;
+}
+
+vaadin-menu-bar-item, vaadin-menu-bar-item.bg-error-10 {
+    cursor: pointer;
+    background-color: transparent;
+}
