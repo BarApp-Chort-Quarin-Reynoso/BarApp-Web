@@ -13,7 +13,7 @@ public class ReservaEntity extends BaseEntity{
   boolean cancelada;
   Integer cantidadPersonas;
   String fecha;
-  String hora;
+  String horario;
   String idUsuario;
   String idRestaurante;
   String logo;
@@ -22,9 +22,4 @@ public class ReservaEntity extends BaseEntity{
   Double puntuacion;
   String tipoComida;
   String calle;
-  String foto;
-  // String idDetalleRestaurante; ?
-  // String idHorario; ?
-  // String idUbicacion; ? 
-  
 }
