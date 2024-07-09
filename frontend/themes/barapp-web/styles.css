@@ -7,8 +7,6 @@
 @import url('./components/footer.css');
 @import url('./components/main-element.css');
 @import url('@fontsource/sansita-swashed/400.css');
-@import url('/component-styles/mis-horarios.css');
-@import url('/component-styles/mis-opiniones.css');
 
 html {
     --lumo-shade-5pct: rgba(33, 33, 33, 0.05);

@@ -1,8 +1,8 @@
 package com.barapp.web.views;
 
 import com.barapp.web.security.SecurityService;
-import com.barapp.web.views.components.BarappFooter;
-import com.barapp.web.views.components.MainElement;
+import com.barapp.web.views.components.pageElements.BarappFooter;
+import com.barapp.web.views.components.pageElements.MainElement;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;

@@ -1,5 +1,71 @@
 .mis-horarios-view {
     align-items: center;
     position: relative;
-    z-index: -2;
+}
+
+.visualizadorLayout {
+    width: 100%;
+    max-width: 850px;
+    height: 600px;
+    justify-content: space-evenly;
+    gap: var(--lumo-space-xl);
+    border-radius: var(--lumo-border-radius-m);
+}
+
+.monthField {
+    width: 100%;
+    min-width: 280px;
+    justify-content: center;
+}
+
+vaadin-custom-field[readonly] vaadin-button.fc-days-of-week-selector-button[disabled] {
+    --lumo-button-size: 30px;
+    --vaadin-button-font-size: 0.8em;
+}
+
+vaadin-custom-field[readonly] vaadin-button.fc-days-of-week-selector-button[theme~=primary][disabled] {
+    background-color: var(--lumo-primary-color-50pct);
+    border: none;
+    color: var(--lumo-primary-text-color);
+}
+
+.calendarDiasHabilitado {
+    z-index: 2;
+    min-width: 280px;
+    --lumo-font-size-l: var(--lumo-font-size-l);
+    --lumo-font-size-m: var(--lumo-font-size-s);
+    --lumo-font-size-xxs: var(--lumo-font-size-s);
+}
+
+.intervaloTiempoSelector-content {
+    align-items: center;
+    border-radius: 4px;
+    padding: var(--lumo-space-s);
+    margin: var(--lumo-space-s) 0;
+}
+
+fc-badge-list {
+    line-height: 0;
+}
+
+.intervaloTiempoSelector fc-badge-list {
+    width: 400px;
+    padding: var(--lumo-space-s);
+}
+
+.badge-con-boton-eliminar {
+    height: 1.8em;
+}
+
+.badge-con-boton-eliminar vaadin-button {
+    min-width: 0;
+    margin-left: var(--lumo-space-xs);
+}
+
+.badge-con-boton-eliminar vaadin-button > vaadin-icon {
+    width: 1em;
+}
+
+vaadin-context-menu-list-box .badge-con-boton-eliminar vaadin-button {
+    visibility: hidden;
 }

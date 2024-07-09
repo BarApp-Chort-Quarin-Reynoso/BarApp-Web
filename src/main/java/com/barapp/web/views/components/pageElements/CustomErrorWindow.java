@@ -1,4 +1,4 @@
-package com.barapp.web.views.components;
+package com.barapp.web.views.components.pageElements;
 
 import com.flowingcode.vaadin.addons.errorwindow.ErrorWindow;
 import com.flowingcode.vaadin.addons.errorwindow.ErrorWindowI18n;

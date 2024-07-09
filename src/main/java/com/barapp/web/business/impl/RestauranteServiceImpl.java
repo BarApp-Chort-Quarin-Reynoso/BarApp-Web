@@ -18,6 +18,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.model.enums.EstadoRestaurante;
+import com.barapp.web.utils.Tuple;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
@@ -60,7 +61,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public BaseDao<Restaurante, RestauranteEntity> getDao() { return restauranteDao; }
+    public BaseDao<Restaurante, RestauranteEntity> getDao() {return restauranteDao;}
 
     @Override
     public String saveLogo(InputStream inputStream, String id, String contentType) {
@@ -75,7 +76,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private String saveImage(String dest, InputStream inputStream, String id, String contentType) {
         String blobString = String.format(dest, id, contentType.substring(contentType.indexOf("/") + 1));
         Blob blob = storageClient
-            .bucket()
+                .bucket()
                 .create(blobString, inputStream, contentType, Bucket.BlobWriteOption.userProject("barapp-b1bc0"));
         URL signedUrl = blob.signUrl(32850, TimeUnit.DAYS);
 
@@ -85,8 +86,10 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public String saveConUsuario(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada) {
         try {
-            String logoUrl = imageDao.saveImage("images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
-            String portadaUrl = imageDao.saveImage("images/fotos/%s.%s",portada.getInputStream(), portada.getId(), portada.getContentType());
+            String logoUrl = imageDao.saveImage(
+                    "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
+            String portadaUrl = imageDao.saveImage(
+                    "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
             restaurante.setLogo(logoUrl);
             restaurante.setPortada(portadaUrl);
 
@@ -100,8 +103,10 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public String saveConFotos(Restaurante restaurante, ImageContainer logo, ImageContainer portada) {
         try {
-            String logoUrl = imageDao.saveImage("images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
-            String portadaUrl = imageDao.saveImage("images/fotos/%s.%s",portada.getInputStream(), portada.getId(), portada.getContentType());
+            String logoUrl = imageDao.saveImage(
+                    "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
+            String portadaUrl = imageDao.saveImage(
+                    "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
             restaurante.setLogo(logoUrl);
             restaurante.setPortada(portadaUrl);
 
@@ -117,7 +122,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public void rechazarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))
             throw new RuntimeException("El restaurante %s ya ha pasado la etapa de verificación"
-                .formatted(restaurante.getNombre()));
+                    .formatted(restaurante.getNombre()));
 
         try {
             restaurante.setEstado(EstadoRestaurante.RECHAZADO);
@@ -131,7 +136,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public void aceptarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))
             throw new RuntimeException("El restaurante %s ya ha pasado la etapa de verificación"
-                .formatted(restaurante.getNombre()));
+                    .formatted(restaurante.getNombre()));
 
         try {
             restaurante.setEstado(EstadoRestaurante.HABILITADO);
@@ -146,7 +151,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         try {
             List<Restaurante> restaurantes = restauranteDao.getFiltered(Filter.equalTo("correo", correo));
             if (restaurantes.isEmpty()) return Optional.empty();
-            
+
             return Optional.of(restaurantes.get(0));
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -179,6 +184,34 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                                 .toList();
                     }
                     horarios.put(d, horariosGenerados);
+                    break;
+                }
+            }
+        }
+
+        return horarios;
+    }
+
+    @Override
+    public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio) {
+        // La implementacion considera que los configuradores son devueltos segun su prioridad
+        List<ConfiguradorHorario> configuradoresHorario
+                = configuradorHorarioDao.getAllByCorreoRestaurante(correoRestaurante);
+
+        Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new LinkedHashMap<>();
+
+        LocalDate start = LocalDate.of(mesAnio.getYear(), mesAnio.getMonth(), 1);
+        LocalDate end = start.plusMonths(1);
+
+        if (start.isBefore(LocalDate.now())) {
+            start = LocalDate.now();
+        }
+
+        for (LocalDate d : start.datesUntil(end).toList()) {
+            for (ConfiguradorHorario ch : configuradoresHorario) {
+                if (ch.isPermitido(d)) {
+                    List<Horario> horariosGenerados = ch.generarHorarios();
+                    horarios.put(d, new Tuple<>(horariosGenerados, ch));
                     break;
                 }
             }

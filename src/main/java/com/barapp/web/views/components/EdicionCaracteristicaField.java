@@ -1,6 +1,7 @@
 package com.barapp.web.views.components;
 
 import com.barapp.web.model.CalificacionPromedio;
+import com.barapp.web.views.components.puntuacion.EstrellasPuntuacion;
 import com.barapp.web.views.utils.events.CrudEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
