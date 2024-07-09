@@ -1,23 +1,59 @@
-[part~='date'].disabled {
+div[part=month-header] {
+    display: none;
+}
+
+/* Estilos para fechas deshabilitadas */
+[part~='date'].disabled, [part~='date'][part~='selected'][aria-selected="true"].disabled {
     color: var(--lumo-disabled-text-color);
 }
 
-[part~='date'].disabled::before {
+[part~='date'].disabled::before, [part~='date'][part~='selected'].disabled::before {
     background-color: transparent;
+    border: none;
 }
 
 [part~='date'].disabled:not(:empty):not([part~='disabled']):not([part~='selected']):hover::before {
     background-color: transparent; 
 }
 
-[part='date'].open:not(:hover) {
-    color: var(--lumo-primary-contrast-color);
+/* Estilos para fechas 'today' que tengan un configurador horario */
+[part='date today'].open {
+    color: var(--lumo-primary-text-color);
 }
 
-[part~='date']:not([part~='selected']).open::before {
+/* Estilos para fechas 'open' */
+[part~='date'].open::before {
     background-color: var(--lumo-primary-color-50pct);
 }
 
-div[part=month-header] {
-    display: none;
+[part~='date'].open {
+    color: var(--lumo-primary-contrast-color);
 }
+
+/* Estilos para fechas 'holiday' */
+[part~='date'].holiday::before {
+    background-color: var(--lumo-error-color-50pct);
+}
+
+[part~='date'].holiday {
+    color: var(--lumo-primary-contrast-color);
+}
+
+/* Estilo para todas la fechas seleccionada*/
+[part~=date][part~=selected]:before {
+    border: solid 1px var(--lumo-primary-color);
+}
+
+/* Estilos para la fecha seleccionada donde el bar no esta abierto */
+[part~=date][part~=selected]:not(.open):not(.holiday):before {
+    background-color: transparent;
+}
+
+[part~=date][part~=selected]:not(.open):not(.holiday):not(.disabled) {
+    color: var(--lumo-body-text-color);
+}
+
+[part~=date][part~=selected][part~=today]:not(.open):not(.holiday) {
+    color: var(--lumo-primary-text-color);
+}
+

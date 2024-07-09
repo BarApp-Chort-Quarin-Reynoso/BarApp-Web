@@ -2,6 +2,7 @@ package com.barapp.web.views.components;
 
 import com.barapp.web.model.Opinion;
 import com.barapp.web.utils.FormatUtils;
+import com.barapp.web.views.components.puntuacion.EstrellasPuntuacion;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;

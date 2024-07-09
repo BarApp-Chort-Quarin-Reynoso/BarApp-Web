@@ -4,22 +4,19 @@ import com.barapp.web.business.service.ConfiguradorHorarioService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.ConfiguradorHorarioNoLaboral;
-import com.barapp.web.model.ConfiguradorHorarioSemanal;
 import com.barapp.web.model.Horario;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.FormatUtils;
-import com.barapp.web.views.components.BarappFooter;
-import com.barapp.web.views.components.MainElement;
+import com.barapp.web.utils.Tuple;
 import com.barapp.web.views.components.VisualizadorHorarios;
+import com.barapp.web.views.components.pageElements.BarappFooter;
+import com.barapp.web.views.components.pageElements.MainElement;
 import com.barapp.web.views.dialogs.EditorConfigurardorHorarioDialog;
 import com.barapp.web.views.dialogs.EditorDiaNoLaboralDialog;
-import com.barapp.web.views.dialogs.VisualizadorConfiguradorHorariosDialog;
 import com.flowingcode.addons.ycalendar.MonthCalendar;
 import com.flowingcode.addons.ycalendar.YearMonthField;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -32,14 +29,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @PageTitle("Mis Horarios")
 @Route(value = "mis-horarios", layout = MainLayout.class)
@@ -56,13 +49,8 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     MonthCalendar calendar;
     VisualizadorHorarios visualizadorHorarios;
     H3 calendarioTitle = new H3(getTranslation("views.mishorarios.fechasdisponibles"));
-    H3 horariosTitle = new H3(getTranslation("views.mishorarios.horariosdisponibles"));
-    Button agregarHorarioButton;
-    Button horarioNoLaborableButton;
-    Button verHorariosButton;
-    Map<LocalDate, List<Horario>> horarios = new HashMap<>();
 
-    VisualizadorConfiguradorHorariosDialog visualizadorDialog;
+    Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new HashMap<>();
 
     public MisHorariosView(SecurityService securityService, ConfiguradorHorarioService configuradorHorarioService, RestauranteService restauranteService) {
         this.securityService = securityService;
@@ -74,6 +62,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
 
     public void configurarUI() {
         monthField = new YearMonthField();
+        monthField.addClassName("monthField");
         monthField.setMin(YearMonth.now());
         monthField.addValueChangeListener(event -> actualizarMes(event.getValue()));
         monthField.getStyle().setWidth("100%");
@@ -85,112 +74,101 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         calendar.setClassNameGenerator(date -> {
             if (date.isBefore(LocalDate.now())) {
                 return "disabled";
-            } else if (horarios.containsKey(date) && !horarios.get(date).isEmpty()) {
+            } else if (horarios.containsKey(date) && !horarios.get(date).getFirst().isEmpty()) {
                 return "open";
+            } else if (horarios.containsKey(date) && horarios
+                    .get(date)
+                    .getSecond() instanceof ConfiguradorHorarioNoLaboral) {
+                return "holiday";
             }
             return null;
         });
+
         calendar.addDateSelectedListener(event -> {
             if (!event.getDate().isBefore(LocalDate.now())) {
-                visualizadorHorarios.setValue(horarios.getOrDefault(event.getDate(), List.of()));
+                Tuple<List<Horario>, ConfiguradorHorario> horarios = this.horarios.get(event.getDate());
+                visualizadorHorarios.setValue(
+                        horarios != null ? horarios.getFirst() : new ArrayList<>(),
+                        horarios != null ? horarios.getSecond() : null,
+                        event.getDate()
+                );
+            } else {
+                visualizadorHorarios.setValue(new ArrayList<>(), null, null);
             }
         });
-        calendar.addClassName("calendar-dias-habilitado");
+        calendar.addClassName("calendarDiasHabilitado");
         calendar.setWidth("100%");
 
-        visualizadorHorarios = new VisualizadorHorarios();
-
-        calendarioTitle.addClassName(LumoUtility.FontSize.LARGE);
-        horariosTitle.addClassName(LumoUtility.FontSize.LARGE);
-        agregarHorarioButton = new Button(getTranslation("views.mishorarios.agregarhorario"));
-        agregarHorarioButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        agregarHorarioButton.setIcon(LineAwesomeIcon.PLUS_SOLID.create());
-        agregarHorarioButton.addClickListener(ce -> {
-            String correo = securityService.getAuthenticatedUser().get().getUsername();
-            ConfiguradorHorarioSemanal configuradorHorario = ConfiguradorHorarioSemanal.builder()
-                    .correoRestaurante(securityService.getAuthenticatedUser().get().getUsername())
-                    .build();
-            EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
-                    configuradorHorario,
-                    configuradorHorarioService.getAllByCorreoRestaurante(correo)
-            );
-            editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
-            editorDialog.open();
-        });
-        horarioNoLaborableButton = new Button(getTranslation("views.mishorarios.horarionolaborable"));
-        horarioNoLaborableButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        horarioNoLaborableButton.addClickListener(ce -> {
-            String correo = securityService.getAuthenticatedUser().get().getUsername();
-            ConfiguradorHorarioNoLaboral configuradorHorario = ConfiguradorHorarioNoLaboral.builder()
-                    .correoRestaurante(securityService.getAuthenticatedUser().get().getUsername())
-                    .build();
-            EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
-                    configuradorHorario,
-                    configuradorHorarioService.getAllNoLaboralByCorreoRestaurante(correo)
-            );
-            editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
-            editorDialog.open();
-        });
-        verHorariosButton = new Button(getTranslation("views.mishorarios.verhorarios"));
-        verHorariosButton.addClickListener(ce -> {
-            String correo = securityService.getAuthenticatedUser().get().getUsername();
+        visualizadorHorarios = new VisualizadorHorarios(
+                getTranslation("views.mishorarios.horariosdisponibles"),
+                securityService.getAuthenticatedUser().orElseThrow().getUsername()
+        );
+        visualizadorHorarios.setSizeFull();
+        visualizadorHorarios.setFlexGrow(1);
+        visualizadorHorarios.addEditListener(ce -> {
+            String correo = securityService.getAuthenticatedUser().orElseThrow().getUsername();
             List<ConfiguradorHorario> configuradores =
                     configuradorHorarioService.getAllByCorreoRestaurante(correo);
-            visualizadorDialog = new VisualizadorConfiguradorHorariosDialog(configuradores);
-            visualizadorDialog.addDeleteListener(de -> eliminarConfigurador(de.getBean()));
-            visualizadorDialog.addEditListener(event -> {
-                if (event.getBean() instanceof ConfiguradorHorarioNoLaboral noLaboral) {
-                    EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
-                            noLaboral,
-                            configuradores.stream()
-                                    .filter(c -> c instanceof ConfiguradorHorarioNoLaboral)
-                                    .map(c -> (ConfiguradorHorarioNoLaboral) c)
-                                    .toList()
-                    );
-                    editorDialog.addSaveListener(e -> {
-                        guardarConfigurador(e.getBean());
-                        visualizadorDialog.actualizarElemento(e.getBean());
-                    });
-                    editorDialog.open();
-                } else {
-                    EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
-                            event.getBean(), configuradores);
-                    editorDialog.addSaveListener(e -> {
-                        guardarConfigurador(e.getBean());
-                        visualizadorDialog.actualizarElemento(e.getBean());
-                    });
-                    editorDialog.open();
-                }
-            });
-            visualizadorDialog.open();
+            if (ce.getBean() instanceof ConfiguradorHorarioNoLaboral noLaboral) {
+                EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
+                        noLaboral,
+                        configuradores.stream()
+                                .filter(c -> c instanceof ConfiguradorHorarioNoLaboral)
+                                .map(c -> (ConfiguradorHorarioNoLaboral) c)
+                                .toList()
+                );
+                editorDialog.addSaveListener(e -> {
+                    guardarConfigurador(e.getBean());
+                });
+                editorDialog.open();
+            } else {
+                EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
+                        ce.getBean(), configuradores);
+                editorDialog.addSaveListener(e -> {
+                    guardarConfigurador(e.getBean());
+                });
+                editorDialog.open();
+            }
         });
+        visualizadorHorarios.addCreateListener(ce -> {
+            if (ce.getBean() instanceof ConfiguradorHorarioNoLaboral) {
+                EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
+                        (ConfiguradorHorarioNoLaboral) ce.getBean(),
+                        configuradorHorarioService.getAllNoLaboralByCorreoRestaurante(
+                                ce.getBean().getCorreoRestaurante())
+                );
+                editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
+                editorDialog.open();
+            } else {
+                EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
+                        ce.getBean(),
+                        configuradorHorarioService.getAllByCorreoRestaurante(ce.getBean().getCorreoRestaurante())
+                );
+                editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
+                editorDialog.open();
+            }
+        });
+        visualizadorHorarios.addDeleteListener(de -> eliminarConfigurador(de.getBean()));
+
+        calendarioTitle.addClassName(LumoUtility.FontSize.LARGE);
 
         VerticalLayout calendarioWrapper = new VerticalLayout(calendarioTitle, monthField, calendar);
         calendarioWrapper.setMinWidth("0");
         calendarioWrapper.getStyle().setFlexBasis("400px");
-        VerticalLayout horariosWrapper = new VerticalLayout(horariosTitle, visualizadorHorarios);
-        horariosWrapper.setMinWidth("0");
-        horariosWrapper.getStyle().setFlexBasis("400px");
-        horariosWrapper.getStyle().setFlexGrow("1");
-        horariosWrapper.getStyle().setFlexShrink("1");
+        visualizadorHorarios.setMinWidth("0");
+        visualizadorHorarios.getStyle().setFlexBasis("400px");
+        visualizadorHorarios.getStyle().setFlexGrow("1");
+        visualizadorHorarios.getStyle().setFlexShrink("1");
 
         HorizontalLayout visualizacionLayout = new HorizontalLayout();
-        visualizacionLayout.setWidth("100%");
-        visualizacionLayout.setMaxWidth("850px");
+        visualizacionLayout.addClassName("visualizadorLayout");
         visualizacionLayout.setPadding(true);
-        visualizacionLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
-        visualizacionLayout.getStyle().set("gap", "var(--lumo-space-xl)");
-        visualizacionLayout.getStyle().setBorder("1px solid var(--lumo-shade-10pct)");
-        visualizacionLayout.add(calendarioWrapper, horariosWrapper);
+        visualizacionLayout.add(calendarioWrapper, visualizadorHorarios);
 
-        HorizontalLayout buttonsLayout = new HorizontalLayout();
-        buttonsLayout.setPadding(true);
-        buttonsLayout.setSpacing(true);
-        buttonsLayout.add(agregarHorarioButton, horarioNoLaborableButton, verHorariosButton);
+        add(visualizacionLayout);
 
         actualizarMes(YearMonth.now());
-
-        MainElement mainElement = new MainElement(visualizacionLayout, buttonsLayout);
+        MainElement mainElement = new MainElement(visualizacionLayout);
         mainElement.addClassName("mis-horarios-view");
 
         this.add(mainElement, new BarappFooter());
@@ -220,10 +198,11 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     private void actualizarMes(YearMonth yearMonth) {
         calendar.setYearMonth(yearMonth);
         securityService.getAuthenticatedUser().ifPresent(u -> {
-            horarios = restauranteService.horariosEnMesDisponiblesSegunDiaHoraActual(u.getUsername(), yearMonth);
+            horarios = restauranteService.horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(
+                    u.getUsername(), yearMonth);
             calendar.refreshAll();
         });
-        visualizadorHorarios.setValue(new ArrayList<>());
+        visualizadorHorarios.setValue(new ArrayList<>(), null, null);
     }
 
     @Override

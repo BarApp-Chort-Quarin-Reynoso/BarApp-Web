@@ -1,4 +1,4 @@
-package com.barapp.web.views.components;
+package com.barapp.web.views.components.puntuacion;
 
 import com.vaadin.flow.component.icon.SvgIcon;
 import lombok.Getter;

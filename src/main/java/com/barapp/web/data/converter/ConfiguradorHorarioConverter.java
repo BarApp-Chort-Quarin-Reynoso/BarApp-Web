@@ -73,6 +73,11 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                         .desde(intervaloTiempo.getDesde().format(FormatUtils.timeFormatter()))
                         .hasta(intervaloTiempo.getHasta().format(FormatUtils.timeFormatter()))
                         .duracion(intervaloTiempo.getDuracionReserva())
+                        .horarios(intervaloTiempo
+                                .getHorarios()
+                                .stream()
+                                .map(horario -> horario.format(FormatUtils.timeFormatter()))
+                                .collect(Collectors.toList()))
                         .build()
         )));
 
@@ -88,6 +93,11 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                         .desde(LocalTime.parse(intervaloTiempo.getDesde(), FormatUtils.timeFormatter()))
                         .hasta(LocalTime.parse(intervaloTiempo.getHasta(), FormatUtils.timeFormatter()))
                         .duracionReserva(intervaloTiempo.getDuracion())
+                        .horarios(intervaloTiempo
+                                .getHorarios()
+                                .stream()
+                                .map(horario -> LocalTime.parse(horario, FormatUtils.timeFormatter()))
+                                .collect(Collectors.toList()))
                         .build()
         ));
 

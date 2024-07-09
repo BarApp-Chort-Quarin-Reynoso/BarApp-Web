@@ -8,6 +8,9 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -19,18 +22,16 @@ import java.util.List;
 public class IntervaloTiempo extends BaseModel {
     LocalTime desde;
     LocalTime hasta;
-    int duracionReserva;
+    int duracionReserva = 15;
+    List<LocalTime> horarios = new ArrayList<>();
 
     public List<Horario> generarHorarios(TipoComida tipoComida) {
-        List<Horario> retorno = new ArrayList<>();
-        LocalTime it = desde;
-
-        while (!it.plusMinutes(duracionReserva).isAfter(hasta)
-                && !it.plusMinutes(duracionReserva).isBefore(desde)) {
-            retorno.add(new Horario(it, tipoComida));
-            it = it.plusMinutes(duracionReserva);
-        }
-
-        return retorno;
+        return horarios.stream().map(hora -> {
+            Horario horario = Horario.builder()
+                    .tipoComida(tipoComida)
+                    .horario(hora)
+                    .build();
+            return horario;
+        }).toList();
     }
 }

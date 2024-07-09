@@ -1,8 +1,7 @@
-package com.barapp.web.views.components;
+package com.barapp.web.views.components.pageElements;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class MainElement extends Main {
     public MainElement() {

@@ -1,11 +1,9 @@
 package com.barapp.web.business.service;
 
 import com.barapp.web.business.ImageContainer;
-import com.barapp.web.model.Horario;
-import com.barapp.web.model.DetalleRestaurante;
-import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.RestauranteUsuario;
-import com.barapp.web.model.UsuarioWeb;
+import com.barapp.web.model.*;
+import com.barapp.web.utils.Tuple;
+
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -30,6 +28,8 @@ public interface RestauranteService extends BaseService<Restaurante> {
     String saveConFotos(Restaurante restaurante, ImageContainer logo, ImageContainer portada);
 
     Map<LocalDate, List<Horario>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio);
+
+    Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio);
 
     Optional<DetalleRestaurante> getRestaurantDetail(String id);
 

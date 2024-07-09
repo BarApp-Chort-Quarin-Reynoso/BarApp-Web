@@ -1,4 +1,4 @@
-package com.barapp.web.views.components;
+package com.barapp.web.views.components.pageElements;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Footer;

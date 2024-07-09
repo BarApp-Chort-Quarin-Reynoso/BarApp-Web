@@ -5,7 +5,6 @@ import com.barapp.web.model.ConfiguradorHorarioDiaEspecifico;
 import com.barapp.web.model.ConfiguradorHorarioSemanal;
 import com.barapp.web.model.IntervaloTiempo;
 import com.barapp.web.model.enums.TipoComida;
-import com.barapp.web.model.enums.TipoConfigurador;
 import com.barapp.web.views.components.IntervaloTiempoSelector;
 import com.barapp.web.views.utils.events.CrudEvent;
 import com.barapp.web.views.utils.validation.ConfiguradorHorarioDiaEspecificoValidator;
@@ -13,9 +12,9 @@ import com.barapp.web.views.utils.validation.ConfiguradorHorarioSemanalValidator
 import com.barapp.web.views.utils.validation.ConfiguradorHorarioValidator;
 import com.flowingcode.vaadin.addons.dayofweekselector.DayOfWeekSelector;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -25,6 +24,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.dom.ElementFactory;
 import com.vaadin.flow.dom.Style;
@@ -33,11 +34,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EditorConfigurardorHorarioDialog extends Dialog {
@@ -48,7 +48,6 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
     final Button cancelarButton;
     final Button guardarButton;
 
-    final ComboBox<TipoConfigurador> tipoConfiguradorCombo;
     final DayOfWeekSelector dayOfWeekSelector;
     final DatePicker datePicker;
     final IntervaloTiempoSelector fieldDesayuno;
@@ -56,15 +55,15 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
     final IntervaloTiempoSelector fieldMerienda;
     final IntervaloTiempoSelector fieldCena;
 
-    Binder.Binding<ConfiguradorHorario, LocalDate> datePickerBinding;
-    Binder.Binding<ConfiguradorHorario, Set<DayOfWeek>> dayOfWeekSelectorBinding;
+    final TabSheet tabsHorarios;
+    final List<Tab> tabs;
 
     final Span errorLabel;
 
     final Binder<ConfiguradorHorario> binder = new Binder<>();
-    ConfiguradorHorario bean;
-    ConfiguradorHorarioValidator validator;
+    final ConfiguradorHorario bean;
     final List<ConfiguradorHorario> horariosExistentes;
+    ConfiguradorHorarioValidator validator;
 
     public EditorConfigurardorHorarioDialog(
             ConfiguradorHorario configuradorHorario,
@@ -83,11 +82,12 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         fieldAlmuerzo = new IntervaloTiempoSelector(TipoComida.ALMUERZO);
         fieldMerienda = new IntervaloTiempoSelector(TipoComida.MERIENDA);
         fieldCena = new IntervaloTiempoSelector(TipoComida.CENA);
-        tipoConfiguradorCombo = new ComboBox<>(getTranslation("comp.editarhorariodialog.tipoconfigurador"));
         dayOfWeekSelector = new DayOfWeekSelector();
         datePicker = new DatePicker();
         cancelarButton = new Button(getTranslation("commons.cancel"));
         guardarButton = new Button(getTranslation("commons.save"));
+        tabsHorarios = new TabSheet();
+        tabs = new ArrayList<>();
 
         errorLabel = new Span();
 
@@ -102,56 +102,27 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
     }
 
     private void configurarUI() {
-        tipoConfiguradorCombo.setItems(List.of(TipoConfigurador.SEMANAL, TipoConfigurador.DIA_ESPECIFICO));
-        tipoConfiguradorCombo.setItemLabelGenerator(t -> getTranslation(t.getTranslationKey()));
-        tipoConfiguradorCombo.setValue(bean instanceof ConfiguradorHorarioSemanal
-                ? TipoConfigurador.SEMANAL
-                : TipoConfigurador.DIA_ESPECIFICO);
-        tipoConfiguradorCombo.addValueChangeListener(e -> {
-            if (e.getValue().equals(TipoConfigurador.SEMANAL)) {
-                if (datePickerBinding != null) {
-                    binder.removeBinding(datePickerBinding);
-                    datePickerBinding = null;
-                    bean = ConfiguradorHorarioSemanal.builder()
-                            .horarios(bean.getHorarios())
-                            .correoRestaurante(bean.getCorreoRestaurante())
-                            .build();
-                    addDaysOfWeekSelectorBinding();
-                    binder.readBean(bean);
-                }
-            } else {
-                if (dayOfWeekSelectorBinding != null) {
-                    binder.removeBinding(dayOfWeekSelectorBinding);
-                    dayOfWeekSelectorBinding = null;
-                    bean = ConfiguradorHorarioDiaEspecifico.builder()
-                            .fecha(LocalDate.now())
-                            .horarios(bean.getHorarios())
-                            .correoRestaurante(bean.getCorreoRestaurante())
-                            .build();
-                    addDatePickerBinding();
-                    binder.readBean(bean);
-                }
-            }
-        });
-        tipoConfiguradorCombo.getStyle().setPaddingTop("0");
-
-        dayOfWeekSelector.getStyle().setPadding("0");
-        dayOfWeekSelector.setVisible(false);
-        dayOfWeekSelector.setWeekDaysShort(List.of("D", "L", "M", "X", "J", "V", "S"));
-        datePicker.setMin(LocalDate.now());
-        datePicker.setVisible(false);
-        cancelarButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        errorLabel.addClassNames(LumoUtility.TextColor.ERROR, LumoUtility.FontSize.XSMALL);
-
         HorizontalLayout daysSelectorLayout = new HorizontalLayout();
         daysSelectorLayout.setWidthFull();
         daysSelectorLayout.setPadding(false);
         daysSelectorLayout.getStyle().setPaddingBottom("var(--lumo-space-m");
         daysSelectorLayout.getStyle().setFlexWrap(Style.FlexWrap.WRAP);
         daysSelectorLayout.getStyle().setAlignItems(Style.AlignItems.END);
-        daysSelectorLayout.add(tipoConfiguradorCombo, dayOfWeekSelector, datePicker);
+
+        if (bean instanceof ConfiguradorHorarioSemanal) {
+            dayOfWeekSelector.getStyle().setPadding("0");
+            dayOfWeekSelector.setWeekDaysShort(List.of("D", "L", "M", "X", "J", "V", "S"));
+            daysSelectorLayout.add(dayOfWeekSelector);
+
+        } else {
+            datePicker.setMin(LocalDate.now());
+            daysSelectorLayout.add(datePicker);
+        }
+
+        cancelarButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        errorLabel.addClassNames(LumoUtility.TextColor.ERROR, LumoUtility.FontSize.XSMALL);
 
         configurarInfoText();
         infotext.setWidthFull();
@@ -163,8 +134,29 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         details.setSummaryText("Información");
         details.add(infotext);
 
+        tabs.add(tabsHorarios.add(getTranslation(TipoComida.DESAYUNO.getTranslationKey()), fieldDesayuno));
+        tabs.add(tabsHorarios.add(getTranslation(TipoComida.ALMUERZO.getTranslationKey()), fieldAlmuerzo));
+        tabs.add(tabsHorarios.add(getTranslation(TipoComida.MERIENDA.getTranslationKey()), fieldMerienda));
+        tabs.add(tabsHorarios.add(getTranslation(TipoComida.CENA.getTranslationKey()), fieldCena));
+        if (bean.getHorarios().get(TipoComida.DESAYUNO) != null) {
+            tabsHorarios.setSelectedTab(tabs.get(0));
+        } else if (bean.getHorarios().get(TipoComida.ALMUERZO) != null) {
+            tabsHorarios.setSelectedTab(tabs.get(1));
+        } else if (bean.getHorarios().get(TipoComida.MERIENDA) != null) {
+            tabsHorarios.setSelectedTab(tabs.get(2));
+        } else if (bean.getHorarios().get(TipoComida.CENA) != null) {
+            tabsHorarios.setSelectedTab(tabs.get(3));
+        }
+        tabsHorarios.setWidthFull();
+
+
+        fieldDesayuno.setWidthFull();
+        fieldAlmuerzo.setWidthFull();
+        fieldMerienda.setWidthFull();
+        fieldCena.setWidthFull();
+
         VerticalLayout innerContentLayout = new VerticalLayout();
-        innerContentLayout.add(daysSelectorLayout, fieldDesayuno, fieldAlmuerzo, fieldMerienda, fieldCena, errorLabel);
+        innerContentLayout.add(daysSelectorLayout, tabsHorarios, errorLabel);
         innerContentLayout.setPadding(false);
         innerContentLayout.setWidth("80%");
 
@@ -175,7 +167,6 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         contentLayout.setMinWidth("450px");
         contentLayout.setWidthFull();
         contentLayout.setPadding(false);
-        contentLayout.getStyle().setPadding("0 var(--lumo-space-xl)");
         contentLayout.setAlignSelf(FlexComponent.Alignment.CENTER, innerContentLayout);
         add(contentLayout);
 
@@ -189,7 +180,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
 
         getFooter().add(cancelarButton, guardarButton);
 
-        setWidth("50%");
+        setWidth("60%");
     }
 
     private void configurarButtonsActions() {
@@ -198,6 +189,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
             errorLabel.removeAll();
             binder.validate();
             if (!binder.writeBeanIfValid(bean)) {
+                selectTabWithError();
                 return;
             }
             if (!validateBean(bean)) {
@@ -210,7 +202,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
     }
 
     private void configurarBinder() {
-        if (tipoConfiguradorCombo.getValue().equals(TipoConfigurador.SEMANAL)) {
+        if (bean instanceof ConfiguradorHorarioSemanal) {
             addDaysOfWeekSelectorBinding();
         } else {
             addDatePickerBinding();
@@ -218,20 +210,16 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
 
         binder.forField(fieldDesayuno)
                 .withValidator(
-                        value -> !fieldDesayuno.isHorarioAgregado() || !fieldDesayuno.isFieldEmpty(),
-                        getTranslation("comp.editarhorariodialog.camposvacios")
+                        value -> !fieldDesayuno.isHorarioAgregado() || !fieldDesayuno.isAnyFieldEmpty(),
+                        getTranslation("comp.editarhorariodialog.fechadesdehastavacios")
                 )
                 .withValidator(
                         value -> !fieldDesayuno.isHorarioAgregado() || value.getDesde().isBefore(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldDesayuno.isHorarioAgregado() ||
-                                !value
-                                        .getDesde()
-                                        .plusMinutes(value.getDuracionReserva())
-                                        .isAfter(value.getHasta()),
-                        getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
+                        value -> !fieldDesayuno.isHorarioAgregado() || !fieldDesayuno.isListaHorariosVacia(),
+                        getTranslation("comp.editarhorariodialog.horariosvacio")
                 )
                 .bind(
                         source -> source.getHorarios().get(TipoComida.DESAYUNO),
@@ -245,20 +233,16 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                 );
         binder.forField(fieldAlmuerzo)
                 .withValidator(
-                        value -> !fieldAlmuerzo.isHorarioAgregado() || !fieldAlmuerzo.isFieldEmpty(),
-                        getTranslation("comp.editarhorariodialog.camposvacios")
+                        value -> !fieldAlmuerzo.isHorarioAgregado() || !fieldAlmuerzo.isAnyFieldEmpty(),
+                        getTranslation("comp.editarhorariodialog.fechadesdehastavacios")
                 )
                 .withValidator(
                         value -> !fieldAlmuerzo.isHorarioAgregado() || value.getDesde().isBefore(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldAlmuerzo.isHorarioAgregado() || !
-                                value
-                                        .getDesde()
-                                        .plusMinutes(value.getDuracionReserva())
-                                        .isAfter(value.getHasta()),
-                        getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
+                        value -> !fieldAlmuerzo.isHorarioAgregado() || !fieldAlmuerzo.isListaHorariosVacia(),
+                        getTranslation("comp.editarhorariodialog.horariosvacio")
                 )
                 .bind(
                         source -> source.getHorarios().get(TipoComida.ALMUERZO),
@@ -272,20 +256,16 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                 );
         binder.forField(fieldMerienda)
                 .withValidator(
-                        value -> !fieldMerienda.isHorarioAgregado() || !fieldMerienda.isFieldEmpty(),
-                        getTranslation("comp.editarhorariodialog.camposvacios")
+                        value -> !fieldMerienda.isHorarioAgregado() || !fieldMerienda.isAnyFieldEmpty(),
+                        getTranslation("comp.editarhorariodialog.fechadesdehastavacios")
                 )
                 .withValidator(
                         value -> !fieldMerienda.isHorarioAgregado() || value.getDesde().isBefore(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldMerienda.isHorarioAgregado() ||
-                                !value
-                                        .getDesde()
-                                        .plusMinutes(value.getDuracionReserva())
-                                        .isAfter(value.getHasta()),
-                        getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
+                        value -> !fieldMerienda.isHorarioAgregado() || !fieldMerienda.isListaHorariosVacia(),
+                        getTranslation("comp.editarhorariodialog.horariosvacio")
                 )
                 .bind(
                         source -> source.getHorarios().get(TipoComida.MERIENDA),
@@ -299,20 +279,16 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                 );
         binder.forField(fieldCena)
                 .withValidator(
-                        value -> !fieldCena.isHorarioAgregado() || !fieldCena.isFieldEmpty(),
-                        getTranslation("comp.editarhorariodialog.camposvacios")
+                        value -> !fieldCena.isHorarioAgregado() || !fieldCena.isAnyFieldEmpty(),
+                        getTranslation("comp.editarhorariodialog.fechadesdehastavacios")
                 )
                 .withValidator(
                         value -> !fieldCena.isHorarioAgregado() || value.getDesde().isBefore(value.getHasta()),
                         getTranslation("comp.editarhorariodialog.fechasincorrectas")
                 )
                 .withValidator(
-                        value -> !fieldCena.isHorarioAgregado() ||
-                                !value
-                                        .getDesde()
-                                        .plusMinutes(value.getDuracionReserva())
-                                        .isAfter(value.getHasta()),
-                        getTranslation("comp.editarhorariodialog.duracionnoposibleparafechaseleccionadas")
+                        value -> !fieldCena.isHorarioAgregado() || !fieldCena.isListaHorariosVacia(),
+                        getTranslation("comp.editarhorariodialog.horariosvacio")
                 )
                 .bind(
                         source -> source.getHorarios().get(TipoComida.CENA),
@@ -324,12 +300,14 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
                             }
                         }
                 );
+
+        binder.addValueChangeListener(e -> {
+            errorLabel.removeAll();
+        });
     }
 
     private void addDatePickerBinding() {
-        dayOfWeekSelector.setVisible(false);
-        datePicker.setVisible(true);
-        datePickerBinding = binder.forField(datePicker)
+        binder.forField(datePicker)
                 .withValidator(Objects::nonNull, "")
                 .bind(
                         source -> ((ConfiguradorHorarioDiaEspecifico) bean).getFecha(),
@@ -339,9 +317,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
     }
 
     private void addDaysOfWeekSelectorBinding() {
-        datePicker.setVisible(false);
-        dayOfWeekSelector.setVisible(true);
-        dayOfWeekSelectorBinding = binder.forField(dayOfWeekSelector)
+        binder.forField(dayOfWeekSelector)
                 .withValidator(
                         value -> !value.isEmpty(),
                         getTranslation("comp.editarhorariodialog.seleccionaalmenosundia")
@@ -385,6 +361,15 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         }
 
         return true;
+    }
+
+    private void selectTabWithError() {
+        for (Tab t : tabs) {
+            if (((HasValidation) tabsHorarios.getComponent(t)).isInvalid()) {
+                tabsHorarios.setSelectedTab(t);
+                break;
+            }
+        }
     }
 
     private void configurarInfoText() {
