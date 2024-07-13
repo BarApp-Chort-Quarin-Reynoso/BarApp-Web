@@ -2,7 +2,7 @@ package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.BaseService;
 import com.barapp.web.business.service.UsuarioService;
-import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioApp;
 
 import java.util.List;
@@ -50,9 +50,9 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
     }
 
     @GetMapping("/{id}/favoritos")
-    public ResponseEntity<List<Restaurante>> getFavoritos(@PathVariable String id) {
+    public ResponseEntity<List<RestauranteUsuario>> getFavoritos(@PathVariable String id) {
       try {
-        List<Restaurante> restaurantes = this.usuarioService.getFavoritos(id);
+        List<RestauranteUsuario> restaurantes = this.usuarioService.getFavoritos(id);
         return new ResponseEntity<>(restaurantes, HttpStatus.OK);
       } catch (Exception e) {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
