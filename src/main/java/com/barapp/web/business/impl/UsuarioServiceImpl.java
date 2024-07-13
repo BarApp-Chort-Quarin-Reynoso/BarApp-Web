@@ -7,7 +7,7 @@ import com.barapp.web.data.dao.RestauranteFavoritoDao;
 import com.barapp.web.data.dao.UsuarioDao;
 import com.barapp.web.data.entities.UsuarioEntity;
 import com.barapp.web.model.DetalleUsuario;
-import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioApp;
 import com.google.cloud.firestore.Filter;
 
@@ -53,7 +53,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     }
 
     @Override
-    public List<Restaurante> getFavoritos(String userId) {
+    public List<RestauranteUsuario> getFavoritos(String userId) {
         try {
             UsuarioApp usuario = this.get(userId);
             if (usuario == null) return null;
