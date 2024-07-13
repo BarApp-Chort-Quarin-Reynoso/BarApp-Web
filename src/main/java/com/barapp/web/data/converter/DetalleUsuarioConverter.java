@@ -9,7 +9,7 @@ public class DetalleUsuarioConverter implements BaseConverter<DetalleUsuario, De
     public DetalleUsuarioEntity toEntity(DetalleUsuario dto) {
         DetalleUsuarioEntity entity = DetalleUsuarioEntity.builder()
                                             .busquedasRecientes(dto.getBusquedasRecientes())
-                                            .idRestaurantesFavoritos(dto.getIdRestaurantesFavoritos())
+                                            .idsRestaurantesFavoritos(dto.getIdsRestaurantesFavoritos())
                                             .mail(dto.getMail())
                                             .telefono(dto.getTelefono())
                                             .build();
@@ -20,7 +20,7 @@ public class DetalleUsuarioConverter implements BaseConverter<DetalleUsuario, De
     public DetalleUsuario toDto(DetalleUsuarioEntity entity) {
         DetalleUsuario dto = DetalleUsuario.builder()
                                   .busquedasRecientes(entity.getBusquedasRecientes())
-                                  .idRestaurantesFavoritos(entity.getIdRestaurantesFavoritos())
+                                  .idsRestaurantesFavoritos(entity.getIdsRestaurantesFavoritos())
                                   .mail(entity.getMail())
                                   .telefono(entity.getTelefono())
                                   .build();

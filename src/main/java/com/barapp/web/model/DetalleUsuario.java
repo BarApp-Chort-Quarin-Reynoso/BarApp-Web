@@ -15,14 +15,14 @@ import lombok.experimental.SuperBuilder;
 public class DetalleUsuario extends BaseModel {
     List<String> busquedasRecientes;
     String mail;
-    List<String> idRestaurantesFavoritos;
+    List<String> idsRestaurantesFavoritos;
     String telefono;
 
     public DetalleUsuario() {
         this.id = UUID.randomUUID().toString();
         this.busquedasRecientes = null;
         this.mail = "";
-        this.idRestaurantesFavoritos = null;
+        this.idsRestaurantesFavoritos = null;
         this.telefono = "";
     }
 }

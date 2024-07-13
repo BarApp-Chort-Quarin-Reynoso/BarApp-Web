@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class DetalleUsuarioEntity extends BaseEntity{
   List<String> busquedasRecientes;
   String mail;
-  List<String> idRestaurantesFavoritos;
+  List<String> idsRestaurantesFavoritos;
   String telefono;
 }
