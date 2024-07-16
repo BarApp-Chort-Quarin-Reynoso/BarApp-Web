@@ -9,5 +9,6 @@ import com.barapp.web.model.UsuarioApp;
 public interface UsuarioService extends BaseService<UsuarioApp> {
     Optional<UsuarioApp> getByMail(String mail);
     List<RestauranteUsuario> getFavoritos(String id);
+    List<RestauranteUsuario> getVistosRecientemente(String id);
     void updateFoto(String id, String foto);
 }
