@@ -56,6 +56,16 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     }
 
     @Override
+    public Optional<DetalleUsuario> getUserDetail(String id) {
+        try {
+          return Optional.ofNullable(detalleUsuarioDao.get(id));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<RestauranteUsuario> getFavoritos(String userId) {
         try {
             UsuarioApp usuario = this.get(userId);
