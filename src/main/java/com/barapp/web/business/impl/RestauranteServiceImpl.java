@@ -2,17 +2,21 @@ package com.barapp.web.business.impl;
 
 import com.barapp.web.business.ImageContainer;
 import com.barapp.web.business.service.RestauranteService;
+import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.ConfiguradorHorarioDao;
 import com.barapp.web.data.dao.ImageDao;
 import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.dao.RestauranteDao;
+import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.entities.RestauranteEntity;
+import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.Horario;
 import com.barapp.web.model.ConfiguradorHorarioSemanal;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.google.cloud.firestore.Filter;
@@ -38,14 +42,15 @@ import java.util.concurrent.TimeUnit;
 public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> implements RestauranteService {
 
     private final RestauranteDao restauranteDao;
+    private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    @Autowired
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
+      this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.configuradorHorarioDao = configuradorHorarioDao;
         this.detalleRestauranteDao = detalleRestauranteDao;
         this.storageClient = storageClient;
@@ -186,6 +191,40 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             return Optional.ofNullable(detalleRestauranteDao.get(id));
         } catch (Exception e) {
             System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuarioEntity restauranteVistoRecientementeEntity) {
+      try {
+
+          if (restauranteDao.get(restauranteVistoRecientementeEntity.getIdRestaurante()) == null) {
+            throw new IllegalStateException("El restaurante con ID " + idRestaurante + " no existe.");
+          }
+          QueryParams queryParams = new QueryParams();
+          queryParams.addFilter(Filter.equalTo("idRestaurante", restauranteVistoRecientementeEntity.getIdRestaurante()));
+
+          if (!restauranteVistoRecientementeDao.getByParams(queryParams).isEmpty()) {
+            throw new IllegalStateException("El restaurante con ID " + idRestaurante + " ya existe.");
+          }
+          RestauranteUsuario restauranteVistoRecientemente = restauranteVistoRecientementeDao.getConverter().toDto(restauranteVistoRecientementeEntity);
+          restauranteVistoRecientementeDao.save(restauranteVistoRecientemente, idRestaurante);
+          return restauranteVistoRecientemente;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Void removeVistoRecientemente(String idRestauranteVistoRecientemente) {
+        try {
+          if (restauranteVistoRecientementeDao.get(idRestauranteVistoRecientemente) == null) {
+            throw new IllegalStateException("El restaurante con ID " + idRestauranteVistoRecientemente + " no existe.");
+          }
+          restauranteVistoRecientementeDao.delete(idRestauranteVistoRecientemente);
+          return null;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -4,6 +4,7 @@ import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.DetalleUsuarioDao;
 import com.barapp.web.data.dao.RestauranteFavoritoDao;
+import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.dao.UsuarioDao;
 import com.barapp.web.data.entities.UsuarioEntity;
 import com.barapp.web.model.DetalleUsuario;
@@ -22,11 +23,13 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     private final UsuarioDao usuarioDao;
     private final DetalleUsuarioDao detalleUsuarioDao;
     private final RestauranteFavoritoDao restauranteFavoritoDao;
+    private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
 
-    public UsuarioServiceImpl(UsuarioDao usuarioDao, DetalleUsuarioDao detalleUsuarioDao, RestauranteFavoritoDao restauranteFavoritoDao) {
+    public UsuarioServiceImpl(UsuarioDao usuarioDao, DetalleUsuarioDao detalleUsuarioDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao) {
         this.usuarioDao = usuarioDao;
         this.detalleUsuarioDao = detalleUsuarioDao;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
+        this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
     }
 
     @Override
@@ -59,6 +62,19 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
             if (usuario == null) return null;
 
             return restauranteFavoritoDao.getByUserId(userId);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<RestauranteUsuario> getVistosRecientemente(String userId) {
+        try {
+            UsuarioApp usuario = this.get(userId);
+            if (usuario == null) return null;
+
+            return restauranteVistoRecientementeDao.getByUserId(userId);
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);

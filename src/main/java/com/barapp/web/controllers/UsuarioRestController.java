@@ -59,6 +59,16 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
       }        
     }
 
+    @GetMapping("/{id}/vistos-recientemente")
+    public ResponseEntity<List<RestauranteUsuario>> getVistosRecientemente(@PathVariable String id) {
+      try {
+        List<RestauranteUsuario> restaurantes = this.usuarioService.getVistosRecientemente(id);
+        return new ResponseEntity<>(restaurantes, HttpStatus.OK);
+      } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }        
+    }
+
     @PatchMapping("/{id}/foto")
     public ResponseEntity<Void> updateFoto(@PathVariable String id, @RequestParam("foto") String foto) {
       try {
