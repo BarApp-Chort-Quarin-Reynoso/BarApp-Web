@@ -10,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestauranteEntity extends BaseEntity {
-    String idRestaurante;
     String nombre;
     String correo;
     Double puntuacion;
