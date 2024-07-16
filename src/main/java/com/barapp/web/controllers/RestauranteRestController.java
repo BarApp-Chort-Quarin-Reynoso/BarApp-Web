@@ -52,6 +52,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
 
       return new ResponseEntity<>(detalleRestaurante.get(), HttpStatus.OK);
     } catch (Exception e) {
+      System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

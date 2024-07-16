@@ -2,6 +2,7 @@ package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.BaseService;
 import com.barapp.web.business.service.UsuarioService;
+import com.barapp.web.model.DetalleUsuario;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioApp;
 
@@ -44,6 +45,20 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
 
         return new ResponseEntity<>(usuario.get(), HttpStatus.OK);
         // return new ResponseEntity<UsuarioApp>(this.usuarioService.getByCorreo(id), HttpStatus.OK);
+      } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    @GetMapping("/detalle/{id}")
+    public ResponseEntity<DetalleUsuario> getUserDetail(@PathVariable String id) {
+      try {
+        Optional<DetalleUsuario> detalleUsuario = this.usuarioService.getUserDetail(id);
+        if (!detalleUsuario.isPresent()) {
+          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(detalleUsuario.get(), HttpStatus.OK);
       } catch (Exception e) {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
