@@ -9,7 +9,7 @@ import com.barapp.web.model.Horario;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.FormatUtils;
-import com.barapp.web.views.components.Footer;
+import com.barapp.web.views.components.BarappFooter;
 import com.barapp.web.views.components.MainElement;
 import com.barapp.web.views.components.VisualizadorHorarios;
 import com.barapp.web.views.dialogs.EditorConfigurardorHorarioDialog;
@@ -193,7 +193,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         MainElement mainElement = new MainElement(visualizacionLayout, buttonsLayout);
         mainElement.addClassName("mis-horarios-view");
 
-        this.add(mainElement, new Footer());
+        this.add(mainElement, new BarappFooter());
         this.setPadding(false);
         this.setSpacing(false);
         this.setSizeFull();

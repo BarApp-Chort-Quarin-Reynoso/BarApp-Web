@@ -1,12 +1,12 @@
 package com.barapp.web.views.components;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-public class Footer extends VerticalLayout {
+public class BarappFooter extends Footer {
 
     Span home = new Span(getTranslation("components.footer.home"));
     Span sobreNosotros = new Span(getTranslation("components.footer.sobrenosotros"));
@@ -16,7 +16,7 @@ public class Footer extends VerticalLayout {
     Span ayuda = new Span(getTranslation("components.footer.ayuda"));
     Span copyright = new Span(getTranslation("components.footer.copyright"));
 
-    public Footer() {
+    public BarappFooter() {
         this.setClassName("footer");
 
         home.setClassName("footer-item");
