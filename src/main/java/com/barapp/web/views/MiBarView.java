@@ -10,7 +10,7 @@ import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.Ubicacion;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.BarappUtils;
-import com.barapp.web.views.components.Footer;
+import com.barapp.web.views.components.BarappFooter;
 import com.barapp.web.views.components.MainElement;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -536,7 +536,7 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         );
         mainElement.addClassName("mi-bar-view");
 
-        this.add(mainElement,new Footer());
+        this.add(mainElement,new BarappFooter());
     }
 
     private void configurarBinders() {

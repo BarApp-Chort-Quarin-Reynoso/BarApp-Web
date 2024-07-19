@@ -1,10 +1,12 @@
 .footer {
-    background-color: var(--lumo-primary-color-10pct);
-    height: 125px;
+    box-sizing: border-box;
     display: flex;
+    width: 100%;
+    height: 125px;
+    background-color: var(--lumo-primary-color-10pct);
     flex-direction: column;
     gap: 5px;
-    padding: 10px;
+    padding: var(--lumo-space-m);
 }
 
 .footer-item {

@@ -7,8 +7,8 @@ import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.*;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
+import com.barapp.web.views.components.BarappFooter;
 import com.barapp.web.views.components.EstrellasPuntuacion;
-import com.barapp.web.views.components.Footer;
 import com.barapp.web.views.components.MainElement;
 import com.barapp.web.views.components.VisualizadorOpinion;
 import com.barapp.web.views.dialogs.EditorCaracteristicasOpinionDialog;
@@ -19,8 +19,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.virtuallist.VirtualList;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -132,7 +130,7 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
         MainElement mainElement = new MainElement(new HorizontalLayout(primeraColumnaLayout, opinionesLayout));
         mainElement.addClassName("mis-opiniones-view");
 
-        this.add(mainElement, new Footer());
+        this.add(mainElement, new BarappFooter());
         this.setPadding(false);
         this.setSpacing(false);
         this.setSizeFull();
