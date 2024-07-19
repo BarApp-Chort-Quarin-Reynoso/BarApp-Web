@@ -23,7 +23,6 @@ import java.util.List;
 public class EdicionCaracteristicaField extends CustomField<String> {
     final ComboBox<String> caracteristicaCB;
     final EstrellasPuntuacion puntuacion;
-    final Span cantidadOpiniones;
     final Button eliminarButton;
     final VerticalLayout opinionesLayout;
 
@@ -31,7 +30,6 @@ public class EdicionCaracteristicaField extends CustomField<String> {
         caracteristicaCB = new ComboBox<>();
         caracteristicaCB.setItems(caracteristicasSeleccionables);
         puntuacion = new EstrellasPuntuacion();
-        cantidadOpiniones = new Span();
         eliminarButton = new Button();
         opinionesLayout = new VerticalLayout();
 
@@ -51,13 +49,9 @@ public class EdicionCaracteristicaField extends CustomField<String> {
             this.fireEvent(new DeleteEvent(this, true, caracteristicaCB.getValue()));
         });
 
-        cantidadOpiniones.addClassNames(LumoUtility.FontSize.SMALL);
-        cantidadOpiniones.getStyle().set("font-style", "italic");
-        cantidadOpiniones.getStyle().set("line-height", "var(--lumo-size-m)");
-
         opinionesLayout.setPadding(false);
         opinionesLayout.setSpacing(false);
-        opinionesLayout.add(puntuacion, cantidadOpiniones);
+        opinionesLayout.add(puntuacion);
         opinionesLayout.setVisible(false);
 
         caracteristicaCB.addValueChangeListener(vce -> {
@@ -68,9 +62,9 @@ public class EdicionCaracteristicaField extends CustomField<String> {
         layout.setSpacing(false);
         layout.getThemeList().add("spacing-l");
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
-        layout.setWidth("250px");
         layout.add(caracteristicaCB, opinionesLayout, eliminarButton);
         add(layout);
+        setWidth("100%");
     }
 
     @Override
@@ -101,13 +95,8 @@ public class EdicionCaracteristicaField extends CustomField<String> {
         puntuacion.setValue(calificacion.getPuntuacion());
         puntuacion.setLabel(caracteristica);
         puntuacion.getStyle().set("padding-top", "0");
-        cantidadOpiniones.setText(calificacion.getCantidadOpiniones() == 1
-                ? getTranslation("views.opiniones.cantidadopiniones.opinion")
-                : getTranslation(
-                "views.opiniones.cantidadopiniones.opiniones", calificacion.getCantidadOpiniones()));
         if (calificacion.getCantidadOpiniones() == 0) {
             puntuacion.setSinOpiniones(true);
-            opinionesLayout.remove(cantidadOpiniones);
         }
         opinionesLayout.setVisible(true);
     }
