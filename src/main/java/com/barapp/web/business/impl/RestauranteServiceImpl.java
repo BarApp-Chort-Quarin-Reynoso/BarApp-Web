@@ -10,7 +10,6 @@ import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.dao.RestauranteDao;
 import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.entities.RestauranteEntity;
-import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.Horario;
 import com.barapp.web.model.ConfiguradorHorarioSemanal;
@@ -23,15 +22,18 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.firebase.cloud.StorageClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,34 +198,41 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuarioEntity restauranteVistoRecientementeEntity) {
+    public RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante) {
       try {
-
-          if (restauranteDao.get(restauranteVistoRecientementeEntity.getIdRestaurante()) == null) {
-            throw new IllegalStateException("El restaurante con ID " + idRestaurante + " no existe.");
-          }
-          QueryParams queryParams = new QueryParams();
-          queryParams.addFilter(Filter.equalTo("idRestaurante", restauranteVistoRecientementeEntity.getIdRestaurante()));
-
-          if (!restauranteVistoRecientementeDao.getByParams(queryParams).isEmpty()) {
-            throw new IllegalStateException("El restaurante con ID " + idRestaurante + " ya existe.");
-          }
-          RestauranteUsuario restauranteVistoRecientemente = restauranteVistoRecientementeDao.getConverter().toDto(restauranteVistoRecientementeEntity);
-          restauranteVistoRecientementeDao.save(restauranteVistoRecientemente, idRestaurante);
-          return restauranteVistoRecientemente;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (restauranteDao.get(restaurante.getIdRestaurante()) == null) {
+          throw new IllegalStateException("El restaurante con ID " + restaurante.getIdRestaurante() + " no existe.");
         }
-    }
 
-    @Override
-    public Void removeVistoRecientemente(String idRestauranteVistoRecientemente) {
-        try {
-          if (restauranteVistoRecientementeDao.get(idRestauranteVistoRecientemente) == null) {
-            throw new IllegalStateException("El restaurante con ID " + idRestauranteVistoRecientemente + " no existe.");
+        QueryParams queryParams = new QueryParams();
+        queryParams.addFilter(Filter.equalTo("idRestaurante", restaurante.getIdRestaurante()));
+        queryParams.addFilter(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
+
+        if (!restauranteVistoRecientementeDao.getByParams(queryParams).isEmpty()) {
+          throw new IllegalStateException("El restaurante con ID " + restaurante.getIdRestaurante() + " ya existe para el usuario con ID " + restaurante.getIdUsuario() + ".");
+        }
+
+        restauranteVistoRecientementeDao.save(restaurante, idRestaurante);
+
+        List<RestauranteUsuario> restaurantes = restauranteVistoRecientementeDao.getFiltered(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
+        // Ordena segun fechaGuardado para eliminar el mas antiguo (si hay mas de 5)
+        restaurantes.sort(Comparator.comparing(r -> {
+          try {
+            String fechaGuardado = ((RestauranteUsuario) r).getFechaGuardado();
+            long seconds = Long.parseLong(fechaGuardado.substring(fechaGuardado.indexOf('=') + 1, fechaGuardado.indexOf(',')));
+            int nanos = Integer.parseInt(fechaGuardado.substring(fechaGuardado.lastIndexOf('=') + 1, fechaGuardado.indexOf(')')));
+
+            return LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds, nanos), ZoneId.systemDefault());
+          } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            System.err.println("Error al parsear fechaGuardado: " + e.getMessage());
+            return LocalDateTime.MIN;
           }
-          restauranteVistoRecientementeDao.delete(idRestauranteVistoRecientemente);
-          return null;
+        }));
+        while (restaurantes.size() > 5) {
+          restauranteVistoRecientementeDao.delete(restaurantes.get(0).getId());
+          restaurantes.remove(0);
+        }
+          return restaurante;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

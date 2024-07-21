@@ -1,7 +1,6 @@
 package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Horario;
 import com.barapp.web.model.Restaurante;
@@ -16,7 +15,6 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,24 +67,12 @@ public class RestauranteRestController extends BaseController<Restaurante> {
 
 
   @PostMapping("/{id}/vistos-recientemente")
-  public ResponseEntity<RestauranteUsuario> addVistoRecientemente(@PathVariable String id, @RequestBody RestauranteUsuarioEntity restauranteEntity) {
+  public ResponseEntity<RestauranteUsuario> addVistoRecientemente(@PathVariable String id, @RequestBody RestauranteUsuario restaurante) {
     try {
-      return new ResponseEntity<>(this.restauranteService.addVistoRecientemente(id, restauranteEntity), HttpStatus.OK);
+      return new ResponseEntity<>(this.restauranteService.addVistoRecientemente(id, restaurante), HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @DeleteMapping("/{id}/vistos-recientemente")
-  public ResponseEntity<RestauranteUsuario> removeVistoRecientemente(@PathVariable String id) {
-    try {
-      this.restauranteService.removeVistoRecientemente(id);
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
 }

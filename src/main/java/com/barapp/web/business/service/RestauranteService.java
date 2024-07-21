@@ -1,7 +1,6 @@
 package com.barapp.web.business.service;
 
 import com.barapp.web.business.ImageContainer;
-import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.Horario;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Restaurante;
@@ -34,7 +33,5 @@ public interface RestauranteService extends BaseService<Restaurante> {
 
     Optional<DetalleRestaurante> getRestaurantDetail(String id);
 
-    RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuarioEntity restauranteVistoRecientemente);
-
-    Void removeVistoRecientemente(String idRestauranteVistoRecientemente);
+    RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante);
 }
