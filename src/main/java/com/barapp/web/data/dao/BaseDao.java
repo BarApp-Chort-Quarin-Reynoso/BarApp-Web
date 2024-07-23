@@ -20,6 +20,8 @@ public interface BaseDao<D extends BaseModel, E extends BaseEntity> {
 
     D get(String id) throws Exception;
 
+    List<D> getAll();
+
     List<D> getAll(Set<Entry<String, String>> allParams) throws Exception;
 
     List<D> getFiltered(Filter... filters) throws Exception;

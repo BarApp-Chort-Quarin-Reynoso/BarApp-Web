@@ -17,6 +17,8 @@ public interface BaseService<D extends BaseModel> {
 
     D get(String id) throws Exception;
 
+    List<D> getAll();
+
     List<D> getAll(Set<Entry<String, String>> allParams) throws Exception;
 
     BaseDao<D, ? extends BaseEntity> getDao();

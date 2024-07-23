@@ -1,0 +1,8 @@
+.lista-bares-view {
+    min-height: 100vh;
+}
+
+.lista-bares-view vaadin-grid {
+    box-sizing: border-box;
+    margin: var(--lumo-size-m);
+}
