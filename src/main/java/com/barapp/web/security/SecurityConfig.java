@@ -33,7 +33,7 @@ public class SecurityConfig extends VaadinWebSecurity {
                     .permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/fakeview/*"))
                     .permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/**"))
+                    .requestMatchers(new AntPathRequestMatcher("/api/**"))
                     .permitAll());
         super.configure(http);
         setLoginView(http, LoginView.class);
