@@ -1,13 +1,11 @@
 package com.barapp.web.views;
 
-import java.util.List;
-
-import org.vaadin.lineawesome.LineAwesomeIcon;
-
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.enums.Rol;
+import com.barapp.web.views.components.pageElements.BarappFooter;
+import com.barapp.web.views.components.pageElements.MainElement;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,16 +13,16 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
 import jakarta.annotation.security.RolesAllowed;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
-@SuppressWarnings("serial")
+import java.util.Comparator;
+import java.util.List;
+
 @PageTitle("Bares")
 @Route(value = "bares", layout = MainLayout.class)
 @RolesAllowed(value = {"ADMIN"})
@@ -39,41 +37,43 @@ public class ListaBaresView extends VerticalLayout {
     public ListaBaresView(RestauranteService restauranteService) {
         this.restauranteService = restauranteService;
 
+        configurarGrid();
         configurarUi();
     }
 
     private void configurarUi() {
-        configurarGrid();
-
         noRestaurantesLabel = new Div(getTranslation("views.bares.sinresultados"));
+
+        MainElement mainElement = new MainElement();
+        mainElement.addClassName("lista-bares-view");
 
         try {
             List<Restaurante> restaurantes = restauranteService
-                .getAll(null)
+                    .getAll()
                     .stream()
-                    .sorted((r1, r2) -> r1.getEstado().compareTo(r2.getEstado()))
+                    .sorted(Comparator.comparing(Restaurante::getEstado))
                     .toList();
             if (!restaurantes.isEmpty()) {
                 baresGrid.setItems(restaurantes);
-                add(baresGrid);
+                mainElement.add(baresGrid);
             } else {
-                add(noRestaurantesLabel);
+                mainElement.add(noRestaurantesLabel);
             }
         } catch (Exception e) {
-            Notification notification = new Notification();
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            notification.setText(getTranslation("commons.errorgenerico"));
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        setSizeFull();
+
+        this.add(mainElement, new BarappFooter());
+        this.setPadding(false);
+        this.setSpacing(false);
+        this.setSizeFull();
     }
 
     private void configurarGrid() {
         baresGrid = new Grid<>();
-        baresGrid.setSizeFull();
         baresGrid.setMultiSort(true);
 
-        Column<Restaurante> nombreCol = baresGrid.addColumn(bar -> bar.getNombre());
+        Column<Restaurante> nombreCol = baresGrid.addColumn(Restaurante::getNombre);
         nombreCol.setHeader(getTranslation("views.bares.grid.nombre"));
         nombreCol.setSortable(true);
         nombreCol.setWidth("180px");
@@ -85,13 +85,13 @@ public class ListaBaresView extends VerticalLayout {
         direccionCol.setWidth("200px");
         direccionCol.setFlexGrow(2);
 
-        Column<Restaurante> correoCol = baresGrid.addColumn(bar -> bar.getCorreo());
+        Column<Restaurante> correoCol = baresGrid.addColumn(Restaurante::getCorreo);
         correoCol.setHeader(getTranslation("views.bares.grid.email"));
         correoCol.setSortable(true);
         correoCol.setWidth("180px");
         correoCol.setFlexGrow(2);
 
-        Column<Restaurante> telefonoCol = baresGrid.addColumn(bar -> bar.getTelefono());
+        Column<Restaurante> telefonoCol = baresGrid.addColumn(Restaurante::getTelefono);
         telefonoCol.setHeader(getTranslation("views.bares.grid.telefono"));
         telefonoCol.setSortable(true);
         telefonoCol.setWidth("150px");
@@ -101,7 +101,7 @@ public class ListaBaresView extends VerticalLayout {
         estadoCol.setHeader(getTranslation("views.bares.grid.estado"));
         estadoCol.setWidth("150px");
         estadoCol.setFlexGrow(1);
-        estadoCol.setComparator((r1, r2) -> r1.getEstado().compareTo(r2.getEstado()));
+        estadoCol.setComparator(Comparator.comparing(Restaurante::getEstado));
 
         Column<Restaurante> actionCol = baresGrid.addComponentColumn(this::getActionColumn);
         actionCol.setWidth("124px");
@@ -136,7 +136,7 @@ public class ListaBaresView extends VerticalLayout {
 
     private Component getActionColumn(Restaurante restaurante) {
         if (restaurante.getEstado() != null && restaurante
-            .getEstado()
+                .getEstado()
                 .equals(EstadoRestaurante.ESPERANDO_HABILITACION)) {
             Button aceptarButton = new Button(LineAwesomeIcon.CHECK_SOLID.create());
             aceptarButton.addThemeVariants(ButtonVariant.LUMO_ICON);

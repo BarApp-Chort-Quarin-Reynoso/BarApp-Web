@@ -34,6 +34,11 @@ public abstract class BaseServiceImpl<D extends BaseModel> implements BaseServic
     }
 
     @Override
+    public List<D> getAll() {
+        return getDao().getAll();
+    }
+
+    @Override
     public List<D> getAll(Set<Entry<String, String>> allParams) throws Exception {
         return getDao().getAll(allParams);
     }

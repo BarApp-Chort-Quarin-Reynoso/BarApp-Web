@@ -60,6 +60,24 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
     }
 
     @Override
+    public List<D> getAll() {
+        List<D> result = new ArrayList<>();
+        ApiFuture<QuerySnapshot> query = getCollection().get();
+        try {
+            List<QueryDocumentSnapshot> documents = query.get().getDocuments();
+            for (QueryDocumentSnapshot doc : documents) {
+                D object = getConverter().toDto(doc.toObject(clazz));
+                object.setId(doc.getId());
+                result.add(object);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }        
+    }
+
+    @Override
     public List<D> getAll(Set<Entry<String, String>> allParams) throws Exception {
         List<D> result = new ArrayList<>();
         ApiFuture<QuerySnapshot> query = getCollection().get();
