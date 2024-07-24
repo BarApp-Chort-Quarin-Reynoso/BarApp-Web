@@ -34,4 +34,8 @@ public interface RestauranteService extends BaseService<Restaurante> {
     Optional<DetalleRestaurante> getRestaurantDetail(String id);
 
     RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante);
+    
+    RestauranteUsuario addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito);
+
+    Void removeFavorito(String idRestauranteFavorito);
 }

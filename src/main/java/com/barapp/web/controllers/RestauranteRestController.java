@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,6 +66,26 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     }
   }
 
+  @PostMapping("/{id}/favoritos")
+  public ResponseEntity<RestauranteUsuario> addFavorito(@PathVariable String id, @RequestBody RestauranteUsuario restaurante) {
+    try {
+      return new ResponseEntity<>(this.restauranteService.addFavorito(id, restaurante), HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @DeleteMapping("/{id}/favoritos")
+  public ResponseEntity<RestauranteUsuario> removeFavorito(@PathVariable String id) {
+    try {
+      this.restauranteService.removeFavorito(id);
+      return new ResponseEntity<>(HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @PostMapping("/{id}/vistos-recientemente")
   public ResponseEntity<RestauranteUsuario> addVistoRecientemente(@PathVariable String id, @RequestBody RestauranteUsuario restaurante) {

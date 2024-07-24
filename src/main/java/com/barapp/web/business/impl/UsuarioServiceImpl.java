@@ -102,4 +102,14 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Optional<DetalleUsuario> updateRestaurantesFavoritos(String id, List<String> restaurantes) {
+        try {
+            return Optional.ofNullable(detalleUsuarioDao.updateRestaurantesFavoritos(id, restaurantes));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
 }

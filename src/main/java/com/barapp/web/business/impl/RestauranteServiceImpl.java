@@ -8,6 +8,7 @@ import com.barapp.web.data.dao.ConfiguradorHorarioDao;
 import com.barapp.web.data.dao.ImageDao;
 import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.dao.RestauranteDao;
+import com.barapp.web.data.dao.RestauranteFavoritoDao;
 import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.entities.RestauranteEntity;
 import com.barapp.web.model.ConfiguradorHorario;
@@ -44,20 +45,22 @@ import java.util.concurrent.TimeUnit;
 public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> implements RestauranteService {
 
     private final RestauranteDao restauranteDao;
+    private final RestauranteFavoritoDao restauranteFavoritoDao;
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
-        this.restauranteDao = restauranteDao;
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
+      this.restauranteDao = restauranteDao;
+      this.restauranteFavoritoDao = restauranteFavoritoDao;
       this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
-        this.configuradorHorarioDao = configuradorHorarioDao;
-        this.detalleRestauranteDao = detalleRestauranteDao;
-        this.storageClient = storageClient;
-        this.imageDao = imageDao;
-    }
+      this.configuradorHorarioDao = configuradorHorarioDao;
+      this.detalleRestauranteDao = detalleRestauranteDao;
+      this.storageClient = storageClient;
+      this.imageDao = imageDao;
+  }
 
     @Override
     public BaseDao<Restaurante, RestauranteEntity> getDao() { return restauranteDao; }
@@ -237,4 +240,39 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public RestauranteUsuario addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito) {
+      try {
+        if (restauranteDao.get(restauranteFavorito.getIdRestaurante()) == null) {
+          throw new IllegalStateException("El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " no existe.");
+        }
+        QueryParams queryParams = new QueryParams();
+        queryParams.addFilter(Filter.equalTo("idRestaurante", restauranteFavorito.getIdRestaurante()));
+        queryParams.addFilter(Filter.equalTo("idUsuario", restauranteFavorito.getIdUsuario()));
+
+        if (!restauranteFavoritoDao.getByParams(queryParams).isEmpty()) {
+          throw new IllegalStateException("El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " ya existe para el usuario con ID " + restauranteFavorito.getIdUsuario() + ".");
+        }
+
+        restauranteFavoritoDao.save(restauranteFavorito, idRestaurante);
+
+        return restauranteFavorito;
+      } catch (Exception e) {
+          throw new RuntimeException(e);
+      }
+  }
+
+  @Override
+  public Void removeFavorito(String idRestauranteFavorito) {
+      try {
+        if (restauranteFavoritoDao.get(idRestauranteFavorito) == null) {
+          throw new IllegalStateException("El restaurante con ID " + idRestauranteFavorito + " no existe.");
+        }
+        restauranteFavoritoDao.delete(idRestauranteFavorito);
+        return null;
+      } catch (Exception e) {
+          throw new RuntimeException(e);
+      }
+  }
 }
