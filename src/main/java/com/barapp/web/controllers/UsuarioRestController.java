@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,6 +90,21 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
       try {
         this.usuarioService.updateFoto(id, foto);
         return new ResponseEntity<>(HttpStatus.OK);
+      } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    @PatchMapping("/detalle/{id}/restaurantes-favoritos")
+    public ResponseEntity<DetalleUsuario> updateRestaurantesFavoritos(@PathVariable String id, @RequestBody List<String> restaurantesFavoritos) {
+      try {
+        Optional<DetalleUsuario> detalleUsuario = this.usuarioService.updateRestaurantesFavoritos(id, restaurantesFavoritos);
+        if (!detalleUsuario.isPresent()) {
+          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(detalleUsuario.get(), HttpStatus.OK);
+        
       } catch (Exception e) {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }

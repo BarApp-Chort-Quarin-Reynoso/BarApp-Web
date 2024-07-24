@@ -1,5 +1,7 @@
 package com.barapp.web.data.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.dao.DetalleUsuarioDao;
@@ -28,5 +30,18 @@ public class DetalleUsuarioDaoImpl extends BaseDaoImpl<DetalleUsuario, DetalleUs
     @Override
     public BaseConverter<DetalleUsuario, DetalleUsuarioEntity> getConverter() {
         return new DetalleUsuarioConverter();
+    }
+
+    @Override
+    public DetalleUsuario updateRestaurantesFavoritos(String id, List<String> restaurantes) {
+        try {
+          DetalleUsuario detalleUsuario = get(id);
+          detalleUsuario.setIdsRestaurantesFavoritos(restaurantes);
+          save(detalleUsuario, id);
+          return detalleUsuario;
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
     }
 }
