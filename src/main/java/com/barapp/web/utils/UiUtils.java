@@ -32,6 +32,7 @@ public class UiUtils {
         label.getStyle().set("padding-top", "var(--lumo-space-m)")
                 .set("font-size", "var(--lumo-font-size-xs)");
         TextField textField = new TextField();
+        textField.setPlaceholder(labelText);
         textField.setValueChangeMode(ValueChangeMode.EAGER);
         textField.setClearButtonVisible(true);
         textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
@@ -39,7 +40,7 @@ public class UiUtils {
         textField.getStyle().set("max-width", "100%");
         textField.addValueChangeListener(
                 e -> filterChangeConsumer.accept(e.getValue()));
-        VerticalLayout layout = new VerticalLayout(label, textField);
+        VerticalLayout layout = new VerticalLayout(textField);
         layout.getThemeList().clear();
         layout.getThemeList().add("spacing-xs");
 

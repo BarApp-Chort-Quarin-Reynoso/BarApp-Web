@@ -1,12 +1,30 @@
-vaadin-tabsheet::part(content) {
+.mis-reservas-view {
+    width: 80% !important;
+    margin: auto;
+    height: fit-content;
+}
+
+.mis-reservas-view vaadin-tabs::part(tabs) {
+    background-color: var(--lumo-primary-color-10pct);
+    margin: 0;
+    border-radius: 0.25em 0.25em 0 0;
+}
+
+.mis-reservas-view vaadin-text-field::part(input-field) {
+    background-color: #efefef66;
+    outline: 1px solid #dcdbdb;
+    margin: 0 1px;
+}
+
+.mis-reservas-view vaadin-tabsheet::part(content) {
     padding: 0;
 }
 
-vaadin-grid-sorter::part(indicators) {
+.mis-reservas-view vaadin-grid-sorter::part(indicators) {
     align-self: baseline;
 }
 
-vaadin-menu-bar-item, vaadin-menu-bar-item.bg-error-10 {
+.mis-reservas-view vaadin-menu-bar-item, .mis-reservas-view vaadin-menu-bar-item.bg-error-10 {
     cursor: pointer;
     background-color: transparent;
 }

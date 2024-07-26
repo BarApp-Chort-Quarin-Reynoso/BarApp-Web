@@ -20,6 +20,7 @@ import com.vaadin.flow.component.grid.*;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -56,6 +57,12 @@ import java.util.List;
 public class MisReservasView extends VerticalLayout implements BeforeEnterObserver {
 
     public static final Rol rolAllowed = Rol.BAR;
+    List<Reserva> reservaList = new ArrayList<>();
+    //        reservaList.add(new Reserva(false, 3, LocalDate.of(2024, 8, 19), new Horario(LocalTime.of(21, 30), TipoComida.CENA), new UsuarioApp("Valentin", "Chort", "", "", "", null), new Restaurante()));
+    //        reservaList.add(new Reserva(false, 2, LocalDate.of(2024, 8, 22), new Horario(LocalTime.of(21, 0), TipoComida.CENA), new UsuarioApp("Saraceli", "Arina", "", "", "", null), new Restaurante()));
+    //        reservaList.add(new Reserva(false, 5, LocalDate.of(2024, 8, 22), new Horario(LocalTime.of(9, 0), TipoComida.DESAYUNO), new UsuarioApp("Julio", "Quarin", "", "", "", null), new Restaurante()));
+    //        reservaList.add(new Reserva(false, 10, LocalDate.of(2024, 9, 6), new Horario(LocalTime.of(13, 30), TipoComida.ALMUERZO), new UsuarioApp("Sagustina", "Ander", "", "", "", null), new Restaurante()));
+    //        reservaList.add(new Reserva(false, 3, LocalDate.of(2024, 11, 15), new Horario(LocalTime.of(16, 5), TipoComida.MERIENDA), new UsuarioApp("Federico", "Reynoso", "", "", "", null), new Restaurante()));
 
     private final SecurityService securityService;
 
@@ -63,6 +70,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
 
     public MisReservasView(SecurityService securityService) {
         this.securityService = securityService;
+        this.addClassName("mis-reservas-view");
 
         configurarElementos();
     }
@@ -102,13 +110,18 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         tabSheet.setSizeFull();
 
         tabSheet.add("Pendientes", getGridPendiente());
-        tabSheet.add("Pasadas",
-                new Div(new Text("This is the Payment tab content")));
+        tabSheet.add("Pasadas", getGridPasadas());
         tabSheet.addThemeVariants(TabSheetVariant.LUMO_BORDERED);
         add(tabSheet);
     }
 
     private Component getGridPendiente() {
+//        if (this.reservaList.isEmpty()) {
+//           Image emptyState = new Image(new StreamResource("empty-box.png", () -> getClass().getResourceAsStream("/META-INF.resources/images/empty-box.png")),"No se han encontrado resultados");
+//           VerticalLayout emptyStateContainer = new VerticalLayout(emptyState, new Span("Aún no tienes ninguna reserva pasada."));
+//           emptyStateContainer.setJustifyContentMode(JustifyContentMode.CENTER);
+//           return emptyState;
+//        }
         Grid<Reserva> pendientesGrid = new Grid<>();
         pendientesGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -117,12 +130,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         Grid.Column<Reserva> horaColumn = pendientesGrid.addColumn(new LocalDateTimeRenderer<>(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario()),"kk:mm")).setSortable(true).setComparator(Comparator.comparing(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario())));
         Grid.Column<Reserva> cantidadPersonasColumn = pendientesGrid.addColumn(Reserva::getCantidadPersonas).setSortable(true);
 
-        List<Reserva> reservaList = new ArrayList<>();
-        reservaList.add(new Reserva(false, 3, LocalDate.of(2024, 8, 19), new Horario(LocalTime.of(21, 30), TipoComida.CENA), new UsuarioApp("Valentin", "Chort", "", "", "", null), new Restaurante()));
-        reservaList.add(new Reserva(false, 2, LocalDate.of(2024, 8, 22), new Horario(LocalTime.of(21, 0), TipoComida.CENA), new UsuarioApp("Saraceli", "Arina", "", "", "", null), new Restaurante()));
-        reservaList.add(new Reserva(false, 5, LocalDate.of(2024, 8, 22), new Horario(LocalTime.of(9, 0), TipoComida.DESAYUNO), new UsuarioApp("Julio", "Quarin", "", "", "", null), new Restaurante()));
-        reservaList.add(new Reserva(false, 10, LocalDate.of(2024, 9, 6), new Horario(LocalTime.of(13, 30), TipoComida.ALMUERZO), new UsuarioApp("Sagustina", "Ander", "", "", "", null), new Restaurante()));
-        reservaList.add(new Reserva(false, 3, LocalDate.of(2024, 11, 15), new Horario(LocalTime.of(16, 5), TipoComida.MERIENDA), new UsuarioApp("Federico", "Reynoso", "", "", "", null), new Restaurante()));
+
         GridListDataView<Reserva> dataView = pendientesGrid.setItems(reservaList);
         ReservaFilter reservaFilter = new ReservaFilter(dataView);
 
@@ -158,6 +166,13 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         return pendientesGrid;
     }
 
+    private Component getGridPasadas() {
+        Image emptyState = new Image();
+        emptyState.setSrc(new StreamResource("empty-box.png", () -> getClass().getResourceAsStream("/META-INF.resources/images/empty-box.png")));
+        VerticalLayout emptyStateContainer = new VerticalLayout(emptyState, new Span("Aún no tienes ninguna reserva pasada."));
+        emptyStateContainer.setJustifyContentMode(JustifyContentMode.CENTER);
+        return emptyState;
+    }
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         securityService.corroborarEstadoBar(event);
