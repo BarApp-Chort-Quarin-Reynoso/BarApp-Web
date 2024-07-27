@@ -7,6 +7,10 @@
     width: 100%;
     max-width: 850px;
     height: 600px;
+}
+
+.horariosLayout {
+    width: 100%;
     justify-content: space-evenly;
     gap: var(--lumo-space-xl);
     border-radius: var(--lumo-border-radius-m);
