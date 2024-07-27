@@ -39,7 +39,8 @@ public class Restaurante extends BaseModel {
     @Builder.Default
     String cuit = "";
 
-    Ubicacion ubicacion;
+    @Builder.Default
+    Ubicacion ubicacion = new Ubicacion();
 
     @Builder.Default
     String idDetalleRestaurante = "";
