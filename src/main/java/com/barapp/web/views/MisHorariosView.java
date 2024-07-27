@@ -1,7 +1,9 @@
 package com.barapp.web.views;
 
+import com.barapp.web.business.impl.HorarioPorRestauranteServiceImpl;
 import com.barapp.web.business.service.ConfiguradorHorarioService;
 import com.barapp.web.business.service.DetalleRestauranteService;
+import com.barapp.web.business.service.HorarioPorRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.*;
 import com.barapp.web.model.enums.Rol;
@@ -43,9 +45,8 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     public static final Rol rolAllowed = Rol.BAR;
 
     final SecurityService securityService;
-    final ConfiguradorHorarioService configuradorHorarioService;
     final RestauranteService restauranteService;
-    final DetalleRestauranteService detalleRestauranteService;
+    final HorarioPorRestauranteService horarioPorRestauranteService;
 
     YearMonthField monthField;
     MonthCalendar calendar;
@@ -53,16 +54,16 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     H3 calendarioTitle = new H3(getTranslation("views.mishorarios.fechasdisponibles"));
 
     Restaurante restaurante;
+    HorarioPorRestaurante horariosPorRestaurante;
     Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new HashMap<>();
 
     Button gestionarCapacidadButton;
     private Set<Mesa> capacidadTotalOriginal;
 
-    public MisHorariosView(SecurityService securityService, ConfiguradorHorarioService configuradorHorarioService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService) {
+    public MisHorariosView(SecurityService securityService, RestauranteService restauranteService, HorarioPorRestauranteService horarioPorRestauranteService) {
         this.securityService = securityService;
-        this.configuradorHorarioService = configuradorHorarioService;
         this.restauranteService = restauranteService;
-        this.detalleRestauranteService = detalleRestauranteService;
+        this.horarioPorRestauranteService = horarioPorRestauranteService;
 
         configurarUI();
 
@@ -70,7 +71,8 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             restaurante = restauranteService
                     .getByCorreo(securityService.getAuthenticatedUser().orElseThrow().getUsername())
                     .orElseThrow();
-            restaurante.setDetalleRestaurante(detalleRestauranteService.get(restaurante.getIdDetalleRestaurante()));
+            horariosPorRestaurante = horarioPorRestauranteService.getByCorreoRestaurante(restaurante.getCorreo())
+                    .orElseThrow();
             capacidadTotalOriginal = new HashSet<>();
             for (Mesa mesa : restaurante.getDetalleRestaurante().getCapacidadTotal()) {
                 capacidadTotalOriginal.add(new Mesa(mesa));
@@ -138,8 +140,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         visualizadorHorarios.setFlexGrow(1);
         visualizadorHorarios.addEditListener(ce -> {
             String correo = securityService.getAuthenticatedUser().orElseThrow().getUsername();
-            List<ConfiguradorHorario> configuradores =
-                    configuradorHorarioService.getAllByCorreoRestaurante(correo);
+            Collection<ConfiguradorHorario> configuradores = horariosPorRestaurante.getConfiguradores().values();
             if (ce.getBean() instanceof ConfiguradorHorarioNoLaboral noLaboral) {
                 EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
                         noLaboral,
@@ -165,15 +166,14 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             if (ce.getBean() instanceof ConfiguradorHorarioNoLaboral) {
                 EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
                         (ConfiguradorHorarioNoLaboral) ce.getBean(),
-                        configuradorHorarioService.getAllNoLaboralByCorreoRestaurante(
-                                ce.getBean().getCorreoRestaurante())
+                        horariosPorRestaurante.getNoLaborales()
                 );
                 editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
                 editorDialog.open();
             } else {
                 EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
                         ce.getBean(),
-                        configuradorHorarioService.getAllByCorreoRestaurante(ce.getBean().getCorreoRestaurante())
+                        horariosPorRestaurante.getLaborales()
                 );
                 editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
                 editorDialog.open();
@@ -213,7 +213,9 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
 
     private void guardarConfigurador(ConfiguradorHorario configuradorHorario) {
         try {
-            configuradorHorarioService.save(configuradorHorario, configuradorHorario.getId());
+            horarioPorRestauranteService.saveConfigurador(
+                    configuradorHorario, configuradorHorario.getId(), horariosPorRestaurante.getId());
+            horariosPorRestaurante.getConfiguradores().put(configuradorHorario.getId(), configuradorHorario);
             actualizarMes(monthField.getValue());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -222,7 +224,9 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
 
     private void eliminarConfigurador(ConfiguradorHorario configuradorHorario) {
         try {
-            configuradorHorarioService.delete(configuradorHorario.getId());
+            horarioPorRestauranteService.deleteConfigurador(
+                    configuradorHorario.getId(), horariosPorRestaurante.getId());
+            horariosPorRestaurante.getConfiguradores().remove(configuradorHorario.getId());
             actualizarMes(monthField.getValue());
         } catch (Exception ex) {
             throw new RuntimeException(ex);

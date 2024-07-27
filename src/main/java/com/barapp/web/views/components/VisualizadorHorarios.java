@@ -183,21 +183,18 @@ public class VisualizadorHorarios extends VerticalLayout {
         agregarSemanalBtn.addClickListener(
                 e -> fireEvent(new CreateEvent(this, true,
                         ConfiguradorHorarioSemanal.builder()
-                                .correoRestaurante(correoBar)
                                 .daysOfWeek(Set.of(diaSeleccionado.getDayOfWeek()))
                                 .build()
                 )));
         agregarEventoBtn.addClickListener(
                 e -> fireEvent(new CreateEvent(this, true,
                         ConfiguradorHorarioDiaEspecifico.builder()
-                                .correoRestaurante(correoBar)
                                 .fecha(diaSeleccionado)
                                 .build()
                 )));
         agregarFeriadoBtn.addClickListener(
                 e -> fireEvent(new CreateEvent(this, true,
                         ConfiguradorHorarioNoLaboral.builder()
-                                .correoRestaurante(correoBar)
                                 .fecha(diaSeleccionado)
                                 .build()
                 )));

@@ -36,6 +36,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,12 +63,12 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
 
     final Binder<ConfiguradorHorario> binder = new Binder<>();
     final ConfiguradorHorario bean;
-    final List<ConfiguradorHorario> horariosExistentes;
+    final Collection<ConfiguradorHorario> horariosExistentes;
     ConfiguradorHorarioValidator validator;
 
     public EditorConfigurardorHorarioDialog(
             ConfiguradorHorario configuradorHorario,
-            List<ConfiguradorHorario> horariosExistentes
+            Collection<ConfiguradorHorario> horariosExistentes
     ) {
         bean = configuradorHorario;
         this.horariosExistentes = horariosExistentes;

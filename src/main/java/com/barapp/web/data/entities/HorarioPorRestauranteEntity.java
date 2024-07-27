@@ -1,11 +1,11 @@
 package com.barapp.web.data.entities;
 
+import com.barapp.web.model.Mesa;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -13,8 +13,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class IntervaloTiempoEntity extends BaseEntity  {
-    String desde;
-    String hasta;
-    List<String> horarios;
+public class HorarioPorRestauranteEntity extends BaseEntity {
+    String idRestaurante;
+    String correo;
+    Map<String, ConfiguradorHorarioEntity> configuradores;
 }

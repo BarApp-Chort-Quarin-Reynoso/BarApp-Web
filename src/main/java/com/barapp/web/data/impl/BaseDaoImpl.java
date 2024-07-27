@@ -9,13 +9,9 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> implements BaseDao<D, E> {
@@ -27,7 +23,12 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
 
     @Override
     public String save(D dto) throws Exception {
-        return this.save(dto, null);
+        if (dto.getId() == null || dto.getId().isEmpty())
+            dto.setId(UUID.randomUUID().toString());
+
+        DocumentReference reference = getCollection().document(dto.getId());
+        reference.set(getConverter().toEntity(dto)).get();
+        return reference.getId();
     }
 
     @Override
