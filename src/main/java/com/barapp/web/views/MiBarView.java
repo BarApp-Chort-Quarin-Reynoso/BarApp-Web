@@ -77,7 +77,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
     H3 tituloDetallesDelBar;
     TextArea descripcionTextarea;
     TextField linkMenuTextfield;
-    Button gestionarCapacidadButton;
 
     // Ubicación
     Section ubicacionSection;
@@ -112,8 +111,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
 
     private final Binder<Restaurante> binder;
     private final Restaurante restaurante;
-    private Set<Mesa> capacidadTotalOriginal;
-    private List<Mesa> capacidadTotalEditable;
 
     private final Integer MAX_DESCRIPTION_LENGTH = 300;
 
@@ -127,12 +124,9 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         UserDetails userDetails = this.securityService.getAuthenticatedUser().orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         Optional<Restaurante> optRestaurante = this.restauranteService.getByCorreo(userDetails.getUsername());
         restaurante = optRestaurante.orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
+
         try {
             restaurante.setDetalleRestaurante(detalleRestauranteService.get(restaurante.getIdDetalleRestaurante()));
-            capacidadTotalOriginal = new HashSet<>();
-            for (Mesa mesa : restaurante.getDetalleRestaurante().getCapacidadTotal()) {
-                capacidadTotalOriginal.add(new Mesa(mesa));
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -183,40 +177,12 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
 
         linkMenuTextfield = new TextField(getTranslation("views.mibar.linkmenu"));
 
-        gestionarCapacidadButton = new Button(getTranslation("views.mibar.gestionarcapacidad"));
-        gestionarCapacidadButton.addClickListener(event -> {
-            capacidadTotalEditable = new ArrayList<>();
-            for (Mesa mesa : capacidadTotalOriginal) {
-                capacidadTotalEditable.add(new Mesa(mesa));
-            }
-            Dialog dialog = new Dialog();
-            dialog.setWidth("700px");
-            dialog.setHeaderTitle(getTranslation("views.mibar.gestionarcapacidad"));
 
-            Span errorSpan = new Span(getTranslation("error.mesasrepetidas"));
-            errorSpan.addClassNames(LumoUtility.TextColor.ERROR, LumoUtility.FontSize.XSMALL);
-            errorSpan.getStyle().set("visibility", "hidden");
-
-            Button guardarDialog = new Button(getTranslation("commons.save"));
-            guardarDialog.addClickListener(guardarEvent -> {
-                if (validarCapacidadTotal(errorSpan, guardarDialog)) {
-                    capacidadTotalOriginal = new HashSet<>(capacidadTotalEditable);
-                    dialog.close();
-                }
-            });
-            Button cancelarDialog = new Button(getTranslation("commons.cancel"), e -> dialog.close());
-            cancelarDialog.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            dialog.getFooter().add(cancelarDialog, guardarDialog);
-
-            dialog.add(createDialogLayout(errorSpan, guardarDialog), errorSpan);
-            dialog.open();
-        });
 
         detallesDelBarSection = new Section(
                 tituloDetallesDelBar,
                 descripcionTextarea,
-                linkMenuTextfield,
-                gestionarCapacidadButton);
+                linkMenuTextfield);
         detallesDelBarSection.setClassName("detalle-bar-section");
     }
 
@@ -401,9 +367,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         guardarButton.addClickListener(e -> {
             if (binder.writeBeanIfValid(restaurante)) {
                 try {
-                    // Actualizar la capacidad total
-                    restaurante.getDetalleRestaurante().setCapacidadTotal(capacidadTotalOriginal);
-
                     // Guardar imágenes en Firebase Storage
                     ImageContainer logo = new ImageContainer(new ByteArrayInputStream(logoByteArray), restaurante.getId(), logoMimeType);
                     ImageContainer portada = new ImageContainer(new ByteArrayInputStream(portadaByteArray), restaurante.getId(), portadaMimeType);
@@ -432,94 +395,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         botonesLayout.setId("registro-botones-layout");
         botonesLayout.setWidthFull();
         botonesLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
-    }
-
-    private VerticalLayout createDialogLayout(Span errorSpan, Button guardar) {
-        VerticalLayout dialogLayout = new VerticalLayout();
-        dialogLayout.setClassName("mi-bar-view-gestionar-capacidad-dialog");
-
-        Grid<Mesa> capacidadGrid = new Grid<>();
-
-        Button agregarMesaButton = new Button(getTranslation("views.mibar.agregarmesa"));
-        agregarMesaButton.setClassName("mi-bar-view-gestionar-capacidad-dialog__button");
-        agregarMesaButton.addClickListener(event -> {
-            capacidadTotalEditable.add(new Mesa());
-            capacidadGrid.getDataProvider().refreshAll();
-            validarCapacidadTotal(errorSpan, guardar);
-        });
-
-        capacidadGrid.addComponentColumn(mesa -> {
-                    IntegerField integerField = new IntegerField();
-                    integerField.setValue(mesa.getCantidadMesas());
-                    integerField.setStepButtonsVisible(true);
-                    integerField.setMin(1);
-                    integerField.addValueChangeListener(event -> {
-                        if (event.getValue() < 1) {
-                            integerField.setValue(event.getOldValue());
-                            return;
-                        }
-                        mesa.setCantidadMesas(event.getValue());
-                    });
-                    return integerField;
-                })
-                .setHeader(getTranslation("views.mibar.cantidaddemesas"))
-                .setAutoWidth(true)
-                .setTextAlign(ColumnTextAlign.CENTER);
-
-        capacidadGrid.addComponentColumn(mesa -> {
-                    IntegerField integerField = new IntegerField();
-                    integerField.setValue(mesa.getCantidadDePersonasPorMesa());
-                    integerField.setStepButtonsVisible(true);
-                    integerField.setMin(1);
-                    integerField.addValueChangeListener(event -> {
-                        if (event.getValue() < 1) {
-                            integerField.setValue(event.getOldValue());
-                            return;
-                        }
-                        mesa.setCantidadDePersonasPorMesa(event.getValue());
-                        validarCapacidadTotal(errorSpan, guardar);
-                    });
-                    return integerField;
-                })
-                .setHeader(getTranslation("views.mibar.cantidadpersonaspormesa" ))
-                .setAutoWidth(true)
-                .setTextAlign(ColumnTextAlign.CENTER);
-
-        capacidadGrid.addComponentColumn(mesa -> {
-                    Button eliminarMesa = new Button(VaadinIcon.TRASH.create(), event -> {
-                        capacidadTotalEditable.remove(mesa);
-                        capacidadGrid.getDataProvider().refreshAll();
-                        validarCapacidadTotal(errorSpan, guardar);
-                    });
-                    eliminarMesa.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                    return eliminarMesa;
-                })
-                .setAutoWidth(true);
-
-        capacidadGrid.setItems(capacidadTotalEditable);
-        capacidadGrid.setSelectionMode(Grid.SelectionMode.NONE);
-
-        dialogLayout.add(agregarMesaButton, capacidadGrid);
-
-        return dialogLayout;
-    }
-
-    private Boolean validarCapacidadTotal(Span errorSpan, Button guardar) {
-        Set<Integer> cantidadPersonasSet = new HashSet<>();
-
-        for (Mesa mesa : capacidadTotalEditable) {
-            Integer cantidadDePersonas = mesa.getCantidadDePersonasPorMesa();
-            if (cantidadPersonasSet.contains(cantidadDePersonas)) {
-                errorSpan.getStyle().set("visibility", "visible");
-                guardar.setEnabled(false);
-                return false; // Se encontró una mesa repetida
-            }
-            cantidadPersonasSet.add(cantidadDePersonas);
-        }
-
-        errorSpan.getStyle().set("visibility", "hidden");
-        guardar.setEnabled(true);
-        return true;
     }
 
     private void configurarLayout() {

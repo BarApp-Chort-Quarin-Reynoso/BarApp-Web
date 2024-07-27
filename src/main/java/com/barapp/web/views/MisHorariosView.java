@@ -1,10 +1,9 @@
 package com.barapp.web.views;
 
 import com.barapp.web.business.service.ConfiguradorHorarioService;
+import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.ConfiguradorHorario;
-import com.barapp.web.model.ConfiguradorHorarioNoLaboral;
-import com.barapp.web.model.Horario;
+import com.barapp.web.model.*;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.FormatUtils;
@@ -12,11 +11,13 @@ import com.barapp.web.utils.Tuple;
 import com.barapp.web.views.components.VisualizadorHorarios;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
+import com.barapp.web.views.dialogs.EditorCapacidadDialog;
 import com.barapp.web.views.dialogs.EditorConfigurardorHorarioDialog;
 import com.barapp.web.views.dialogs.EditorDiaNoLaboralDialog;
 import com.flowingcode.addons.ycalendar.MonthCalendar;
 import com.flowingcode.addons.ycalendar.YearMonthField;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -44,20 +45,39 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     final SecurityService securityService;
     final ConfiguradorHorarioService configuradorHorarioService;
     final RestauranteService restauranteService;
+    final DetalleRestauranteService detalleRestauranteService;
 
     YearMonthField monthField;
     MonthCalendar calendar;
     VisualizadorHorarios visualizadorHorarios;
     H3 calendarioTitle = new H3(getTranslation("views.mishorarios.fechasdisponibles"));
 
+    Restaurante restaurante;
     Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new HashMap<>();
 
-    public MisHorariosView(SecurityService securityService, ConfiguradorHorarioService configuradorHorarioService, RestauranteService restauranteService) {
+    Button gestionarCapacidadButton;
+    private Set<Mesa> capacidadTotalOriginal;
+
+    public MisHorariosView(SecurityService securityService, ConfiguradorHorarioService configuradorHorarioService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService) {
         this.securityService = securityService;
         this.configuradorHorarioService = configuradorHorarioService;
         this.restauranteService = restauranteService;
+        this.detalleRestauranteService = detalleRestauranteService;
 
         configurarUI();
+
+        try {
+            restaurante = restauranteService
+                    .getByCorreo(securityService.getAuthenticatedUser().orElseThrow().getUsername())
+                    .orElseThrow();
+            restaurante.setDetalleRestaurante(detalleRestauranteService.get(restaurante.getIdDetalleRestaurante()));
+            capacidadTotalOriginal = new HashSet<>();
+            for (Mesa mesa : restaurante.getDetalleRestaurante().getCapacidadTotal()) {
+                capacidadTotalOriginal.add(new Mesa(mesa));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void configurarUI() {
@@ -98,6 +118,17 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         });
         calendar.addClassName("calendarDiasHabilitado");
         calendar.setWidth("100%");
+
+        gestionarCapacidadButton = new Button(getTranslation("views.mibar.gestionarcapacidad"));
+        gestionarCapacidadButton.addClickListener(event -> {
+            List<Mesa> capacidadTotalEditable = new ArrayList<>();
+            for (Mesa mesa : capacidadTotalOriginal) {
+                capacidadTotalEditable.add(new Mesa(mesa));
+            }
+            EditorCapacidadDialog dialog = new EditorCapacidadDialog(capacidadTotalEditable);
+            dialog.open();
+
+        });
 
         visualizadorHorarios = new VisualizadorHorarios(
                 getTranslation("views.mishorarios.horariosdisponibles"),
@@ -160,15 +191,18 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         visualizadorHorarios.getStyle().setFlexGrow("1");
         visualizadorHorarios.getStyle().setFlexShrink("1");
 
-        HorizontalLayout visualizacionLayout = new HorizontalLayout();
-        visualizacionLayout.addClassName("visualizadorLayout");
-        visualizacionLayout.setPadding(true);
-        visualizacionLayout.add(calendarioWrapper, visualizadorHorarios);
+        HorizontalLayout horariosLayout = new HorizontalLayout(calendarioWrapper, visualizadorHorarios);
+        horariosLayout.addClassName("horariosLayout");
 
-        add(visualizacionLayout);
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.addClassName("visualizadorLayout");
+        mainLayout.setPadding(true);
+        mainLayout.add(horariosLayout, gestionarCapacidadButton);
+
+        add(mainLayout);
 
         actualizarMes(YearMonth.now());
-        MainElement mainElement = new MainElement(visualizacionLayout);
+        MainElement mainElement = new MainElement(mainLayout);
         mainElement.addClassName("mis-horarios-view");
 
         this.add(mainElement, new BarappFooter());
