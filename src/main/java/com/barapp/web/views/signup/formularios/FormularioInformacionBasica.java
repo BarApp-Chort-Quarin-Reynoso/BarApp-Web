@@ -102,6 +102,7 @@ public class FormularioInformacionBasica extends VerticalLayout {
 
             Restaurante bean = Restaurante.builder().build();
             if (binder.writeBeanIfValid(bean)) {
+                bean.setIdDetalleRestaurante(bean.getDetalleRestaurante().getId());
                 binder.setBean(bean);
 
                 try {
