@@ -20,8 +20,6 @@ import java.util.Map;
 @ToString
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class ConfiguradorHorario extends BaseModel {
-    String correoRestaurante;
-
     @Builder.Default
     Map<TipoComida, IntervaloTiempo> horarios = new LinkedHashMap<>();
 

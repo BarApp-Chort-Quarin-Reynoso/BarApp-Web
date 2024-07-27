@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class IntervaloTiempo extends BaseModel {
     LocalTime desde;
     LocalTime hasta;
-    int duracionReserva = 15;
     List<LocalTime> horarios = new ArrayList<>();
 
     public List<Horario> generarHorarios(TipoComida tipoComida) {

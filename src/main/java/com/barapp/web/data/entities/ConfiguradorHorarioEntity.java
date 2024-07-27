@@ -14,7 +14,6 @@ import java.util.Map;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfiguradorHorarioEntity extends BaseEntity {
-    String correoRestaurante;
     @Builder.Default
     Integer tipo = 0;
     @Builder.Default

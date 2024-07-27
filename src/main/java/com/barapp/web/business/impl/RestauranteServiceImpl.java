@@ -3,21 +3,9 @@ package com.barapp.web.business.impl;
 import com.barapp.web.business.ImageContainer;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.data.QueryParams;
-import com.barapp.web.data.dao.BaseDao;
-import com.barapp.web.data.dao.ConfiguradorHorarioDao;
-import com.barapp.web.data.dao.ImageDao;
-import com.barapp.web.data.dao.DetalleRestauranteDao;
-import com.barapp.web.data.dao.RestauranteDao;
-import com.barapp.web.data.dao.RestauranteFavoritoDao;
-import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
+import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.RestauranteEntity;
-import com.barapp.web.model.ConfiguradorHorario;
-import com.barapp.web.model.Horario;
-import com.barapp.web.model.ConfiguradorHorarioSemanal;
-import com.barapp.web.model.DetalleRestaurante;
-import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.RestauranteUsuario;
-import com.barapp.web.model.UsuarioWeb;
+import com.barapp.web.model.*;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.utils.Tuple;
 import com.google.cloud.firestore.Filter;
@@ -35,11 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -50,17 +34,19 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
+    private final HorarioPorRestauranteDao horarioPorRestauranteDao;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
-      this.restauranteDao = restauranteDao;
-      this.restauranteFavoritoDao = restauranteFavoritoDao;
-      this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
-      this.configuradorHorarioDao = configuradorHorarioDao;
-      this.detalleRestauranteDao = detalleRestauranteDao;
-      this.storageClient = storageClient;
-      this.imageDao = imageDao;
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, HorarioPorRestauranteDao horarioPorRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
+        this.restauranteDao = restauranteDao;
+        this.restauranteFavoritoDao = restauranteFavoritoDao;
+        this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
+        this.configuradorHorarioDao = configuradorHorarioDao;
+        this.detalleRestauranteDao = detalleRestauranteDao;
+        this.horarioPorRestauranteDao = horarioPorRestauranteDao;
+        this.storageClient = storageClient;
+        this.imageDao = imageDao;
   }
 
     @Override
@@ -198,8 +184,9 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio) {
         // La implementacion considera que los configuradores son devueltos segun su prioridad
-        List<ConfiguradorHorario> configuradoresHorario
-                = configuradorHorarioDao.getAllByCorreoRestaurante(correoRestaurante);
+        HorarioPorRestaurante horarioPorRestaurante = horarioPorRestauranteDao.getByCorreoRestaurante(correoRestaurante).orElseThrow();
+        Collection<ConfiguradorHorario> configuradoresHorario
+                = horarioPorRestaurante.getConfiguradores().values();
 
         Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new LinkedHashMap<>();
 

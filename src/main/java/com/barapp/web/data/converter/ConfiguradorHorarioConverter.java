@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
 public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorHorario, ConfiguradorHorarioEntity> {
     @Override
     public ConfiguradorHorarioEntity toEntity(ConfiguradorHorario dto) {
-        ConfiguradorHorarioEntity.ConfiguradorHorarioEntityBuilder builder = ConfiguradorHorarioEntity.builder()
-                .correoRestaurante(dto.getCorreoRestaurante());
+        ConfiguradorHorarioEntity.ConfiguradorHorarioEntityBuilder builder = ConfiguradorHorarioEntity.builder();
 
         if (dto instanceof ConfiguradorHorarioSemanal semanal) {
             builder.tipo(TipoConfigurador.SEMANAL.getOrden());
@@ -42,25 +41,28 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
 
         if (entity.getTipo() == TipoConfigurador.SEMANAL.getOrden()) {
             dto = ConfiguradorHorarioSemanal.builder()
-                    .correoRestaurante(entity.getCorreoRestaurante())
                     .daysOfWeek(entity.getDaysOfWeek().stream().map(DayOfWeek::valueOf).collect(Collectors.toSet()))
                     .horarios(toHorariosDto(entity.getHorarios()))
                     .build();
         } else if (entity.getTipo() == TipoConfigurador.DIA_ESPECIFICO.getOrden()) {
             dto = ConfiguradorHorarioDiaEspecifico.builder()
-                    .correoRestaurante(entity.getCorreoRestaurante())
                     .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.dateFormatter()))
                     .horarios(toHorariosDto(entity.getHorarios()))
                     .build();
         } else if (entity.getTipo() == TipoConfigurador.NO_LABORAL.getOrden()) {
             dto = ConfiguradorHorarioNoLaboral.builder()
-                    .correoRestaurante(entity.getCorreoRestaurante())
                     .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.dateFormatter()))
                     .build();
         } else {
             throw new IllegalArgumentException("La entidad asociada no tiene un tipo asignado soportado");
         }
 
+        return dto;
+    }
+
+    public ConfiguradorHorario toDtoWithId(ConfiguradorHorarioEntity entity, String id) {
+        ConfiguradorHorario dto = toDto(entity);
+        dto.setId(id);
         return dto;
     }
 
@@ -72,7 +74,6 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                 IntervaloTiempoEntity.builder()
                         .desde(intervaloTiempo.getDesde().format(FormatUtils.timeFormatter()))
                         .hasta(intervaloTiempo.getHasta().format(FormatUtils.timeFormatter()))
-                        .duracion(intervaloTiempo.getDuracionReserva())
                         .horarios(intervaloTiempo
                                 .getHorarios()
                                 .stream()
@@ -92,7 +93,6 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                 IntervaloTiempo.builder()
                         .desde(LocalTime.parse(intervaloTiempo.getDesde(), FormatUtils.timeFormatter()))
                         .hasta(LocalTime.parse(intervaloTiempo.getHasta(), FormatUtils.timeFormatter()))
-                        .duracionReserva(intervaloTiempo.getDuracion())
                         .horarios(intervaloTiempo
                                 .getHorarios()
                                 .stream()
