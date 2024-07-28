@@ -10,6 +10,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.views.InicioView;
+import com.barapp.web.views.components.pageElements.MainElement;
 import com.barapp.web.views.signup.formularios.*;
 import com.barapp.web.views.components.pageElements.CustomErrorWindow;
 import com.vaadin.flow.component.UI;
@@ -87,8 +88,9 @@ public class RegistroBarView extends VerticalLayout {
 
         baseLayout = new VerticalLayout(formularioInformacionBasica);
         baseLayout.setId("registro-base-layout");
-
-        this.add(topLayout, baseLayout);
+        MainElement mainElement = new MainElement(baseLayout);
+        mainElement.setId("registro-base-layout");
+        this.add(topLayout, mainElement);
     }
 
     private void configurarListenersFormularioInformacionBasica() {
