@@ -1,8 +1,15 @@
 package com.barapp.web.views.login;
 
+import java.io.InputStream;
 import java.util.Optional;
 
 import com.barapp.web.security.LoginListener;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.barapp.web.business.service.RestauranteService;
@@ -23,26 +30,14 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @PageTitle("Login")
 @Route(value = "login")
 @AnonymousAllowed
-public class LoginView extends VerticalLayout implements BeforeEnterObserver {
+public class LoginView extends Div implements BeforeEnterObserver {
     private final LoginForm login;
     private final LoginI18n i18n;
 
-    private final RestauranteService restauranteService;
-    private final SecurityService securityService;
-    private final LoginListener loginListener;
-
     @Autowired
     public LoginView(RestauranteService restauranteService, SecurityService securityService, LoginListener loginListener) {
-        this.restauranteService = restauranteService;
-        this.securityService = securityService;
-        this.loginListener = loginListener;
-
         addClassName("login-view");
         setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
-        getStyle().set("padding", "var(--lumo-space-l)");
-
 
         i18n = LoginI18n.createDefault();
         LoginI18n.Form i18nForm = i18n.getForm();
@@ -63,6 +58,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login = new LoginForm();
         login.setAction("login");
         login.setI18n(i18n);
+        login.addClassName("login-form");
 
         login.addLoginListener(e -> {
             if (securityService.getAuthenticatedUser().isPresent()) {
@@ -79,7 +75,17 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             }
         });
 
-        add(login);
+        Div infoContainer = new Div();
+        infoContainer.setClassName("info-container");
+        Image imagen = new Image();
+        imagen.setClassName("imagen");
+        InputStream imagenInputStream = getClass().getResourceAsStream("/META-INF.resources/images/Restaurante.jpg");
+        StreamResource imagenDefaultResource = new StreamResource("Restaurante.jpg", () -> imagenInputStream);
+        imagen.setSrc(imagenDefaultResource);
+
+        infoContainer.add(imagen);
+
+        add(infoContainer, login);
     }
 
     @Override
