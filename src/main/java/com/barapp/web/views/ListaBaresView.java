@@ -99,7 +99,7 @@ public class ListaBaresView extends VerticalLayout {
 
         Column<Restaurante> estadoCol = baresGrid.addComponentColumn(this::getEstadoBadge);
         estadoCol.setHeader(getTranslation("views.bares.grid.estado"));
-        estadoCol.setWidth("150px");
+        estadoCol.setWidth("190px");
         estadoCol.setFlexGrow(1);
         estadoCol.setComparator(Comparator.comparing(Restaurante::getEstado));
 
