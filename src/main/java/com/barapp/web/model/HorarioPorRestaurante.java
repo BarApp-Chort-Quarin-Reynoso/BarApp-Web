@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +19,12 @@ import java.util.Map;
 public class HorarioPorRestaurante extends BaseModel {
     String idRestaurante;
     String correo;
-    Map<String, ConfiguradorHorario> configuradores;
-    List<Mesa> mesas;
+
+    @Builder.Default
+    Map<String, ConfiguradorHorario> configuradores = new LinkedHashMap<>();
+
+    @Builder.Default
+    List<Mesa> mesas = new ArrayList<>();
 
     public List<ConfiguradorHorarioNoLaboral> getNoLaborales() {
         return configuradores.values().stream()
