@@ -18,6 +18,7 @@ public class HorarioPorRestaurante extends BaseModel {
     String idRestaurante;
     String correo;
     Map<String, ConfiguradorHorario> configuradores;
+    List<Mesa> mesas;
 
     public List<ConfiguradorHorarioNoLaboral> getNoLaborales() {
         return configuradores.values().stream()

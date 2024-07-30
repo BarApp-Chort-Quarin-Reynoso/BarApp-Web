@@ -17,4 +17,5 @@ public class HorarioPorRestauranteEntity extends BaseEntity {
     String idRestaurante;
     String correo;
     Map<String, ConfiguradorHorarioEntity> configuradores;
+    List<Mesa> mesas;
 }

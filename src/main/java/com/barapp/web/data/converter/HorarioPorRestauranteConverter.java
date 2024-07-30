@@ -20,6 +20,7 @@ public class HorarioPorRestauranteConverter implements BaseConverter<HorarioPorR
                         .entrySet()
                         .stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, entry -> chConverter.toEntity(entry.getValue()))))
+                .mesas(dto.getMesas())
                 .build();
     }
 
@@ -35,6 +36,7 @@ public class HorarioPorRestauranteConverter implements BaseConverter<HorarioPorR
                         .collect(Collectors.toMap(Map.Entry::getKey,
                                 entry -> chConverter.toDtoWithId(entry.getValue(), entry.getKey())
                         )))
+                .mesas(entity.getMesas())
                 .build();
     }
 }
