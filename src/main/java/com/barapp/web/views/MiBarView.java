@@ -255,17 +255,14 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
             );
         });
         paisCombobox = new ComboBox<>(getTranslation("views.registro.pais"));
-        paisCombobox.setWidthFull();
         paisCombobox.setItems(List.of("Argentina"));
         paisCombobox.setValue("Argentina");
         paisCombobox.setReadOnly(true);
         provinciaCombobox = new ComboBox<>(getTranslation("views.registro.provincia"));
-        provinciaCombobox.setWidthFull();
         provinciaCombobox.setItems(List.of("Santa Fe"));
         provinciaCombobox.setValue("Santa Fe");
         provinciaCombobox.setReadOnly(true);
         localidadCombobox = new ComboBox<>(getTranslation("views.registro.localidad"));
-        localidadCombobox.setWidthFull();
         localidadCombobox.setItems(List.of("Santa Fe"));
         localidadCombobox.setValue("Santa Fe");
         localidadCombobox.setReadOnly(true);
@@ -277,7 +274,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         HorizontalLayout direccionUbicacionLayout = new HorizontalLayout(direccionTextfield, numeroTextfield);
         direccionUbicacionLayout.setWidthFull();
         HorizontalLayout paisUbicacionLayout = new HorizontalLayout(paisCombobox, provinciaCombobox, localidadCombobox);
-        paisUbicacionLayout.setWidthFull();
 
         ubicacionSection = new Section(
                 tituloUbicacion,

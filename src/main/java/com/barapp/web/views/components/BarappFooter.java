@@ -1,8 +1,10 @@
 package com.barapp.web.views.components.pageElements;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -28,26 +30,22 @@ public class BarappFooter extends Footer {
         copyright.setClassName("footer-copy");
 
         Button facebook = new Button(LineAwesomeIcon.FACEBOOK.create());
+        facebook.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         Button instagram = new Button(LineAwesomeIcon.INSTAGRAM.create());
+        instagram.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         Button twitter = new Button(LineAwesomeIcon.TWITTER.create());
+        twitter.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         Button whatsapp = new Button(LineAwesomeIcon.WHATSAPP.create());
+        whatsapp.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        this.add(new HorizontalLayout(
-                        home,
-                        sobreNosotros,
-                        terminosCondiciones,
-                        nuestroEquipo,
-                        blog,
-                        ayuda),
-                new HorizontalLayout(
-                        facebook,
-                        instagram,
-                        twitter,
-                        whatsapp
-                ),
-                copyright);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(home, sobreNosotros, terminosCondiciones, nuestroEquipo, blog,ayuda);
+        horizontalLayout.setClassName("items-list");
+        HorizontalLayout container = new HorizontalLayout(horizontalLayout,new HorizontalLayout(facebook, instagram, twitter, whatsapp));
+        container.setClassName("footer-layout-container");
+
+        this.add(container,copyright);
     }
 }
