@@ -44,3 +44,8 @@
 .mi-bar-view-gestionar-capacidad-dialog__button {
     align-self: flex-end;
 }
+
+vaadin-combo-box {
+    width: 0;
+    flex-grow: 1;
+}

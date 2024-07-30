@@ -24,7 +24,10 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
         setPadding(false);
         setSpacing(false);
 
-        add(new MainElement(), new BarappFooter());
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+
+        add(verticalLayout, new BarappFooter());
     }
 
     @Override
