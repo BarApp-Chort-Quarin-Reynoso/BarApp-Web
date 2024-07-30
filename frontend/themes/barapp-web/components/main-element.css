@@ -10,6 +10,8 @@
     border-radius: var(--lumo-border-radius-l);
     padding: var(--lumo-space-xl);
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .2);
+    width: 80%;
+    min-width: 600px;
 }
 
 @media (max-width: 1024px) {
