@@ -131,7 +131,7 @@ public class RegistroBarView extends VerticalLayout {
             ImageContainer logo = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(), formularioImagenes.getLogoMimeType());
             ImageContainer portada = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(), formularioImagenes.getPortadaMimeType());
             try {
-                restauranteService.saveConUsuario(restaurante, usuarioWeb, logo, portada);
+                restauranteService.registrarRestaurante(restaurante, usuarioWeb, logo, portada);
             } catch (Exception e) {
                 CustomErrorWindow.showError(e);
             }

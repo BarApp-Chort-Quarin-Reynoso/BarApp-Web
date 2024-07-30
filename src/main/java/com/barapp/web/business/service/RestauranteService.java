@@ -23,7 +23,7 @@ public interface RestauranteService extends BaseService<Restaurante> {
     
     Optional<Restaurante> getByCorreo(String correo);
 
-    String saveConUsuario(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada);
+    String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada);
 
     String saveConFotos(Restaurante restaurante, ImageContainer logo, ImageContainer portada);
 

@@ -67,8 +67,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             restaurante = restauranteService
                     .getByCorreo(securityService.getAuthenticatedUser().orElseThrow().getUsername())
                     .orElseThrow();
-            horariosPorRestaurante = horarioPorRestauranteService.getByCorreoRestaurante(restaurante.getCorreo())
-                    .orElseThrow();
+            horariosPorRestaurante = horarioPorRestauranteService.getByCorreoRestaurante(restaurante.getCorreo()).orElseThrow();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

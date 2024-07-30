@@ -73,7 +73,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public String saveConUsuario(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada) {
+    public String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada) {
         try {
             String logoUrl = imageDao.saveImage(
                     "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
@@ -81,8 +81,12 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                     "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
             restaurante.setLogo(logoUrl);
             restaurante.setPortada(portadaUrl);
+            HorarioPorRestaurante horarioPorRestaurante = HorarioPorRestaurante.builder()
+                    .idRestaurante(restaurante.getId())
+                    .correo(restaurante.getCorreo())
+                    .build();
 
-            return restauranteDao.saveConUsuario(restaurante, usuario);
+            return restauranteDao.registrarRestaurante(restaurante, usuario, horarioPorRestaurante);
         } catch (Exception e) {
             // TODO eliminar foto si falla
             throw new RuntimeException(e);
@@ -183,10 +187,13 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     @Override
     public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio) {
-        // La implementacion considera que los configuradores son devueltos segun su prioridad
-        HorarioPorRestaurante horarioPorRestaurante = horarioPorRestauranteDao.getByCorreoRestaurante(correoRestaurante).orElseThrow();
+        Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteDao.getByCorreoRestaurante(correoRestaurante);
+        if (horarioPorRestaurante.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+
         Collection<ConfiguradorHorario> configuradoresHorario
-                = horarioPorRestaurante.getConfiguradores().values();
+                = horarioPorRestaurante.get().getConfiguradores().values();
 
         Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new LinkedHashMap<>();
 
