@@ -73,3 +73,7 @@ fc-badge-list {
 vaadin-context-menu-list-box .badge-con-boton-eliminar vaadin-button {
     visibility: hidden;
 }
+
+.capacidad-grid::part(footer-cell) {
+    width: 0;
+}

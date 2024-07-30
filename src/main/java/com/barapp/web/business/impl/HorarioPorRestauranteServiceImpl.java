@@ -6,8 +6,10 @@ import com.barapp.web.data.dao.HorarioPorRestauranteDao;
 import com.barapp.web.data.entities.BaseEntity;
 import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.HorarioPorRestaurante;
+import com.barapp.web.model.Mesa;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,6 +49,17 @@ public class HorarioPorRestauranteServiceImpl extends BaseServiceImpl<HorarioPor
         }
 
         horarioPorRestaurante.getConfiguradores().remove(id);
+        horarioPorRestauranteDao.save(horarioPorRestaurante);
+    }
+
+    @Override
+    public void saveMesas(List<Mesa> mesas, String idHorariosPorRestaurante) throws Exception {
+        HorarioPorRestaurante horarioPorRestaurante = horarioPorRestauranteDao.get(idHorariosPorRestaurante);
+        if (horarioPorRestaurante == null) {
+            throw new Exception("El idHorariosPorRestaurante no existe");
+        }
+
+        horarioPorRestaurante.setMesas(mesas);
         horarioPorRestauranteDao.save(horarioPorRestaurante);
     }
 }

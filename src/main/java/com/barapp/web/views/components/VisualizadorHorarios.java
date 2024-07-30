@@ -9,6 +9,7 @@ import com.flowingcode.vaadin.addons.badgelist.Badge;
 import com.flowingcode.vaadin.addons.badgelist.BadgeList;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
@@ -61,6 +62,7 @@ public class VisualizadorHorarios extends VerticalLayout {
 
         editarBtn.setIcon(LineAwesomeIcon.PENCIL_ALT_SOLID.create());
         eliminarBtn.setIcon(LineAwesomeIcon.TRASH_ALT_SOLID.create());
+        eliminarBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
         infoLabel.setText(noDaySelectedText);
         infoLabel.setClassName("empty-label");
         configuradorAplicado.addClassNames(LumoUtility.FontSize.SMALL);

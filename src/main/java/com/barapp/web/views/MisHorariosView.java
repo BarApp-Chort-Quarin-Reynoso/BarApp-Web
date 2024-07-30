@@ -1,8 +1,5 @@
 package com.barapp.web.views;
 
-import com.barapp.web.business.impl.HorarioPorRestauranteServiceImpl;
-import com.barapp.web.business.service.ConfiguradorHorarioService;
-import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.HorarioPorRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.*;
@@ -58,7 +55,6 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new HashMap<>();
 
     Button gestionarCapacidadButton;
-    private Set<Mesa> capacidadTotalOriginal;
 
     public MisHorariosView(SecurityService securityService, RestauranteService restauranteService, HorarioPorRestauranteService horarioPorRestauranteService) {
         this.securityService = securityService;
@@ -73,10 +69,6 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
                     .orElseThrow();
             horariosPorRestaurante = horarioPorRestauranteService.getByCorreoRestaurante(restaurante.getCorreo())
                     .orElseThrow();
-            capacidadTotalOriginal = new HashSet<>();
-            for (Mesa mesa : restaurante.getDetalleRestaurante().getCapacidadTotal()) {
-                capacidadTotalOriginal.add(new Mesa(mesa));
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -121,15 +113,14 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         calendar.addClassName("calendarDiasHabilitado");
         calendar.setWidth("100%");
 
-        gestionarCapacidadButton = new Button(getTranslation("views.mibar.gestionarcapacidad"));
+        gestionarCapacidadButton = new Button(getTranslation("views.mishorarios.gestionarcapacidadpordefecto"));
         gestionarCapacidadButton.addClickListener(event -> {
-            List<Mesa> capacidadTotalEditable = new ArrayList<>();
-            for (Mesa mesa : capacidadTotalOriginal) {
-                capacidadTotalEditable.add(new Mesa(mesa));
-            }
+            List<Mesa> capacidadTotalEditable = new ArrayList<>(horariosPorRestaurante.getMesas());
             EditorCapacidadDialog dialog = new EditorCapacidadDialog(capacidadTotalEditable);
+            dialog.addSaveListener(e -> {
+                guardarCapacidad(new ArrayList<>(e.getBean()));
+            });
             dialog.open();
-
         });
 
         visualizadorHorarios = new VisualizadorHorarios(
@@ -139,7 +130,6 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         visualizadorHorarios.setSizeFull();
         visualizadorHorarios.setFlexGrow(1);
         visualizadorHorarios.addEditListener(ce -> {
-            String correo = securityService.getAuthenticatedUser().orElseThrow().getUsername();
             Collection<ConfiguradorHorario> configuradores = horariosPorRestaurante.getConfiguradores().values();
             if (ce.getBean() instanceof ConfiguradorHorarioNoLaboral noLaboral) {
                 EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
@@ -241,6 +231,15 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             calendar.refreshAll();
         });
         visualizadorHorarios.setValue(new ArrayList<>(), null, null);
+    }
+
+    private void guardarCapacidad(List<Mesa> mesas) {
+        try {
+            horarioPorRestauranteService.saveMesas(mesas, horariosPorRestaurante.getId());
+            horariosPorRestaurante.setMesas(mesas);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
