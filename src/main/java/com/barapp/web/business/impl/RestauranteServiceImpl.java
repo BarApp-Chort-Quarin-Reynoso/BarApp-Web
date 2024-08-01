@@ -153,9 +153,17 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     @Override
     public Map<LocalDate, List<Horario>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio) {
-        // La implementacion considera que los configuradores son devueltos segun su prioridad
-        List<ConfiguradorHorario> configuradoresHorario
-                = configuradorHorarioDao.getAllByCorreoRestaurante(correoRestaurante);
+        Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteDao
+            .getByCorreoRestaurante(correoRestaurante);
+
+        if (horarioPorRestaurante.isEmpty()) {
+            return new LinkedHashMap<>();
+        }
+
+        Collection<ConfiguradorHorario> configuradoresHorario = horarioPorRestaurante
+            .get()
+                .getConfiguradores()
+                .values();
 
         Map<LocalDate, List<Horario>> horarios = new LinkedHashMap<>();
 
@@ -238,8 +246,11 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         queryParams.addFilter(Filter.equalTo("idRestaurante", restaurante.getIdRestaurante()));
         queryParams.addFilter(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
 
-        if (!restauranteVistoRecientementeDao.getByParams(queryParams).isEmpty()) {
-          throw new IllegalStateException("El restaurante con ID " + restaurante.getIdRestaurante() + " ya existe para el usuario con ID " + restaurante.getIdUsuario() + ".");
+        List<RestauranteUsuario> restaurantesVistosDelUsuario = restauranteVistoRecientementeDao
+        .getByParams(queryParams);
+
+        if (!restaurantesVistosDelUsuario.isEmpty()) {
+            return restaurantesVistosDelUsuario.get(0);
         }
 
         restauranteVistoRecientementeDao.save(restaurante, idRestaurante);

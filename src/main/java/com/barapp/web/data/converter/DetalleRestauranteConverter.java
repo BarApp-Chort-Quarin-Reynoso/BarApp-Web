@@ -34,6 +34,9 @@ public class DetalleRestauranteConverter implements BaseConverter<DetalleRestaur
     }
 
     private Map<String, CalificacionPromedio> getCaracteristicasOrdenadas(Map<String, CalificacionPromedio> caracteristicas) {
+        if (caracteristicas == null) {
+            return Collections.emptyMap();
+        }
         Map<String, CalificacionPromedio> ordenadas = new LinkedHashMap<>();
         caracteristicas.keySet().stream().sorted().forEach(k -> ordenadas.put(k, caracteristicas.get(k)));
         return ordenadas;
