@@ -8,5 +8,5 @@ public interface ReservaService extends BaseService<Reserva> {
   List<Reserva> getReservasByUsuario(String idUsuario);
   List<Reserva> getReservasByRestaurante(String idRestaurante);
   List<Reserva> getReservasByEstado(String estado);
-  void updateEstado(String idReserva, String estado);
+  Reserva updateEstado(String idReserva, String estado);
 }
