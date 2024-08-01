@@ -10,13 +10,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservaEntity extends BaseEntity{
-  boolean cancelada;
+  String estado;
   Integer cantidadPersonas;
   String fecha;
   String horario;
   String idUsuario;
+  String idOpinion;
   String idRestaurante;
   String logo;
+  String portada;
   String nombre;
   Integer numero;
   Double puntuacion;
