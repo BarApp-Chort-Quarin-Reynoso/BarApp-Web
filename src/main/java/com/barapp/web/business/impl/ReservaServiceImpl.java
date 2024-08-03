@@ -1,17 +1,19 @@
 package com.barapp.web.business.impl;
 
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.ReservaDao;
 import com.barapp.web.data.entities.ReservaEntity;
 import com.barapp.web.model.Reserva;
 import com.barapp.web.model.enums.EstadoReserva;
+import com.barapp.web.utils.FormatUtils;
 import com.google.cloud.firestore.Filter;
+import org.springframework.stereotype.Service;
+
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.*;
 
 @Service
 public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements ReservaService {
@@ -23,7 +25,9 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
-    public BaseDao<Reserva, ReservaEntity> getDao() { return reservaDao; }
+    public BaseDao<Reserva, ReservaEntity> getDao() {
+        return reservaDao;
+    }
 
     @Override
     public List<Reserva> getReservasByUsuario(String idUsuario) {
@@ -51,12 +55,50 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
+    public List<Reserva> getReservasByRestauranteEstado(String idRestaurante, EstadoReserva estado) {
+        try {
+            return reservaDao.getFiltered(Filter.and(
+                    Filter.equalTo("idRestaurante", idRestaurante),
+                    Filter.equalTo("estado", estado.toString())
+            ));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<Reserva> getReservasByEstado(String estado) {
         try {
             List<Reserva> reservas = reservaDao.getFiltered(Filter.equalTo("estado", estado));
             return reservas;
         } catch (Exception e) {
             System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Map<LocalDate, List<Reserva>> getReservasPendientesPorMes(String idRestaurante, YearMonth mes) {
+        try {
+            List<Reserva> reservas = reservaDao.getFiltered(Filter.and(
+                    Filter.equalTo("idRestaurante", idRestaurante),
+                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString()),
+                    Filter.greaterThanOrEqualTo("fecha", FormatUtils.persistenceDateFormatter().format(mes.atDay(1))),
+                    Filter.lessThanOrEqualTo("fecha", mes.atEndOfMonth().format(FormatUtils.persistenceDateFormatter()))
+            ));
+
+            Map<LocalDate, List<Reserva>> reservasPorDia = new LinkedHashMap<>();
+            reservas.forEach(reserva -> {
+                LocalDate fecha = reserva.getFecha();
+                if (!reservasPorDia.containsKey(fecha)) {
+                    reservasPorDia.put(fecha, new ArrayList<>());
+                }
+
+                reservasPorDia.get(fecha).add(reserva);
+            });
+
+            return reservasPorDia;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -74,4 +116,5 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             throw new RuntimeException(e);
         }
     }
+
 }

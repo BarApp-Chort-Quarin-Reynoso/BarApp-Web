@@ -1,8 +1,12 @@
 package com.barapp.web.data.converter;
 
+import com.barapp.web.data.entities.ConfiguradorHorarioEntity;
 import com.barapp.web.data.entities.HorarioPorRestauranteEntity;
+import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.HorarioPorRestaurante;
 
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,31 +15,37 @@ public class HorarioPorRestauranteConverter implements BaseConverter<HorarioPorR
 
     @Override
     public HorarioPorRestauranteEntity toEntity(HorarioPorRestaurante dto) {
-        ConfiguradorHorarioConverter chConverter = new ConfiguradorHorarioConverter();
+        Map<String, ConfiguradorHorarioEntity> configuradoresOrdenados = new LinkedHashMap<>();
+        dto.getConfiguradores().entrySet()
+                .stream()
+                .sorted(Comparator.comparing(e -> e.getValue().getTipo()))
+                .forEach(e -> {
+                    configuradoresOrdenados.put(e.getKey(), chConverter.toEntity(e.getValue()));
+                });
+
         return HorarioPorRestauranteEntity.builder()
                 .idRestaurante(dto.getIdRestaurante())
                 .correo(dto.getCorreo())
-                .configuradores(dto
-                        .getConfiguradores()
-                        .entrySet()
-                        .stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, entry -> chConverter.toEntity(entry.getValue()))))
+                .configuradores(configuradoresOrdenados)
                 .mesas(dto.getMesas())
                 .build();
     }
 
     @Override
     public HorarioPorRestaurante toDto(HorarioPorRestauranteEntity entity) {
+        Map<String, ConfiguradorHorario> configuradoresOrdenados = new LinkedHashMap<>();
+        entity.getConfiguradores().entrySet()
+                .stream()
+                .sorted(Comparator.comparing(e -> e.getValue().getTipo()))
+                .forEach(e -> {
+                    ConfiguradorHorario ch = chConverter.toDtoWithId(e.getValue(), e.getKey());
+                    configuradoresOrdenados.put(ch.getId(), ch);
+                });
+
         return HorarioPorRestaurante.builder()
                 .idRestaurante(entity.getIdRestaurante())
                 .correo(entity.getCorreo())
-                .configuradores(entity
-                        .getConfiguradores()
-                        .entrySet()
-                        .stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey,
-                                entry -> chConverter.toDtoWithId(entry.getValue(), entry.getKey())
-                        )))
+                .configuradores(configuradoresOrdenados)
                 .mesas(entity.getMesas())
                 .build();
     }

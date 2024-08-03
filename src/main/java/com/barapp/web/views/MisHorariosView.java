@@ -7,6 +7,7 @@ import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.FormatUtils;
 import com.barapp.web.utils.Tuple;
+import com.barapp.web.views.components.CapacidadField;
 import com.barapp.web.views.components.VisualizadorHorarios;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
@@ -54,7 +55,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
     HorarioPorRestaurante horariosPorRestaurante;
     Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new HashMap<>();
 
-    Button gestionarCapacidadButton;
+    CapacidadField capacidadField;
 
     public MisHorariosView(SecurityService securityService, RestauranteService restauranteService, HorarioPorRestauranteService horarioPorRestauranteService) {
         this.securityService = securityService;
@@ -67,7 +68,10 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             restaurante = restauranteService
                     .getByCorreo(securityService.getAuthenticatedUser().orElseThrow().getUsername())
                     .orElseThrow();
-            horariosPorRestaurante = horarioPorRestauranteService.getByCorreoRestaurante(restaurante.getCorreo()).orElseThrow();
+            horariosPorRestaurante = horarioPorRestauranteService
+                    .getByCorreoRestaurante(restaurante.getCorreo())
+                    .orElseThrow();
+            capacidadField.setValue(new ArrayList<>(horariosPorRestaurante.getMesas()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -112,14 +116,9 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         calendar.addClassName("calendarDiasHabilitado");
         calendar.setWidth("100%");
 
-        gestionarCapacidadButton = new Button(getTranslation("views.mishorarios.gestionarcapacidadpordefecto"));
-        gestionarCapacidadButton.addClickListener(event -> {
-            List<Mesa> capacidadTotalEditable = new ArrayList<>(horariosPorRestaurante.getMesas());
-            EditorCapacidadDialog dialog = new EditorCapacidadDialog(capacidadTotalEditable);
-            dialog.addSaveListener(e -> {
-                guardarCapacidad(new ArrayList<>(e.getBean()));
-            });
-            dialog.open();
+        capacidadField = new CapacidadField(getTranslation("views.mishorarios.capacidadpordefecto"));
+        capacidadField.addSaveListener(e -> {
+            guardarCapacidad(new ArrayList<>(e.getBean()));
         });
 
         visualizadorHorarios = new VisualizadorHorarios(
@@ -129,7 +128,8 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         visualizadorHorarios.setSizeFull();
         visualizadorHorarios.setFlexGrow(1);
         visualizadorHorarios.addEditListener(ce -> {
-            Collection<ConfiguradorHorario> configuradores = horariosPorRestaurante.getConfiguradores().values();
+            List<ConfiguradorHorario> configuradores = new ArrayList<>(
+                    horariosPorRestaurante.getConfiguradores().values());
             if (ce.getBean() instanceof ConfiguradorHorarioNoLaboral noLaboral) {
                 EditorDiaNoLaboralDialog editorDialog = new EditorDiaNoLaboralDialog(
                         noLaboral,
@@ -144,7 +144,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
                 editorDialog.open();
             } else {
                 EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
-                        ce.getBean(), configuradores);
+                        ce.getBean(), configuradores, horariosPorRestaurante.getMesas());
                 editorDialog.addSaveListener(e -> {
                     guardarConfigurador(e.getBean());
                 });
@@ -162,7 +162,8 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
             } else {
                 EditorConfigurardorHorarioDialog editorDialog = new EditorConfigurardorHorarioDialog(
                         ce.getBean(),
-                        horariosPorRestaurante.getLaborales()
+                        horariosPorRestaurante.getLaborales(),
+                        horariosPorRestaurante.getMesas()
                 );
                 editorDialog.addSaveListener(se -> guardarConfigurador(se.getBean()));
                 editorDialog.open();
@@ -186,7 +187,7 @@ public class MisHorariosView extends VerticalLayout implements BeforeEnterObserv
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.addClassName("visualizadorLayout");
         mainLayout.setPadding(true);
-        mainLayout.add(horariosLayout, gestionarCapacidadButton);
+        mainLayout.add(horariosLayout, capacidadField);
 
         add(mainLayout);
 

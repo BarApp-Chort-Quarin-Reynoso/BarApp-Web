@@ -1,8 +1,10 @@
 package com.barapp.web.data.entities;
 
+import com.barapp.web.model.Mesa;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,4 +24,6 @@ public class ConfiguradorHorarioEntity extends BaseEntity {
     String fecha = null;     // Se utiliza para ConfiguradorHorarioDiaEspecifico y ConfiguradorHorarioDiaInhabilitado
     @Builder.Default
     Map<String, IntervaloTiempoEntity> horarios = new HashMap<>();
+    @Builder.Default
+    List<Mesa> mesas = new ArrayList<>();
 }

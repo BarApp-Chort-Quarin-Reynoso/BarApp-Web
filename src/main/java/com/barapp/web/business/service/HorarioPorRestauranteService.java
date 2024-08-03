@@ -12,4 +12,5 @@ public interface HorarioPorRestauranteService extends BaseService<HorarioPorRest
     void saveConfigurador(ConfiguradorHorario configuradorHorario, String id, String idHorariosPorRestaurante) throws Exception;
     void deleteConfigurador(String id, String idHorariosPorRestaurante) throws Exception;
     void saveMesas(List<Mesa> mesas, String idHorariosPorRestaurante) throws Exception;
+    boolean validarHorariosYCapacidad(HorarioPorRestaurante horarioPorRestaurante);
 }

@@ -1,6 +1,7 @@
 package com.barapp.web.views.components;
 
 import com.barapp.web.model.IntervaloTiempo;
+import com.barapp.web.model.Mesa;
 import com.barapp.web.model.enums.TipoComida;
 import com.flowingcode.vaadin.addons.badgelist.Badge;
 import com.flowingcode.vaadin.addons.badgelist.BadgeList;
@@ -32,6 +33,7 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
     final TimePicker desdePicker;
     final TimePicker hastaPicker;
     final TimePicker horarioPicker;
+    final CapacidadField capacidadField;
     BadgeList horariosBadgeList;
     HorizontalLayout contentLayout;
     HorizontalLayout horarioWrapper;
@@ -40,12 +42,14 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
 
     private final LocalTime MIN_HORARIO = LocalTime.of(7, 0);
 
-    public IntervaloTiempoSelector(TipoComida tipoComida) {
+    public IntervaloTiempoSelector(List<Mesa> capacidadPorDefecto) {
         desdePicker = new TimePicker(getTranslation("views.mishorarios.desde"));
         hastaPicker = new TimePicker(getTranslation("views.mishorarios.hasta"));
         horarioPicker = new TimePicker(getTranslation("views.mishorarios.horario"));
+        capacidadField = new CapacidadField(getTranslation("comp.editarhorariodialog.lugaresdisponibles"));
         addHorarioButton = new Button();
         horariosBadgeList = new BadgeList(List.of());
+        capacidadField.setCapacidadPorDefecto(capacidadPorDefecto);
 
         configurarUI();
         setBinding();
@@ -80,14 +84,15 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
                 hastaPicker.setMin(e.getValue());
                 horarioPicker.setMin(e.getValue());
                 removeHorariosInvalidos();
-                addHorarioButton.setVisible(true);
-                if (hastaPicker.getValue() != null)
+                if (hastaPicker.getValue() != null) {
                     horarioPicker.setEnabled(true);
+                    setHorarioSeteado(true);
+                }
             } else {
                 hastaPicker.setMin(MIN_HORARIO);
                 horarioPicker.setEnabled(false);
                 clearListaHorarios();
-                addHorarioButton.setVisible(false);
+                setHorarioSeteado(false);
             }
         });
         hastaPicker.setClearButtonVisible(true);
@@ -96,14 +101,15 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
                 desdePicker.setMax(e.getValue());
                 horarioPicker.setMax(e.getValue());
                 removeHorariosInvalidos();
-                addHorarioButton.setVisible(true);
-                if (desdePicker.getValue() != null)
+                if (desdePicker.getValue() != null) {
                     horarioPicker.setEnabled(true);
+                    setHorarioSeteado(true);
+                }
             } else {
                 desdePicker.setMax(null);
                 horarioPicker.setEnabled(false);
                 clearListaHorarios();
-                addHorarioButton.setVisible(false);
+                setHorarioSeteado(false);
             }
         });
         horarioPicker.setStep(Duration.ofMinutes(15));
@@ -126,15 +132,24 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
         fieldsWrapper.addClassName(LumoUtility.Padding.Horizontal.MEDIUM);
         fieldsWrapper.add(
                 new HorizontalLayout(desdePicker, hastaPicker),
-                horarioWrapper
+                horarioWrapper,
+                capacidadField
         );
 
         contentLayout = new HorizontalLayout();
         contentLayout.add(fieldsWrapper);
         contentLayout.addClassName("intervaloTiempoSelector-content");
 
+        setHorarioSeteado(false);
+
         add(contentLayout);
         addClassName("intervaloTiempoSelector");
+    }
+
+    private void setHorarioSeteado(boolean seteado) {
+        addHorarioButton.setVisible(seteado);
+        horarioWrapper.setVisible(seteado);
+        capacidadField.setVisible(seteado);
     }
 
     private void setBinding() {
@@ -142,6 +157,9 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
                 .bind(IntervaloTiempo::getDesde, IntervaloTiempo::setDesde);
         binder.forField(hastaPicker)
                 .bind(IntervaloTiempo::getHasta, IntervaloTiempo::setHasta);
+        binder.forField(capacidadField)
+                .bind(IntervaloTiempo::getMesas, IntervaloTiempo::setMesas);
+        binder.addValueChangeListener(e -> updateValue());
     }
 
     private void setListaHorarios(Set<LocalTime> horarios) {
@@ -191,6 +209,7 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
             intTiempo.setDesde(desdePicker.getValue());
             intTiempo.setHasta(hastaPicker.getValue());
             intTiempo.setHorarios(new ArrayList<>(horarios));
+            intTiempo.setMesas(capacidadField.getValue());
             return intTiempo;
         } else {
             return null;
@@ -202,6 +221,7 @@ public class IntervaloTiempoSelector extends CustomField<IntervaloTiempo> {
         if (newValue != null) {
             desdePicker.setValue(newValue.getDesde());
             hastaPicker.setValue(newValue.getHasta());
+            capacidadField.setValue(newValue.getMesas());
             contentLayout.setVisible(true);
             setListaHorarios(new TreeSet<>(newValue.getHorarios()));
         }

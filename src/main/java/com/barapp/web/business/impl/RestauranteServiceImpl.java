@@ -1,12 +1,15 @@
 package com.barapp.web.business.impl;
 
 import com.barapp.web.business.ImageContainer;
+import com.barapp.web.business.service.HorarioPorRestauranteService;
+import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.RestauranteEntity;
 import com.barapp.web.model.*;
 import com.barapp.web.model.enums.EstadoRestaurante;
+import com.barapp.web.model.enums.TipoComida;
 import com.barapp.web.utils.Tuple;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.storage.Blob;
@@ -25,6 +28,7 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> implements RestauranteService {
@@ -34,17 +38,19 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
-    private final HorarioPorRestauranteDao horarioPorRestauranteDao;
+    private final HorarioPorRestauranteService horarioPorRestauranteService;
+    private final ReservaService reservaService;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, HorarioPorRestauranteDao horarioPorRestauranteDao, StorageClient storageClient, ImageDao imageDao) {
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService, StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.configuradorHorarioDao = configuradorHorarioDao;
         this.detalleRestauranteDao = detalleRestauranteDao;
-        this.horarioPorRestauranteDao = horarioPorRestauranteDao;
+        this.horarioPorRestauranteService = horarioPorRestauranteService;
+        this.reservaService = reservaService;
         this.storageClient = storageClient;
         this.imageDao = imageDao;
   }
@@ -152,20 +158,23 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public Map<LocalDate, List<Horario>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio) {
-        Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteDao
+    public Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio) {
+        Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
             .getByCorreoRestaurante(correoRestaurante);
 
         if (horarioPorRestaurante.isEmpty()) {
             return new LinkedHashMap<>();
         }
 
+        Map<LocalDate, List<Reserva>> reservasPorDia = reservaService
+            .getReservasPendientesPorMes(horarioPorRestaurante.get().getIdRestaurante(), mesAnio);
+
         Collection<ConfiguradorHorario> configuradoresHorario = horarioPorRestaurante
             .get()
                 .getConfiguradores()
                 .values();
 
-        Map<LocalDate, List<Horario>> horarios = new LinkedHashMap<>();
+        Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horarios = new LinkedHashMap<>();
 
         LocalDate start = LocalDate.of(mesAnio.getYear(), mesAnio.getMonth(), 1);
         LocalDate end = start.plusMonths(1);
@@ -178,13 +187,66 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             for (ConfiguradorHorario ch : configuradoresHorario) {
                 if (ch.isPermitido(d)) {
                     List<Horario> horariosGenerados = ch.generarHorarios();
+
+                    // Busca la capacidad por comida. Si no tiene una especifica, se usa la general
+                    Map<TipoComida, Set<Mesa>> capacidadPorComida = ch.getCapacidadPorComida();
+                    for (TipoComida tipoComida : TipoComida.values()) {
+                        if (capacidadPorComida.get(tipoComida).isEmpty() && ch.tieneHorariosParaTipoComida(tipoComida)) {
+                            capacidadPorComida.put(tipoComida, horarioPorRestaurante.get().getMesas()
+                                    .stream()
+                                    .map(Mesa::new).collect(Collectors.toCollection(LinkedHashSet::new)));
+                        }
+                    }
+                    List<Reserva> reservas = reservasPorDia.getOrDefault(d, List.of());
+
+                    // Se calcula la capacidad disponible
+                    for (Reserva r : reservas) {
+                        TipoComida tipoComida = r.getHorario().getTipoComida();
+                        Optional<Mesa> mesaOcupadaOpt = capacidadPorComida.get(tipoComida)
+                                .stream()
+                                .sorted(Comparator.comparing(Mesa::getCantidadDePersonasPorMesa))
+                                .filter(m -> m.getCantidadDePersonasPorMesa() >= r.getCantidadPersonas())
+                                .findFirst();
+
+                        if (mesaOcupadaOpt.isEmpty() || mesaOcupadaOpt.get().getCantidadMesas() == 0) {
+                            throw new IllegalStateException("Las reservas son inconsistentes con las mesas disponibles");
+                        }
+
+                        Mesa mesa = mesaOcupadaOpt.get();
+                        mesa.setCantidadMesas(mesa.getCantidadMesas() - 1);
+                        if (mesa.getCantidadMesas() == 0) {
+                            capacidadPorComida.get(tipoComida).remove(mesa);
+                        }
+                    }
+
+                    // Se eliminan los horarios que ya pasaron si la fecha es de hoy
                     if (d.isEqual(LocalDate.now())) {
                         horariosGenerados = horariosGenerados
                                 .stream()
                                 .filter(h -> h.getHorario().isAfter(LocalTime.now()))
                                 .toList();
                     }
-                    horarios.put(d, horariosGenerados);
+                    Map<String, HorarioConCapacidadDisponible> horariosConCapacidad = new LinkedHashMap<>();
+                    for (Map.Entry<TipoComida, Set<Mesa>> entry : capacidadPorComida.entrySet()) {
+                        TipoComida tipoComida = entry.getKey();
+                        Set<Mesa> mesas = entry.getValue();
+
+                        HorarioConCapacidadDisponible horarioConCapacidad = HorarioConCapacidadDisponible.builder()
+                                .tipoComida(tipoComida)
+                                .horarios(horariosGenerados.stream()
+                                        .filter(hc -> hc.getTipoComida().equals(tipoComida))
+                                        .map(Horario::getHorario)
+                                        .toList())
+                                .mesas(new ArrayList<>(mesas))
+                                .build();
+                        if (!horarioConCapacidad.getHorarios().isEmpty() && !horarioConCapacidad.getMesas().isEmpty()) {
+                            horariosConCapacidad.put(tipoComida.toString(), horarioConCapacidad);
+                        }
+                    }
+
+                    if (!horariosConCapacidad.isEmpty())
+                        horarios.put(d, horariosConCapacidad);
+                    
                     break;
                 }
             }
@@ -195,7 +257,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     @Override
     public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio) {
-        Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteDao.getByCorreoRestaurante(correoRestaurante);
+        Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
+                .getByCorreoRestaurante(correoRestaurante);
         if (horarioPorRestaurante.isEmpty()) {
             return new LinkedHashMap<>();
         }
