@@ -1,14 +1,12 @@
 package com.barapp.web.model;
 
-import com.barapp.web.data.entities.ConfiguradorHorarioEntity;
+import com.barapp.web.model.enums.TipoComida;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -37,5 +35,48 @@ public class HorarioPorRestaurante extends BaseModel {
         return configuradores.values().stream()
                 .filter(c -> !(c instanceof ConfiguradorHorarioNoLaboral))
                 .toList();
+    }
+
+    public List<Reserva> filterReservasInvalidas(List<Reserva> reservas) {
+        List<Reserva> reservasInvalidas = new ArrayList<>();
+
+        Map<ConfiguradorHorario, Map<TipoComida, Set<Mesa>>> mesasPorConfigurador = new LinkedHashMap<>();
+        configuradores.values().forEach(ch -> {
+            mesasPorConfigurador.put(ch, new LinkedHashMap<>());
+            ch.getCapacidadPorComida()
+                    .forEach((key, value) -> mesasPorConfigurador.get(ch).put(key, value
+                            .stream()
+                            .map(Mesa::new).collect(Collectors.toSet())));
+        });
+
+        for (Reserva reserva : reservas) {
+            for (ConfiguradorHorario ch : configuradores.values()) {
+                if (ch.isPermitido(reserva.getFecha())) {
+                    if (!ch.generarHorarios().contains(reserva.getHorario())) {
+                        reservasInvalidas.add(reserva);
+                    } else {
+                        Optional<Mesa> mesaOpt = mesasPorConfigurador.get(ch).get(reserva.getTipoComida()).stream()
+                                .sorted(Comparator.comparing(Mesa::getCantidadDePersonasPorMesa))
+                                .filter(m ->
+                                        m.getCantidadDePersonasPorMesa() >= reserva.getCantidadPersonas()
+                                        && m.getCantidadDePersonasPorMesa() != 0)
+                                .findFirst();
+                        if (mesaOpt.isEmpty()) {
+                            reservasInvalidas.add(reserva);
+                        } else {
+                            mesaOpt.get().setCantidadMesas(mesaOpt.get().getCantidadMesas() - 1);
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return reservasInvalidas;
+    }
+
+    public boolean hayReservasInvalidadas(List<Reserva> reservas) {
+        return true;
     }
 }

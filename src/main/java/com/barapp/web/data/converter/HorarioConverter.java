@@ -11,7 +11,6 @@ public class HorarioConverter {
 
     public static HorarioEntity toEntity(Horario dto) {
         HorarioEntity entity = HorarioEntity.builder()
-                                            .idHorario(dto.getId())
                                             .hora(dto.getHorario().toString())
                                             .tipoComida(dto.getTipoComida().toString())
                                             .build();
@@ -24,8 +23,6 @@ public class HorarioConverter {
                                  .horario(LocalTime.parse(entity.getHora()))
                                  .tipoComida(TipoComida.valueOf(entity.getTipoComida()))
                                  .build();
-
-        horario.setId(entity.getIdHorario());
         return horario;
     }
 

@@ -27,7 +27,7 @@ public interface RestauranteService extends BaseService<Restaurante> {
 
     String saveConFotos(Restaurante restaurante, ImageContainer logo, ImageContainer portada);
 
-    Map<LocalDate, List<Horario>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio);
+    Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio);
 
     Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio);
 

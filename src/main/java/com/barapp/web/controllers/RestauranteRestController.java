@@ -1,10 +1,7 @@
 package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.DetalleRestaurante;
-import com.barapp.web.model.Horario;
-import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.RestauranteUsuario;
+import com.barapp.web.model.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -57,11 +54,11 @@ public class RestauranteRestController extends BaseController<Restaurante> {
   }
 
   @GetMapping("/{correo}/horarios")
-  public ResponseEntity<Map<LocalDate, List<Horario>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio) {
+  public ResponseEntity<Map<LocalDate, Map<String, HorarioConCapacidadDisponible>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio) {
     try {
       return new ResponseEntity<>(this.restauranteService.horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
     } catch (Exception e) {
-      System.out.println(e);
+      e.printStackTrace();
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

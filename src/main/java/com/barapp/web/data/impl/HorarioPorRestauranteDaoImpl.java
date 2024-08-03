@@ -11,7 +11,10 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
 import org.springframework.stereotype.Repository;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HorarioPorRestauranteDaoImpl extends BaseDaoImpl<HorarioPorRestaurante, HorarioPorRestauranteEntity> implements HorarioPorRestauranteDao {
@@ -36,7 +39,9 @@ public class HorarioPorRestauranteDaoImpl extends BaseDaoImpl<HorarioPorRestaura
     @Override
     public Optional<HorarioPorRestaurante> getByCorreoRestaurante(String correo) {
         try {
-            return getFiltered(Filter.equalTo("correo", correo)).stream().findFirst();
+            return getFiltered(Filter.equalTo("correo", correo))
+                    .stream()
+                    .findFirst();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -10,6 +10,7 @@ import com.barapp.web.utils.FormatUtils;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,6 +33,8 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
             builder.fecha(noLaboral.getFecha().format(FormatUtils.persistenceDateFormatter()));
         }
 
+        builder.mesas(dto.getMesas());
+
         return builder.build();
     }
 
@@ -43,15 +46,18 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
             dto = ConfiguradorHorarioSemanal.builder()
                     .daysOfWeek(entity.getDaysOfWeek().stream().map(DayOfWeek::valueOf).collect(Collectors.toSet()))
                     .horarios(toHorariosDto(entity.getHorarios()))
+                    .mesas(entity.getMesas())
                     .build();
         } else if (entity.getTipo() == TipoConfigurador.DIA_ESPECIFICO.getOrden()) {
             dto = ConfiguradorHorarioDiaEspecifico.builder()
                     .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.persistenceDateFormatter()))
                     .horarios(toHorariosDto(entity.getHorarios()))
+                    .mesas(entity.getMesas())
                     .build();
         } else if (entity.getTipo() == TipoConfigurador.NO_LABORAL.getOrden()) {
             dto = ConfiguradorHorarioNoLaboral.builder()
                     .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.persistenceDateFormatter()))
+                    .mesas(entity.getMesas())
                     .build();
         } else {
             throw new IllegalArgumentException("La entidad asociada no tiene un tipo asignado soportado");
@@ -79,6 +85,7 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                                 .stream()
                                 .map(horario -> horario.format(FormatUtils.timeFormatter()))
                                 .collect(Collectors.toList()))
+                        .mesas(intervaloTiempo.getMesas() != null ? intervaloTiempo.getMesas() : new ArrayList<>())
                         .build()
         )));
 
@@ -98,6 +105,7 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                                 .stream()
                                 .map(horario -> LocalTime.parse(horario, FormatUtils.timeFormatter()))
                                 .collect(Collectors.toList()))
+                        .mesas(intervaloTiempo.getMesas() != null ? intervaloTiempo.getMesas() : new ArrayList<>())
                         .build()
         ));
 

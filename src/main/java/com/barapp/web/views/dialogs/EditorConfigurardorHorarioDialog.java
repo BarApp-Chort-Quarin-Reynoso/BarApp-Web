@@ -1,10 +1,8 @@
 package com.barapp.web.views.dialogs;
 
-import com.barapp.web.model.ConfiguradorHorario;
-import com.barapp.web.model.ConfiguradorHorarioDiaEspecifico;
-import com.barapp.web.model.ConfiguradorHorarioSemanal;
-import com.barapp.web.model.IntervaloTiempo;
+import com.barapp.web.model.*;
 import com.barapp.web.model.enums.TipoComida;
+import com.barapp.web.views.components.CapacidadField;
 import com.barapp.web.views.components.IntervaloTiempoSelector;
 import com.barapp.web.views.utils.events.CrudEvent;
 import com.barapp.web.views.utils.validation.ConfiguradorHorarioDiaEspecificoValidator;
@@ -36,7 +34,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,12 +60,13 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
 
     final Binder<ConfiguradorHorario> binder = new Binder<>();
     final ConfiguradorHorario bean;
-    final Collection<ConfiguradorHorario> horariosExistentes;
+    final List<ConfiguradorHorario> horariosExistentes;
     ConfiguradorHorarioValidator validator;
 
     public EditorConfigurardorHorarioDialog(
             ConfiguradorHorario configuradorHorario,
-            Collection<ConfiguradorHorario> horariosExistentes
+            List<ConfiguradorHorario> horariosExistentes,
+            List<Mesa> capacidadPorDefecto
     ) {
         bean = configuradorHorario;
         this.horariosExistentes = horariosExistentes;
@@ -79,10 +77,10 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         infotext = new Paragraph();
         details = new Details();
 
-        fieldDesayuno = new IntervaloTiempoSelector(TipoComida.DESAYUNO);
-        fieldAlmuerzo = new IntervaloTiempoSelector(TipoComida.ALMUERZO);
-        fieldMerienda = new IntervaloTiempoSelector(TipoComida.MERIENDA);
-        fieldCena = new IntervaloTiempoSelector(TipoComida.CENA);
+        fieldDesayuno = new IntervaloTiempoSelector(capacidadPorDefecto);
+        fieldAlmuerzo = new IntervaloTiempoSelector(capacidadPorDefecto);
+        fieldMerienda = new IntervaloTiempoSelector(capacidadPorDefecto);
+        fieldCena = new IntervaloTiempoSelector(capacidadPorDefecto);
         dayOfWeekSelector = new DayOfWeekSelector();
         datePicker = new DatePicker();
         cancelarButton = new Button(getTranslation("commons.cancel"));
@@ -106,7 +104,7 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
         HorizontalLayout daysSelectorLayout = new HorizontalLayout();
         daysSelectorLayout.setWidthFull();
         daysSelectorLayout.setPadding(false);
-        daysSelectorLayout.getStyle().setPaddingBottom("var(--lumo-space-m");
+        daysSelectorLayout.getStyle().setPaddingBottom("var(--lumo-space-m)");
         daysSelectorLayout.getStyle().setFlexWrap(Style.FlexWrap.WRAP);
         daysSelectorLayout.getStyle().setAlignItems(Style.AlignItems.END);
 

@@ -16,9 +16,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EditorCapacidadDialog extends Dialog {
 
@@ -30,25 +28,26 @@ public class EditorCapacidadDialog extends Dialog {
         this.capacidadTotalEditable = capacidadTotalEditable;
 
         this.setWidth("700px");
-        this.setHeaderTitle(getTranslation("views.mishorarios.gestionarcapacidadpordefecto"));
+        this.setHeaderTitle(getTranslation("views.mishorarios.editarcapacidad"));
 
         Span errorSpan = new Span(getTranslation("error.mesasrepetidas"));
         errorSpan.addClassNames(LumoUtility.TextColor.ERROR, LumoUtility.FontSize.XSMALL);
         errorSpan.getStyle().set("visibility", "hidden");
 
-        Button guardarDialog = new Button(getTranslation("commons.save"));
-        guardarDialog.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        guardarDialog.addClickListener(guardarEvent -> {
-            if (validarCapacidadTotal(errorSpan, guardarDialog)) {
-                fireEvent(new SaveEvent(this, false, new HashSet<>(capacidadTotalEditable)));
+        Button guardarButton = new Button(getTranslation("commons.save"));
+        guardarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        guardarButton.addClickListener(guardarEvent -> {
+            if (validarCapacidadTotal(errorSpan, guardarButton)) {
+                capacidadTotalEditable.sort(Comparator.comparing(Mesa::getCantidadDePersonasPorMesa));
+                fireEvent(new SaveEvent(this, false, new LinkedHashSet<>(capacidadTotalEditable)));
                 this.close();
             }
         });
         Button cancelarDialog = new Button(getTranslation("commons.cancel"), e -> this.close());
         cancelarDialog.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        this.getFooter().add(cancelarDialog, guardarDialog);
+        this.getFooter().add(cancelarDialog, guardarButton);
 
-        this.add(createDialogLayout(errorSpan, guardarDialog), errorSpan);
+        this.add(createDialogLayout(errorSpan, guardarButton), errorSpan);
     }
 
     public Registration addSaveListener(ComponentEventListener<SaveEvent> listener) {
@@ -62,7 +61,7 @@ public class EditorCapacidadDialog extends Dialog {
         Grid<Mesa> capacidadGrid = new Grid<>();
         capacidadGrid.addClassName("capacidad-grid");
 
-        Button agregarMesaButton = new Button(getTranslation("views.editorcapacidad.agregarmesa"));
+        Button agregarMesaButton = new Button(getTranslation("comp.editorcapacidad.agregarmesa"));
         agregarMesaButton.setClassName("mi-bar-view-gestionar-capacidad-dialog__button");
         agregarMesaButton.addClickListener(event -> {
             capacidadTotalEditable.add(new Mesa());
@@ -86,7 +85,7 @@ public class EditorCapacidadDialog extends Dialog {
                     });
                     return integerField;
                 })
-                .setHeader(getTranslation("views.editorcapacidad.cantidaddemesas"))
+                .setHeader(getTranslation("comp.editorcapacidad.cantidaddemesas"))
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
 
@@ -106,7 +105,7 @@ public class EditorCapacidadDialog extends Dialog {
                     });
                     return integerField;
                 })
-                .setHeader(getTranslation("views.editorcapacidad.cantidadpersonaspormesa"))
+                .setHeader(getTranslation("comp.editorcapacidad.cantidadpersonaspormesa"))
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
 
@@ -151,7 +150,7 @@ public class EditorCapacidadDialog extends Dialog {
     }
 
     private void actualizarFooter() {
-        Div total = new Div(getTranslation("views.editorcapacidad.total", capacidadTotalEditable.stream()
+        Div total = new Div(getTranslation("comp.editorcapacidad.total", capacidadTotalEditable.stream()
                 .map(mesa -> mesa.getCantidadMesas() * mesa.getCantidadDePersonasPorMesa())
                 .reduce(0, Integer::sum)));
         total.addClassNames(LumoUtility.TextAlignment.RIGHT, "vaadin-like-label");
