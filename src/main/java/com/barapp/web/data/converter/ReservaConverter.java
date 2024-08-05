@@ -29,7 +29,7 @@ public class ReservaConverter implements BaseConverter<Reserva, ReservaEntity> {
           .puntuacion(dto.getRestaurante().getPuntuacion())
           .numero(dto.getRestaurante().getUbicacion().getNumero())
           .calle(dto.getRestaurante().getUbicacion().getCalle())
-          .tipoComida(dto.getHorario().getTipoComida().toString())
+          .tipoComida(dto.getTipoComida().toString())
           .idOpinion(dto.getIdOpinion())
           .build();
     }
@@ -61,9 +61,10 @@ public class ReservaConverter implements BaseConverter<Reserva, ReservaEntity> {
               .build())
           .usuario(UsuarioApp
             .builder()
-              .idUsuario(entity.getIdUsuario())
+              .id(entity.getIdUsuario())
               .build())
           .idOpinion(entity.getIdOpinion())
+          .tipoComida(TipoComida.valueOf(entity.getTipoComida()))
           .build();
     }
 
