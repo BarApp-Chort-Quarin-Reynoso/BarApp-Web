@@ -17,7 +17,7 @@ public abstract class BaseController<D extends BaseModel> {
     try {
       return new ResponseEntity<>(getService().getAll(allParams.entrySet()), HttpStatus.OK);
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e);
       return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -30,6 +30,7 @@ public abstract class BaseController<D extends BaseModel> {
       }
       return new ResponseEntity<>(getService().save(dto, id), HttpStatus.OK);
     } catch (Exception e) {
+        System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -39,6 +40,7 @@ public abstract class BaseController<D extends BaseModel> {
     try {
       return new ResponseEntity<>(getService().get(id), HttpStatus.OK);
     } catch (Exception e) {
+        System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -46,8 +48,9 @@ public abstract class BaseController<D extends BaseModel> {
   @PutMapping("/{id}")
   public ResponseEntity<String> update(@RequestBody D dto, @PathVariable String id) {
     try {
-      return new ResponseEntity<>(getService().save(dto, id), HttpStatus.OK);// TODO: Ver si es save
+      return new ResponseEntity<>(getService().save(dto, id), HttpStatus.OK);
     } catch (Exception e) {
+        System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -58,6 +61,7 @@ public abstract class BaseController<D extends BaseModel> {
       getService().delete(id);
       return new ResponseEntity<>(id, HttpStatus.OK);
     } catch (Exception e) {
+        System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
