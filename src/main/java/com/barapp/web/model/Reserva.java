@@ -2,6 +2,8 @@ package com.barapp.web.model;
 
 import java.time.LocalDate;
 import com.barapp.web.model.enums.EstadoReserva;
+import com.barapp.web.model.enums.TipoComida;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,7 @@ public class Reserva extends BaseModel{
   UsuarioApp usuario;
   Restaurante restaurante;
   String idOpinion;
+  TipoComida tipoComida;
 
   @Override
   public String toString() {
