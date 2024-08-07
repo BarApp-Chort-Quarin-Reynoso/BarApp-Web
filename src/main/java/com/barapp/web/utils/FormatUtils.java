@@ -25,7 +25,11 @@ public class FormatUtils {
         return DateTimeFormatter.ofPattern("HH:mm");
     }
 
-    public static DateTimeFormatter dateFormatter() {
+    public static DateTimeFormatter visualizationDateFormatter() {
         return DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    }
+
+    public static DateTimeFormatter persistenceDateFormatter()  {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd");
     }
 }
