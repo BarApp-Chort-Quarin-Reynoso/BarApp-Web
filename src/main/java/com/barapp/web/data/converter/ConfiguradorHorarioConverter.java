@@ -25,11 +25,11 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
             builder.horarios(toHorariosEntity(dto.getHorarios()));
         } else if (dto instanceof ConfiguradorHorarioDiaEspecifico especifico) {
             builder.tipo(TipoConfigurador.DIA_ESPECIFICO.getOrden());
-            builder.fecha(especifico.getFecha().format(FormatUtils.dateFormatter()));
+            builder.fecha(especifico.getFecha().format(FormatUtils.persistenceDateFormatter()));
             builder.horarios(toHorariosEntity(dto.getHorarios()));
         } else if (dto instanceof ConfiguradorHorarioNoLaboral noLaboral) {
             builder.tipo(TipoConfigurador.NO_LABORAL.getOrden());
-            builder.fecha(noLaboral.getFecha().format(FormatUtils.dateFormatter()));
+            builder.fecha(noLaboral.getFecha().format(FormatUtils.persistenceDateFormatter()));
         }
 
         return builder.build();
@@ -46,12 +46,12 @@ public class ConfiguradorHorarioConverter implements BaseConverter<ConfiguradorH
                     .build();
         } else if (entity.getTipo() == TipoConfigurador.DIA_ESPECIFICO.getOrden()) {
             dto = ConfiguradorHorarioDiaEspecifico.builder()
-                    .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.dateFormatter()))
+                    .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.persistenceDateFormatter()))
                     .horarios(toHorariosDto(entity.getHorarios()))
                     .build();
         } else if (entity.getTipo() == TipoConfigurador.NO_LABORAL.getOrden()) {
             dto = ConfiguradorHorarioNoLaboral.builder()
-                    .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.dateFormatter()))
+                    .fecha(LocalDate.parse(entity.getFecha(), FormatUtils.persistenceDateFormatter()))
                     .build();
         } else {
             throw new IllegalArgumentException("La entidad asociada no tiene un tipo asignado soportado");

@@ -46,7 +46,7 @@ public class VisualizadorOpinion extends VerticalLayout {
     public void setValue(Opinion opinion) {
         avatar.setImage(opinion.getUsuario().getFoto());
         usuario.add(opinion.getUsuario().getNombre() + " " + opinion.getUsuario().getApellido());
-        fecha.setText(opinion.getFecha().format(FormatUtils.dateFormatter()));
+        fecha.setText(opinion.getFecha().format(FormatUtils.visualizationDateFormatter()));
         puntuacion.setValue(opinion.getNota());
         comentario.setText(opinion.getComentario());
     }
