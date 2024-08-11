@@ -35,6 +35,9 @@ public class SecurityConfig extends VaadinWebSecurity {
                     .permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/api/**"))
                     .permitAll());
+
+        http.csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")));
+
         super.configure(http);
         setLoginView(http, LoginView.class);
     }
