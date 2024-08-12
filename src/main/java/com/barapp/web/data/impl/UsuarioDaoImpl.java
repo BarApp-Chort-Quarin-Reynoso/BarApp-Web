@@ -9,6 +9,7 @@ import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,24 +26,18 @@ public class UsuarioDaoImpl extends BaseDaoImpl<UsuarioApp, UsuarioEntity> imple
     }
 
     @Override
-    public CollectionReference getCollection() {
-        return firestore.collection("usuarios");
-    }
+    public CollectionReference getCollection() { return firestore.collection("usuarios"); }
 
     @Override
-    public BaseConverter<UsuarioApp, UsuarioEntity> getConverter() {
-        return new UsuarioConverter();
-    }
+    public BaseConverter<UsuarioApp, UsuarioEntity> getConverter() { return new UsuarioConverter(); }
 
     @Override
-    public UsuarioApp buscarPorEmailEnFirebaseAuth(String email, String contrasenia) throws FirebaseAuthException {
-        firebaseAuth.getUserByEmail(contrasenia);
-        return null;
-    }
+    public String registrarUsuario(String mail, String contrasenia) throws FirebaseAuthException {
+        UserRecord.CreateRequest request = new UserRecord.CreateRequest()
+            .setEmail(mail)
+                .setPassword(contrasenia);
 
-    @Override
-    public String crearUsuarioEnFirebaseAuth() {
-        // TODO Auto-generated method stub
-        return null;
+        UserRecord userRecord = firebaseAuth.createUser(request);
+        return userRecord.getUid();
     }
 }
