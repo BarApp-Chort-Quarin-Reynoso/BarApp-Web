@@ -112,4 +112,14 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Optional<DetalleUsuario> updateBusquedasRecientes(String id, List<String> busquedasRecientes) {
+        try {
+            return Optional.ofNullable(detalleUsuarioDao.updateBusquedasRecientes(id, busquedasRecientes));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -14,4 +14,5 @@ public interface UsuarioService extends BaseService<UsuarioApp> {
     void updateFoto(String id, String foto);
     Optional<DetalleUsuario> getUserDetail(String id);
     Optional<DetalleUsuario> updateRestaurantesFavoritos(String id, List<String> restaurantes);
+    Optional<DetalleUsuario> updateBusquedasRecientes(String id, List<String> busquedasRecientes);
 }

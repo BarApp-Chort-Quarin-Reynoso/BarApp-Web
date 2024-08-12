@@ -6,4 +6,5 @@ import com.barapp.web.model.DetalleUsuario;
 
 public interface DetalleUsuarioDao extends BaseDao<DetalleUsuario, DetalleUsuarioEntity>{
   DetalleUsuario updateRestaurantesFavoritos(String id, List<String> restaurantes);
+  DetalleUsuario updateBusquedasRecientes(String id, List<String> busquedasRecientes);
 }
