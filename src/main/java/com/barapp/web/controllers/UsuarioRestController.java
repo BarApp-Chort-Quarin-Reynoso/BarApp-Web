@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,6 +48,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
         return new ResponseEntity<>(usuario.get(), HttpStatus.OK);
         // return new ResponseEntity<UsuarioApp>(this.usuarioService.getByCorreo(id), HttpStatus.OK);
       } catch (Exception e) {
+            System.out.println(e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
@@ -61,8 +63,19 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
 
         return new ResponseEntity<>(detalleUsuario.get(), HttpStatus.OK);
       } catch (Exception e) {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-      }
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/detalle/{id}")
+    public ResponseEntity<String> addUserDetail(@PathVariable String id, @RequestBody DetalleUsuario detalleUsuario) {
+        try {
+            return new ResponseEntity<>(this.usuarioService.addUserDetail(id, detalleUsuario), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{id}/favoritos")
@@ -71,6 +84,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
         List<RestauranteUsuario> restaurantes = this.usuarioService.getFavoritos(id);
         return new ResponseEntity<>(restaurantes, HttpStatus.OK);
       } catch (Exception e) {
+            System.out.println(e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }        
     }
@@ -86,11 +100,12 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
     }
 
     @PatchMapping("/{id}/foto")
-    public ResponseEntity<Void> updateFoto(@PathVariable String id, @RequestParam("foto") String foto) {
+    public ResponseEntity<Void> updateFoto(@PathVariable String id, @RequestBody String foto) {
       try {
         this.usuarioService.updateFoto(id, foto);
         return new ResponseEntity<>(HttpStatus.OK);
       } catch (Exception e) {
+            System.out.println(e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
@@ -106,6 +121,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
         return new ResponseEntity<>(detalleUsuario.get(), HttpStatus.OK);
         
       } catch (Exception e) {
+            System.out.println(e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
@@ -121,6 +137,16 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
 
             return new ResponseEntity<>(HttpStatus.OK);
 
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/registrar")
+    public ResponseEntity<String> registrarUsuario(@RequestParam String mail, @RequestParam String contrasenia) {
+        try {
+            return new ResponseEntity<>(this.usuarioService.registrarUsuario(mail, contrasenia), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -66,6 +66,16 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     }
 
     @Override
+    public String addUserDetail(String id, DetalleUsuario detalleUsuario) {
+        try {
+            return detalleUsuarioDao.save(detalleUsuario, id);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public List<RestauranteUsuario> getFavoritos(String userId) {
         try {
             UsuarioApp usuario = this.get(userId);
@@ -117,6 +127,16 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     public Optional<DetalleUsuario> updateBusquedasRecientes(String id, List<String> busquedasRecientes) {
         try {
             return Optional.ofNullable(detalleUsuarioDao.updateBusquedasRecientes(id, busquedasRecientes));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String registrarUsuario(String mail, String contrasenia) {
+        try {
+            return usuarioDao.registrarUsuario(mail, contrasenia);
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
