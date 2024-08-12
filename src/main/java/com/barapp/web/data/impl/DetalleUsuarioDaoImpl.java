@@ -44,4 +44,17 @@ public class DetalleUsuarioDaoImpl extends BaseDaoImpl<DetalleUsuario, DetalleUs
           return null;
         }
     }
+
+    @Override
+    public DetalleUsuario updateBusquedasRecientes(String id, List<String> busquedasRecientes) {
+        try {
+          DetalleUsuario detalleUsuario = get(id);
+          detalleUsuario.setBusquedasRecientes(busquedasRecientes);
+          save(detalleUsuario, id);
+          return detalleUsuario;
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+    }
 }

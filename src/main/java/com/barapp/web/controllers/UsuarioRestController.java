@@ -109,4 +109,21 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
+
+    @PatchMapping("/detalle/{id}/busquedas-recientes")
+    public ResponseEntity<Void> updateRecentSearches(@PathVariable String id, @RequestBody List<String> busquedasRecientes) {
+        try {
+            Optional<DetalleUsuario> detalleUsuario = this.usuarioService
+                .updateBusquedasRecientes(id, busquedasRecientes);
+            if (!detalleUsuario.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
