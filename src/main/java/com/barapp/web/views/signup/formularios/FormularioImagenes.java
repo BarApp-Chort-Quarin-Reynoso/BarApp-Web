@@ -3,6 +3,7 @@ package com.barapp.web.views.signup.formularios;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.utils.BarappUtils;
 import com.barapp.web.views.utils.events.SiguienteFormularioEvent;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
@@ -32,7 +33,7 @@ public class FormularioImagenes extends VerticalLayout {
     Paragraph seleccionaLogo;
     Upload logoUpload;
     MemoryBuffer logoBuffer;
-    Image logoImage;
+    Avatar logoImage;
     @Getter
     byte[] logoByteArray;
     @Getter
@@ -70,7 +71,7 @@ public class FormularioImagenes extends VerticalLayout {
 
         seleccionaLogo = new Paragraph(getTranslation("views.registro.selecionalogo"));
 
-        logoImage = new Image();
+        logoImage = new Avatar();
         logoImage.setId("registro-logo-avatar");
         logoBuffer = new MemoryBuffer();
         logoUpload = new Upload(logoBuffer);
@@ -87,7 +88,7 @@ public class FormularioImagenes extends VerticalLayout {
                 logoInputStream.reset();
 
                 StreamResource streamResource = new StreamResource(restaurante.getId(), () -> logoInputStream);
-                logoImage.setSrc(streamResource);
+                logoImage.setImageResource(streamResource);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -107,7 +108,7 @@ public class FormularioImagenes extends VerticalLayout {
             defaultLogoInputStream.reset();
 
             StreamResource avatarDefaultResource = new StreamResource("ic_barapp.png", () -> defaultLogoInputStream);
-            logoImage.setSrc(avatarDefaultResource);
+            logoImage.setImageResource(avatarDefaultResource);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -161,7 +162,7 @@ public class FormularioImagenes extends VerticalLayout {
         siguienteButton.addClickListener(e -> {
             this.removeFromParent();
             for (SiguienteFormularioEvent listener : this.siguienteFormularioListeners) {
-                restaurante.setLogo(logoImage.getSrc());
+                restaurante.setLogo(logoImage.getImage());
                 restaurante.setPortada(portadaImage.getSrc());
                 listener.onSiguienteFormularioEvent(restaurante);
             }
