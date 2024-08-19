@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.type.LatLng;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(value = "/api/restaurantes")
 @CrossOrigin("*")
 public class RestauranteRestController extends BaseController<Restaurante> {
+  final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private final RestauranteService restauranteService;
 
@@ -113,5 +117,24 @@ public class RestauranteRestController extends BaseController<Restaurante> {
           System.out.println(e);
           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
+  }
+
+  @GetMapping("/cercanos")
+  public ResponseEntity<List<Restaurante>> getRestaurantesEnArea(@RequestParam String neLat, @RequestParam String neLon, @RequestParam String swLat, @RequestParam String swLon) {
+    try {
+      logger.info("Busqueda area: ne: %s, %s sw: %s, %s".formatted(neLat, neLon, swLat, swLon));
+      LatLng northeast = LatLng.newBuilder()
+              .setLatitude(Double.parseDouble(neLat))
+              .setLongitude(Double.parseDouble(neLon))
+              .build();
+      LatLng southwest = LatLng.newBuilder()
+              .setLatitude(Double.parseDouble(swLat))
+              .setLongitude(Double.parseDouble(swLon))
+              .build();
+      return new ResponseEntity<>(this.restauranteService.getRestaurantesEnArea(northeast, southwest), HttpStatus.OK);
+    } catch (Exception e) {
+      logger.error(e.getMessage(), e);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

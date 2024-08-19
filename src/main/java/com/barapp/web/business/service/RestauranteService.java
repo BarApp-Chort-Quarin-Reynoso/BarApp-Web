@@ -3,6 +3,7 @@ package com.barapp.web.business.service;
 import com.barapp.web.business.ImageContainer;
 import com.barapp.web.model.*;
 import com.barapp.web.utils.Tuple;
+import com.google.type.LatLng;
 
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -42,4 +43,6 @@ public interface RestauranteService extends BaseService<Restaurante> {
     Void removeFavorito(String idRestauranteFavorito);
 
     List<Restaurante> getDestacados();
+
+    List<Restaurante> getRestaurantesEnArea(LatLng northeast, LatLng southwest);
 }

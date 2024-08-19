@@ -12,7 +12,10 @@ import com.barapp.web.model.UsuarioWeb;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteBatch;
+import com.google.type.LatLng;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RestauranteDaoImpl extends BaseDaoImpl<Restaurante, RestauranteEntity> implements RestauranteDao {
