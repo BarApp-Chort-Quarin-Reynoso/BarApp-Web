@@ -15,6 +15,7 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.firebase.cloud.StorageClient;
+import com.google.type.LatLng;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +54,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         this.reservaService = reservaService;
         this.storageClient = storageClient;
         this.imageDao = imageDao;
-  }
+    }
 
     @Override
     public BaseDao<Restaurante, RestauranteEntity> getDao() {return restauranteDao;}
@@ -173,17 +174,17 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio) {
         Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
-            .getByCorreoRestaurante(correoRestaurante);
+                .getByCorreoRestaurante(correoRestaurante);
 
         if (horarioPorRestaurante.isEmpty()) {
             return new LinkedHashMap<>();
         }
 
         Map<LocalDate, List<Reserva>> reservasPorDia = reservaService
-            .getReservasPendientesPorMes(horarioPorRestaurante.get().getIdRestaurante(), mesAnio);
+                .getReservasPendientesPorMes(horarioPorRestaurante.get().getIdRestaurante(), mesAnio);
 
         Collection<ConfiguradorHorario> configuradoresHorario = horarioPorRestaurante
-            .get()
+                .get()
                 .getConfiguradores()
                 .values();
 
@@ -204,7 +205,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                     // Busca la capacidad por comida. Si no tiene una especifica, se usa la general
                     Map<TipoComida, Set<Mesa>> capacidadPorComida = ch.getCapacidadPorComida();
                     for (TipoComida tipoComida : TipoComida.values()) {
-                        if (capacidadPorComida.get(tipoComida).isEmpty() && ch.tieneHorariosParaTipoComida(tipoComida)) {
+                        if (capacidadPorComida.get(tipoComida).isEmpty() && ch.tieneHorariosParaTipoComida(
+                                tipoComida)) {
                             capacidadPorComida.put(tipoComida, horarioPorRestaurante.get().getMesas()
                                     .stream()
                                     .map(Mesa::new).collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -222,7 +224,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                                 .findFirst();
 
                         if (mesaOcupadaOpt.isEmpty() || mesaOcupadaOpt.get().getCantidadMesas() == 0) {
-                            throw new IllegalStateException("Las reservas son inconsistentes con las mesas disponibles");
+                            throw new IllegalStateException(
+                                    "Las reservas son inconsistentes con las mesas disponibles");
                         }
 
                         Mesa mesa = mesaOcupadaOpt.get();
@@ -259,7 +262,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
                     if (!horariosConCapacidad.isEmpty())
                         horarios.put(d, horariosConCapacidad);
-                    
+
                     break;
                 }
             }
@@ -313,43 +316,47 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     @Override
     public RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante) {
-      try {
-        if (restauranteDao.get(restaurante.getIdRestaurante()) == null) {
-          throw new IllegalStateException("El restaurante con ID " + restaurante.getIdRestaurante() + " no existe.");
-        }
+        try {
+            if (restauranteDao.get(restaurante.getIdRestaurante()) == null) {
+                throw new IllegalStateException(
+                        "El restaurante con ID " + restaurante.getIdRestaurante() + " no existe.");
+            }
 
-        QueryParams queryParams = new QueryParams();
-        queryParams.addFilter(Filter.equalTo("idRestaurante", restaurante.getIdRestaurante()));
-        queryParams.addFilter(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
+            QueryParams queryParams = new QueryParams();
+            queryParams.addFilter(Filter.equalTo("idRestaurante", restaurante.getIdRestaurante()));
+            queryParams.addFilter(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
 
-        List<RestauranteUsuario> restaurantesVistosDelUsuario = restauranteVistoRecientementeDao
-        .getByParams(queryParams);
+            List<RestauranteUsuario> restaurantesVistosDelUsuario = restauranteVistoRecientementeDao
+                    .getByParams(queryParams);
 
-        if (!restaurantesVistosDelUsuario.isEmpty()) {
-            return restaurantesVistosDelUsuario.get(0);
-        }
+            if (!restaurantesVistosDelUsuario.isEmpty()) {
+                return restaurantesVistosDelUsuario.get(0);
+            }
 
-        restauranteVistoRecientementeDao.save(restaurante, idRestaurante);
+            restauranteVistoRecientementeDao.save(restaurante, idRestaurante);
 
-        List<RestauranteUsuario> restaurantes = restauranteVistoRecientementeDao.getFiltered(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
-        // Ordena segun fechaGuardado para eliminar el mas antiguo (si hay mas de 5)
-        restaurantes.sort(Comparator.comparing(r -> {
-          try {
-            String fechaGuardado = ((RestauranteUsuario) r).getFechaGuardado();
-            long seconds = Long.parseLong(fechaGuardado.substring(fechaGuardado.indexOf('=') + 1, fechaGuardado.indexOf(',')));
-            int nanos = Integer.parseInt(fechaGuardado.substring(fechaGuardado.lastIndexOf('=') + 1, fechaGuardado.indexOf(')')));
+            List<RestauranteUsuario> restaurantes = restauranteVistoRecientementeDao.getFiltered(
+                    Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
+            // Ordena segun fechaGuardado para eliminar el mas antiguo (si hay mas de 5)
+            restaurantes.sort(Comparator.comparing(r -> {
+                try {
+                    String fechaGuardado = ((RestauranteUsuario) r).getFechaGuardado();
+                    long seconds = Long.parseLong(
+                            fechaGuardado.substring(fechaGuardado.indexOf('=') + 1, fechaGuardado.indexOf(',')));
+                    int nanos = Integer.parseInt(
+                            fechaGuardado.substring(fechaGuardado.lastIndexOf('=') + 1, fechaGuardado.indexOf(')')));
 
-            return LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds, nanos), ZoneId.systemDefault());
-          } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-            System.err.println("Error al parsear fechaGuardado: " + e.getMessage());
-            return LocalDateTime.MIN;
-          }
-        }));
-        while (restaurantes.size() > 5) {
-          restauranteVistoRecientementeDao.delete(restaurantes.get(0).getId());
-          restaurantes.remove(0);
-        }
-          return restaurante;
+                    return LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds, nanos), ZoneId.systemDefault());
+                } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+                    System.err.println("Error al parsear fechaGuardado: " + e.getMessage());
+                    return LocalDateTime.MIN;
+                }
+            }));
+            while (restaurantes.size() > 5) {
+                restauranteVistoRecientementeDao.delete(restaurantes.get(0).getId());
+                restaurantes.remove(0);
+            }
+            return restaurante;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -357,38 +364,55 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
     @Override
     public RestauranteUsuario addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito) {
-      try {
-        if (restauranteDao.get(restauranteFavorito.getIdRestaurante()) == null) {
-          throw new IllegalStateException("El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " no existe.");
+        try {
+            if (restauranteDao.get(restauranteFavorito.getIdRestaurante()) == null) {
+                throw new IllegalStateException(
+                        "El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " no existe.");
+            }
+            QueryParams queryParams = new QueryParams();
+            queryParams.addFilter(Filter.equalTo("idRestaurante", restauranteFavorito.getIdRestaurante()));
+            queryParams.addFilter(Filter.equalTo("idUsuario", restauranteFavorito.getIdUsuario()));
+
+            if (!restauranteFavoritoDao.getByParams(queryParams).isEmpty()) {
+                throw new IllegalStateException(
+                        "El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " ya existe para el usuario con ID " + restauranteFavorito.getIdUsuario() + ".");
+            }
+
+            restauranteFavoritoDao.save(restauranteFavorito, idRestaurante);
+
+            return restauranteFavorito;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        QueryParams queryParams = new QueryParams();
-        queryParams.addFilter(Filter.equalTo("idRestaurante", restauranteFavorito.getIdRestaurante()));
-        queryParams.addFilter(Filter.equalTo("idUsuario", restauranteFavorito.getIdUsuario()));
+    }
 
-        if (!restauranteFavoritoDao.getByParams(queryParams).isEmpty()) {
-          throw new IllegalStateException("El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " ya existe para el usuario con ID " + restauranteFavorito.getIdUsuario() + ".");
+    @Override
+    public Void removeFavorito(String idRestauranteFavorito) {
+        try {
+            if (restauranteFavoritoDao.get(idRestauranteFavorito) == null) {
+                throw new IllegalStateException("El restaurante con ID " + idRestauranteFavorito + " no existe.");
+            }
+            restauranteFavoritoDao.delete(idRestauranteFavorito);
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        restauranteFavoritoDao.save(restauranteFavorito, idRestaurante);
-
-        return restauranteFavorito;
-      } catch (Exception e) {
-          throw new RuntimeException(e);
-      }
-  }
-
-  @Override
-  public Void removeFavorito(String idRestauranteFavorito) {
-      try {
-        if (restauranteFavoritoDao.get(idRestauranteFavorito) == null) {
-          throw new IllegalStateException("El restaurante con ID " + idRestauranteFavorito + " no existe.");
+    @Override
+    public List<Restaurante> getRestaurantesEnArea(LatLng northeast, LatLng southwest) {
+        try {
+            QueryParams queryParams = new QueryParams();
+            queryParams.addFilter(Filter.equalTo("estado", EstadoRestaurante.HABILITADO.toString()));
+            queryParams.addFilter(Filter.greaterThan("latitud", southwest.getLatitude()));
+            queryParams.addFilter(Filter.lessThan("latitud", northeast.getLatitude()));
+            queryParams.addFilter(Filter.greaterThan("longitud", southwest.getLongitude()));
+            queryParams.addFilter(Filter.lessThan("longitud", northeast.getLongitude()));
+            return restauranteDao.getByParams(queryParams);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        restauranteFavoritoDao.delete(idRestauranteFavorito);
-        return null;
-      } catch (Exception e) {
-          throw new RuntimeException(e);
-      }
-  }
+    }
 
     @Override
     public List<Restaurante> getDestacados() {
