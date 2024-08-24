@@ -28,4 +28,5 @@ public class RestauranteUsuarioEntity extends BaseEntity {
     String idDetalleRestaurante;
     String idRestaurante;
     String fechaGuardado;
+    String estado;
 }

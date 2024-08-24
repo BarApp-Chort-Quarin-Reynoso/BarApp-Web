@@ -1,5 +1,7 @@
 package com.barapp.web.model;
 
+import com.barapp.web.model.enums.EstadoRestaurante;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -43,4 +45,5 @@ public class RestauranteUsuario extends BaseModel {
 
     @Builder.Default
     DetalleRestaurante detalleRestaurante = new DetalleRestaurante();
+    EstadoRestaurante estado;
 }
