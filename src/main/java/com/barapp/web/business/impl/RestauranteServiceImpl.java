@@ -59,6 +59,19 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public BaseDao<Restaurante, RestauranteEntity> getDao() {return restauranteDao;}
 
     @Override
+    public List<Restaurante> getAvailableOrPausedRestaurants() {
+        try {
+            return restauranteDao.getFiltered(Filter.or(
+                    Filter.equalTo("estado", EstadoRestaurante.HABILITADO),
+                    Filter.equalTo("estado", EstadoRestaurante.PAUSADO)
+            ));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public String saveLogo(InputStream inputStream, String id, String contentType) {
         return this.saveImage("images/logos/%s.%s", inputStream, id, contentType);
     }
@@ -376,4 +389,14 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
           throw new RuntimeException(e);
       }
   }
+
+    @Override
+    public List<Restaurante> getDestacados() {
+        try {
+            return restauranteDao.getFiltered(Filter.greaterThanOrEqualTo("puntuacion", 4.0));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
 }

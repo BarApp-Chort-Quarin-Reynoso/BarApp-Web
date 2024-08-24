@@ -38,6 +38,17 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     return restauranteService;
   }
 
+  @Override
+  @GetMapping()
+  public ResponseEntity<List<Restaurante>> getAll(@RequestParam Map<String,String> allParams) {
+      try {
+          return new ResponseEntity<>(this.restauranteService.getAvailableOrPausedRestaurants(), HttpStatus.OK);
+      } catch (Exception e) {
+          System.out.println(e);
+          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+  }
+
   @GetMapping("/detalle/{id}")
   public ResponseEntity<DetalleRestaurante> getRestaurantDetail(@PathVariable String id) {
     try {
@@ -58,7 +69,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     try {
       return new ResponseEntity<>(this.restauranteService.horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -92,5 +103,15 @@ public class RestauranteRestController extends BaseController<Restaurante> {
       System.out.println(e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @GetMapping("/destacados")
+  public ResponseEntity<List<Restaurante>> getDestacados() {
+      try {
+          return new ResponseEntity<>(this.restauranteService.getDestacados(), HttpStatus.OK);
+      } catch (Exception e) {
+          System.out.println(e);
+          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
   }
 }
