@@ -13,6 +13,8 @@ import java.util.Optional;
 
 public interface RestauranteService extends BaseService<Restaurante> {
 
+    List<Restaurante> getAvailableOrPausedRestaurants();
+
     String saveLogo(InputStream inputStream, String id, String contentType);
 
     String savePortada(InputStream inputStream, String id, String contentType);
@@ -38,4 +40,6 @@ public interface RestauranteService extends BaseService<Restaurante> {
     RestauranteUsuario addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito);
 
     Void removeFavorito(String idRestauranteFavorito);
+
+    List<Restaurante> getDestacados();
 }
