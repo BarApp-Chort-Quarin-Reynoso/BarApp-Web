@@ -13,6 +13,7 @@ import com.barapp.web.data.converter.RestauranteUsuarioConverter;
 import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.RestauranteUsuario;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Filter;
@@ -41,7 +42,11 @@ public class RestauranteVistoRecientementeDaoImpl extends BaseDaoImpl<Restaurant
     @Override
     public List<RestauranteUsuario> getByUserId(String userId) {
         try {
-          List<RestauranteUsuario> vistosRecientemente = this.getFiltered(Filter.equalTo("idUsuario", userId));
+            List<RestauranteUsuario> vistosRecientemente = this
+                .getFiltered(Filter
+                    .and(Filter.equalTo("idUsuario", userId), Filter
+                        .or(Filter.equalTo("estado", EstadoRestaurante.HABILITADO), Filter
+                            .equalTo("estado", EstadoRestaurante.PAUSADO))));
 
           Pattern pattern = Pattern.compile("Timestamp\\(seconds=(\\d+), nanoseconds=(\\d+)\\)");
 

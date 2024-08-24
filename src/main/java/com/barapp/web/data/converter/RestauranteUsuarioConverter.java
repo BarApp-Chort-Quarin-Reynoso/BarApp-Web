@@ -3,6 +3,7 @@ package com.barapp.web.data.converter;
 import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.Ubicacion;
+import com.barapp.web.model.enums.EstadoRestaurante;
 
 public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsuario, RestauranteUsuarioEntity> {
 
@@ -13,6 +14,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
                 .idUsuario(dto.getIdUsuario())
                 .idRestaurante(dto.getIdRestaurante())
                 .nombre(dto.getNombre())
+                .estado(dto.getEstado().toString())
                 .correo(dto.getCorreo())
                 .puntuacion(dto.getPuntuacion())
                 .logo(dto.getLogo())
@@ -36,6 +38,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
                 .idUsuario(entity.getIdUsuario())
                 .idRestaurante(entity.getIdRestaurante())
                 .nombre(entity.getNombre())
+                .estado(entity.getEstado() != null ? EstadoRestaurante.valueOf(entity.getEstado()) : null)
                 .correo(entity.getCorreo())
                 .puntuacion(entity.getPuntuacion())
                 .logo(entity.getLogo())

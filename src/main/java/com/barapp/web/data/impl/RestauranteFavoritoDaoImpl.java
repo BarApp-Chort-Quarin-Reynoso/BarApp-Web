@@ -9,6 +9,7 @@ import com.barapp.web.data.converter.RestauranteUsuarioConverter;
 import com.barapp.web.data.dao.RestauranteFavoritoDao;
 import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.RestauranteUsuario;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Filter;
@@ -37,7 +38,11 @@ public class RestauranteFavoritoDaoImpl extends BaseDaoImpl<RestauranteUsuario, 
     @Override
     public List<RestauranteUsuario> getByUserId(String userId) {
         try {
-            return this.getFiltered(Filter.equalTo("idUsuario", userId));
+            return this
+                .getFiltered(Filter
+                    .and(Filter.equalTo("idUsuario", userId), Filter
+                        .or(Filter.equalTo("estado", EstadoRestaurante.HABILITADO), Filter
+                            .equalTo("estado", EstadoRestaurante.PAUSADO))));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
