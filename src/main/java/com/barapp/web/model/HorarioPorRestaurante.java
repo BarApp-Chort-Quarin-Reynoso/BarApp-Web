@@ -55,7 +55,7 @@ public class HorarioPorRestaurante extends BaseModel {
                     if (!ch.generarHorarios().contains(reserva.getHorario())) {
                         reservasInvalidas.add(reserva);
                     } else {
-                        Optional<Mesa> mesaOpt = mesasPorConfigurador.get(ch).get(reserva.getTipoComida()).stream()
+                        Optional<Mesa> mesaOpt = mesasPorConfigurador.get(ch).get(reserva.getHorario().getTipoComida()).stream()
                                 .sorted(Comparator.comparing(Mesa::getCantidadDePersonasPorMesa))
                                 .filter(m ->
                                         m.getCantidadDePersonasPorMesa() >= reserva.getCantidadPersonas()
