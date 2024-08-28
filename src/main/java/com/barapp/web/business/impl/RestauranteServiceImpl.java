@@ -39,17 +39,19 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
+    private final DetalleUsuarioDao detalleUsuarioDao;
     private final HorarioPorRestauranteService horarioPorRestauranteService;
     private final ReservaService reservaService;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService, StorageClient storageClient, ImageDao imageDao) {
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, DetalleUsuarioDao detalleUsuarioDao, HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService, StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.configuradorHorarioDao = configuradorHorarioDao;
         this.detalleRestauranteDao = detalleRestauranteDao;
+        this.detalleUsuarioDao = detalleUsuarioDao;
         this.horarioPorRestauranteService = horarioPorRestauranteService;
         this.reservaService = reservaService;
         this.storageClient = storageClient;
@@ -57,15 +59,17 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public BaseDao<Restaurante, RestauranteEntity> getDao() {return restauranteDao;}
+    public BaseDao<Restaurante, RestauranteEntity> getDao() { return restauranteDao; }
 
     @Override
     public List<Restaurante> getAvailableOrPausedRestaurants() {
         try {
-            return restauranteDao.getFiltered(Filter.or(
-                    Filter.equalTo("estado", EstadoRestaurante.HABILITADO),
-                    Filter.equalTo("estado", EstadoRestaurante.PAUSADO)
-            ));
+            return restauranteDao
+                .getFiltered(Filter
+                    .or(
+                            Filter.equalTo("estado", EstadoRestaurante.HABILITADO),
+                            Filter.equalTo("estado", EstadoRestaurante.PAUSADO)
+                    ));
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
@@ -85,7 +89,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private String saveImage(String dest, InputStream inputStream, String id, String contentType) {
         String blobString = String.format(dest, id, contentType.substring(contentType.indexOf("/") + 1));
         Blob blob = storageClient
-                .bucket()
+            .bucket()
                 .create(blobString, inputStream, contentType, Bucket.BlobWriteOption.userProject("barapp-b1bc0"));
         URL signedUrl = blob.signUrl(32850, TimeUnit.DAYS);
 
@@ -95,13 +99,16 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada) {
         try {
-            String logoUrl = imageDao.saveImage(
-                    "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
-            String portadaUrl = imageDao.saveImage(
-                    "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
+            String logoUrl = imageDao
+                .saveImage(
+                        "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
+            String portadaUrl = imageDao
+                .saveImage(
+                        "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
             restaurante.setLogo(logoUrl);
             restaurante.setPortada(portadaUrl);
-            HorarioPorRestaurante horarioPorRestaurante = HorarioPorRestaurante.builder()
+            HorarioPorRestaurante horarioPorRestaurante = HorarioPorRestaurante
+                .builder()
                     .idRestaurante(restaurante.getId())
                     .correo(restaurante.getCorreo())
                     .build();
@@ -116,10 +123,12 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public String saveConFotos(Restaurante restaurante, ImageContainer logo, ImageContainer portada) {
         try {
-            String logoUrl = imageDao.saveImage(
-                    "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
-            String portadaUrl = imageDao.saveImage(
-                    "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
+            String logoUrl = imageDao
+                .saveImage(
+                        "images/logos/%s.%s", logo.getInputStream(), logo.getId(), logo.getContentType());
+            String portadaUrl = imageDao
+                .saveImage(
+                        "images/fotos/%s.%s", portada.getInputStream(), portada.getId(), portada.getContentType());
             restaurante.setLogo(logoUrl);
             restaurante.setPortada(portadaUrl);
 
@@ -135,7 +144,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public void rechazarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))
             throw new RuntimeException("El restaurante %s ya ha pasado la etapa de verificación"
-                    .formatted(restaurante.getNombre()));
+                .formatted(restaurante.getNombre()));
 
         try {
             restaurante.setEstado(EstadoRestaurante.RECHAZADO);
@@ -149,7 +158,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public void aceptarRestaurante(Restaurante restaurante) {
         if (!restaurante.getEstado().equals(EstadoRestaurante.ESPERANDO_HABILITACION))
             throw new RuntimeException("El restaurante %s ya ha pasado la etapa de verificación"
-                    .formatted(restaurante.getNombre()));
+                .formatted(restaurante.getNombre()));
 
         try {
             restaurante.setEstado(EstadoRestaurante.HABILITADO);
@@ -174,17 +183,17 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio) {
         Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
-                .getByCorreoRestaurante(correoRestaurante);
+            .getByCorreoRestaurante(correoRestaurante);
 
         if (horarioPorRestaurante.isEmpty()) {
             return new LinkedHashMap<>();
         }
 
         Map<LocalDate, List<Reserva>> reservasPorDia = reservaService
-                .getReservasPendientesPorMes(horarioPorRestaurante.get().getIdRestaurante(), mesAnio);
+            .getReservasPendientesPorMes(horarioPorRestaurante.get().getIdRestaurante(), mesAnio);
 
         Collection<ConfiguradorHorario> configuradoresHorario = horarioPorRestaurante
-                .get()
+            .get()
                 .getConfiguradores()
                 .values();
 
@@ -205,11 +214,16 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                     // Busca la capacidad por comida. Si no tiene una especifica, se usa la general
                     Map<TipoComida, Set<Mesa>> capacidadPorComida = ch.getCapacidadPorComida();
                     for (TipoComida tipoComida : TipoComida.values()) {
-                        if (capacidadPorComida.get(tipoComida).isEmpty() && ch.tieneHorariosParaTipoComida(
-                                tipoComida)) {
-                            capacidadPorComida.put(tipoComida, horarioPorRestaurante.get().getMesas()
-                                    .stream()
-                                    .map(Mesa::new).collect(Collectors.toCollection(LinkedHashSet::new)));
+                        if (capacidadPorComida.get(tipoComida).isEmpty() && ch
+                            .tieneHorariosParaTipoComida(
+                                    tipoComida)) {
+                            capacidadPorComida
+                                .put(tipoComida, horarioPorRestaurante
+                                    .get()
+                                        .getMesas()
+                                        .stream()
+                                        .map(Mesa::new)
+                                        .collect(Collectors.toCollection(LinkedHashSet::new)));
                         }
                     }
                     List<Reserva> reservas = reservasPorDia.getOrDefault(d, List.of());
@@ -217,7 +231,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                     // Se calcula la capacidad disponible
                     for (Reserva r : reservas) {
                         TipoComida tipoComida = r.getHorario().getTipoComida();
-                        Optional<Mesa> mesaOcupadaOpt = capacidadPorComida.get(tipoComida)
+                        Optional<Mesa> mesaOcupadaOpt = capacidadPorComida
+                            .get(tipoComida)
                                 .stream()
                                 .sorted(Comparator.comparing(Mesa::getCantidadDePersonasPorMesa))
                                 .filter(m -> m.getCantidadDePersonasPorMesa() >= r.getCantidadPersonas())
@@ -238,7 +253,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                     // Se eliminan los horarios que ya pasaron si la fecha es de hoy
                     if (d.isEqual(LocalDate.now())) {
                         horariosGenerados = horariosGenerados
-                                .stream()
+                            .stream()
                                 .filter(h -> h.getHorario().isAfter(LocalTime.now()))
                                 .toList();
                     }
@@ -247,9 +262,11 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                         TipoComida tipoComida = entry.getKey();
                         Set<Mesa> mesas = entry.getValue();
 
-                        HorarioConCapacidadDisponible horarioConCapacidad = HorarioConCapacidadDisponible.builder()
+                        HorarioConCapacidadDisponible horarioConCapacidad = HorarioConCapacidadDisponible
+                            .builder()
                                 .tipoComida(tipoComida)
-                                .horarios(horariosGenerados.stream()
+                                .horarios(horariosGenerados
+                                    .stream()
                                         .filter(hc -> hc.getTipoComida().equals(tipoComida))
                                         .map(Horario::getHorario)
                                         .toList())
@@ -274,13 +291,15 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     @Override
     public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio) {
         Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
-                .getByCorreoRestaurante(correoRestaurante);
+            .getByCorreoRestaurante(correoRestaurante);
         if (horarioPorRestaurante.isEmpty()) {
             return new LinkedHashMap<>();
         }
 
-        Collection<ConfiguradorHorario> configuradoresHorario
-                = horarioPorRestaurante.get().getConfiguradores().values();
+        Collection<ConfiguradorHorario> configuradoresHorario = horarioPorRestaurante
+            .get()
+                .getConfiguradores()
+                .values();
 
         Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horarios = new LinkedHashMap<>();
 
@@ -327,7 +346,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             queryParams.addFilter(Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
 
             List<RestauranteUsuario> restaurantesVistosDelUsuario = restauranteVistoRecientementeDao
-                    .getByParams(queryParams);
+                .getByParams(queryParams);
 
             if (!restaurantesVistosDelUsuario.isEmpty()) {
                 return restaurantesVistosDelUsuario.get(0);
@@ -335,16 +354,20 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
             restauranteVistoRecientementeDao.save(restaurante, idRestaurante);
 
-            List<RestauranteUsuario> restaurantes = restauranteVistoRecientementeDao.getFiltered(
-                    Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
+            List<RestauranteUsuario> restaurantes = restauranteVistoRecientementeDao
+                .getFiltered(
+                        Filter.equalTo("idUsuario", restaurante.getIdUsuario()));
             // Ordena segun fechaGuardado para eliminar el mas antiguo (si hay mas de 5)
             restaurantes.sort(Comparator.comparing(r -> {
                 try {
                     String fechaGuardado = ((RestauranteUsuario) r).getFechaGuardado();
-                    long seconds = Long.parseLong(
-                            fechaGuardado.substring(fechaGuardado.indexOf('=') + 1, fechaGuardado.indexOf(',')));
-                    int nanos = Integer.parseInt(
-                            fechaGuardado.substring(fechaGuardado.lastIndexOf('=') + 1, fechaGuardado.indexOf(')')));
+                    long seconds = Long
+                        .parseLong(
+                                fechaGuardado.substring(fechaGuardado.indexOf('=') + 1, fechaGuardado.indexOf(',')));
+                    int nanos = Integer
+                        .parseInt(
+                                fechaGuardado
+                                    .substring(fechaGuardado.lastIndexOf('=') + 1, fechaGuardado.indexOf(')')));
 
                     return LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds, nanos), ZoneId.systemDefault());
                 } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
@@ -363,7 +386,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public RestauranteUsuario addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito) {
+    public List<String> addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito, String idDetalleUsuario) {
         try {
             if (restauranteDao.get(restauranteFavorito.getIdRestaurante()) == null) {
                 throw new IllegalStateException(
@@ -375,25 +398,51 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
             if (!restauranteFavoritoDao.getByParams(queryParams).isEmpty()) {
                 throw new IllegalStateException(
-                        "El restaurante con ID " + restauranteFavorito.getIdRestaurante() + " ya existe para el usuario con ID " + restauranteFavorito.getIdUsuario() + ".");
+                        "El restaurante con ID " + restauranteFavorito
+                            .getIdRestaurante() + " ya existe para el usuario con ID " + restauranteFavorito
+                                .getIdUsuario() + ".");
             }
 
             restauranteFavoritoDao.save(restauranteFavorito, idRestaurante);
 
-            return restauranteFavorito;
+            // Siempre se guarda con el idRestaurante de la colección 'restaurantes'
+            return detalleUsuarioDao
+                .addFavorito(idDetalleUsuario, restauranteFavorito.getIdRestaurante());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Void removeFavorito(String idRestauranteFavorito) {
+    public List<String> removeFavorito(String idRestaurante, String idUsuario, String idDetalleUsuario) {
         try {
-            if (restauranteFavoritoDao.get(idRestauranteFavorito) == null) {
-                throw new IllegalStateException("El restaurante con ID " + idRestauranteFavorito + " no existe.");
+            QueryParams queryParamsForNormalRestaurants = new QueryParams();
+            queryParamsForNormalRestaurants.addFilter(Filter.equalTo("idRestaurante", idRestaurante));
+            queryParamsForNormalRestaurants.addFilter(Filter.equalTo("idUsuario", idUsuario));
+
+            List<RestauranteUsuario> restaurantesFavoritosUsuario = restauranteFavoritoDao
+                .getByParams(queryParamsForNormalRestaurants);
+
+            // Puede ser que la vista del usuario sea de un RestauranteUsuario en vez de un Restaurante común, por lo tanto hay que considerar ambos casos
+            if (restaurantesFavoritosUsuario.isEmpty()) {
+                QueryParams queryParamsForUserRestaurants = new QueryParams();
+                queryParamsForUserRestaurants.addFilter(Filter.equalTo("idUsuario", idUsuario));
+
+                restaurantesFavoritosUsuario = restauranteFavoritoDao
+                    .getByParams(queryParamsForUserRestaurants)
+                        .stream()
+                        .filter(r -> r.getId().equals(idRestaurante))
+                        .toList();
+
+                if (restaurantesFavoritosUsuario.isEmpty()) {
+                    throw new IllegalStateException(
+                            "El restaurante con ID " + idRestaurante + " no existe para el usuario con ID " + idUsuario + ".");
+                }
             }
-            restauranteFavoritoDao.delete(idRestauranteFavorito);
-            return null;
+
+            restauranteFavoritoDao.delete(restaurantesFavoritosUsuario.get(0).getId());
+            return detalleUsuarioDao
+                .removeFavorito(idDetalleUsuario, restaurantesFavoritosUsuario.get(0).getIdRestaurante());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

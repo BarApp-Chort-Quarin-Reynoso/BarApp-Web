@@ -29,112 +29,115 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(value = "/api/restaurantes")
 @CrossOrigin("*")
 public class RestauranteRestController extends BaseController<Restaurante> {
-  final Logger logger = LoggerFactory.getLogger(this.getClass());
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private final RestauranteService restauranteService;
+    private final RestauranteService restauranteService;
 
-  public RestauranteRestController(RestauranteService restauranteService) {
-    this.restauranteService = restauranteService;
-  }
-
-  @Override
-  public RestauranteService getService() {
-    return restauranteService;
-  }
-
-  @Override
-  @GetMapping()
-  public ResponseEntity<List<Restaurante>> getAll(@RequestParam Map<String,String> allParams) {
-      try {
-          return new ResponseEntity<>(this.restauranteService.getAvailableOrPausedRestaurants(), HttpStatus.OK);
-      } catch (Exception e) {
-          System.out.println(e);
-          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-  }
-
-  @GetMapping("/detalle/{id}")
-  public ResponseEntity<DetalleRestaurante> getRestaurantDetail(@PathVariable String id) {
-    try {
-      Optional<DetalleRestaurante> detalleRestaurante = this.restauranteService.getRestaurantDetail(id);
-      if (!detalleRestaurante.isPresent()) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-
-      return new ResponseEntity<>(detalleRestaurante.get(), HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public RestauranteRestController(RestauranteService restauranteService) {
+        this.restauranteService = restauranteService;
     }
-  }
 
-  @GetMapping("/{correo}/horarios")
-  public ResponseEntity<Map<LocalDate, Map<String, HorarioConCapacidadDisponible>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio) {
-    try {
-      return new ResponseEntity<>(this.restauranteService.horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @Override
+    public RestauranteService getService() { return restauranteService; }
+
+    @Override
+    @GetMapping()
+    public ResponseEntity<List<Restaurante>> getAll(@RequestParam Map<String, String> allParams) {
+        try {
+            return new ResponseEntity<>(this.restauranteService.getAvailableOrPausedRestaurants(), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 
-  @PostMapping("/{id}/favoritos")
-  public ResponseEntity<RestauranteUsuario> addFavorito(@PathVariable String id, @RequestBody RestauranteUsuario restaurante) {
-    try {
-      return new ResponseEntity<>(this.restauranteService.addFavorito(id, restaurante), HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @GetMapping("/detalle/{id}")
+    public ResponseEntity<DetalleRestaurante> getRestaurantDetail(@PathVariable String id) {
+        try {
+            Optional<DetalleRestaurante> detalleRestaurante = this.restauranteService.getRestaurantDetail(id);
+            if (!detalleRestaurante.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            return new ResponseEntity<>(detalleRestaurante.get(), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 
-  @DeleteMapping("/{id}/favoritos")
-  public ResponseEntity<RestauranteUsuario> removeFavorito(@PathVariable String id) {
-    try {
-      this.restauranteService.removeFavorito(id);
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @GetMapping("/{correo}/horarios")
+    public ResponseEntity<Map<LocalDate, Map<String, HorarioConCapacidadDisponible>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio) {
+        try {
+            return new ResponseEntity<>(this.restauranteService
+                .horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 
-  @PostMapping("/{id}/vistos-recientemente")
-  public ResponseEntity<RestauranteUsuario> addVistoRecientemente(@PathVariable String id, @RequestBody RestauranteUsuario restaurante) {
-    try {
-      return new ResponseEntity<>(this.restauranteService.addVistoRecientemente(id, restaurante), HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @PostMapping("/{id}/favoritos")
+    public ResponseEntity<List<String>> addFavorito(@PathVariable String id, @RequestParam String idDetalleUsuario, @RequestBody RestauranteUsuario restaurante) {
+        try {
+            return new ResponseEntity<>(this.restauranteService
+                .addFavorito(id, restaurante, idDetalleUsuario), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
 
-  @GetMapping("/destacados")
-  public ResponseEntity<List<Restaurante>> getDestacados() {
-      try {
-          return new ResponseEntity<>(this.restauranteService.getDestacados(), HttpStatus.OK);
-      } catch (Exception e) {
-          System.out.println(e);
-          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-  }
-
-  @GetMapping("/cercanos")
-  public ResponseEntity<List<Restaurante>> getRestaurantesEnArea(@RequestParam String neLat, @RequestParam String neLon, @RequestParam String swLat, @RequestParam String swLon) {
-    try {
-      logger.info("Busqueda area: ne: %s, %s sw: %s, %s".formatted(neLat, neLon, swLat, swLon));
-      LatLng northeast = LatLng.newBuilder()
-              .setLatitude(Double.parseDouble(neLat))
-              .setLongitude(Double.parseDouble(neLon))
-              .build();
-      LatLng southwest = LatLng.newBuilder()
-              .setLatitude(Double.parseDouble(swLat))
-              .setLongitude(Double.parseDouble(swLon))
-              .build();
-      return new ResponseEntity<>(this.restauranteService.getRestaurantesEnArea(northeast, southwest), HttpStatus.OK);
-    } catch (Exception e) {
-      logger.error(e.getMessage(), e);
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @DeleteMapping("/{id}/favoritos")
+    public ResponseEntity<List<String>> removeFavorito(@PathVariable String id, @RequestParam String idUsuario, @RequestParam String idDetalleUsuario) {
+        try {
+            return new ResponseEntity<>(this.restauranteService
+                .removeFavorito(id, idUsuario, idDetalleUsuario), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-  }
+
+    @PostMapping("/{id}/vistos-recientemente")
+    public ResponseEntity<RestauranteUsuario> addVistoRecientemente(@PathVariable String id, @RequestBody RestauranteUsuario restaurante) {
+        try {
+            return new ResponseEntity<>(this.restauranteService.addVistoRecientemente(id, restaurante), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/destacados")
+    public ResponseEntity<List<Restaurante>> getDestacados() {
+        try {
+            return new ResponseEntity<>(this.restauranteService.getDestacados(), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/cercanos")
+    public ResponseEntity<List<Restaurante>> getRestaurantesEnArea(@RequestParam String neLat, @RequestParam String neLon, @RequestParam String swLat, @RequestParam String swLon) {
+        try {
+            logger.info("Busqueda area: ne: %s, %s sw: %s, %s".formatted(neLat, neLon, swLat, swLon));
+            LatLng northeast = LatLng
+                .newBuilder()
+                    .setLatitude(Double.parseDouble(neLat))
+                    .setLongitude(Double.parseDouble(neLon))
+                    .build();
+            LatLng southwest = LatLng
+                .newBuilder()
+                    .setLatitude(Double.parseDouble(swLat))
+                    .setLongitude(Double.parseDouble(swLon))
+                    .build();
+            return new ResponseEntity<>(this.restauranteService
+                .getRestaurantesEnArea(northeast, southwest), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

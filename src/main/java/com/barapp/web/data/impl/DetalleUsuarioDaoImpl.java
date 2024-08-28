@@ -23,38 +23,51 @@ public class DetalleUsuarioDaoImpl extends BaseDaoImpl<DetalleUsuario, DetalleUs
     }
 
     @Override
-    public CollectionReference getCollection() {
-        return firestore.collection("detallesUsuarios");
-    }
+    public CollectionReference getCollection() { return firestore.collection("detallesUsuarios"); }
 
     @Override
-    public BaseConverter<DetalleUsuario, DetalleUsuarioEntity> getConverter() {
-        return new DetalleUsuarioConverter();
-    }
-
-    @Override
-    public DetalleUsuario updateRestaurantesFavoritos(String id, List<String> restaurantes) {
-        try {
-          DetalleUsuario detalleUsuario = get(id);
-          detalleUsuario.setIdsRestaurantesFavoritos(restaurantes);
-          save(detalleUsuario, id);
-          return detalleUsuario;
-        } catch (Exception e) {
-          e.printStackTrace();
-          return null;
-        }
-    }
+    public BaseConverter<DetalleUsuario, DetalleUsuarioEntity> getConverter() { return new DetalleUsuarioConverter(); }
 
     @Override
     public DetalleUsuario updateBusquedasRecientes(String id, List<String> busquedasRecientes) {
         try {
-          DetalleUsuario detalleUsuario = get(id);
-          detalleUsuario.setBusquedasRecientes(busquedasRecientes);
-          save(detalleUsuario, id);
-          return detalleUsuario;
+            DetalleUsuario detalleUsuario = get(id);
+            detalleUsuario.setBusquedasRecientes(busquedasRecientes);
+            save(detalleUsuario, id);
+            return detalleUsuario;
         } catch (Exception e) {
-          e.printStackTrace();
-          return null;
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<String> addFavorito(String id, String idRestaurante) {
+        try {
+            DetalleUsuario detalleUsuario = get(id);
+            List<String> userFavoriteRestaurants = detalleUsuario.getIdsRestaurantesFavoritos();
+            userFavoriteRestaurants.add(idRestaurante);
+            detalleUsuario.setIdsRestaurantesFavoritos(userFavoriteRestaurants);
+            save(detalleUsuario, id);
+            return detalleUsuario.getIdsRestaurantesFavoritos();
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<String> removeFavorito(String id, String idRestaurante) {
+        try {
+            DetalleUsuario detalleUsuario = get(id);
+            List<String> userFavoriteRestaurants = detalleUsuario.getIdsRestaurantesFavoritos();
+            userFavoriteRestaurants.remove(idRestaurante);
+            detalleUsuario.setIdsRestaurantesFavoritos(userFavoriteRestaurants);
+            save(detalleUsuario, id);
+            return detalleUsuario.getIdsRestaurantesFavoritos();
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
     }
 }

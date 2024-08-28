@@ -23,7 +23,7 @@ public interface RestauranteService extends BaseService<Restaurante> {
     void rechazarRestaurante(Restaurante restaurante);
 
     void aceptarRestaurante(Restaurante restaurante);
-    
+
     Optional<Restaurante> getByCorreo(String correo);
 
     String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada);
@@ -37,10 +37,10 @@ public interface RestauranteService extends BaseService<Restaurante> {
     Optional<DetalleRestaurante> getRestaurantDetail(String id);
 
     RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante);
-    
-    RestauranteUsuario addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito);
 
-    Void removeFavorito(String idRestauranteFavorito);
+    List<String> addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito, String idDetalleUsuario);
+
+    List<String> removeFavorito(String idRestaurante, String idUsuario, String idDetalleUsuario);
 
     List<Restaurante> getDestacados();
 
