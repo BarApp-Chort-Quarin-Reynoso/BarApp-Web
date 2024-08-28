@@ -33,21 +33,20 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     }
 
     @Override
-    public BaseDao<UsuarioApp, UsuarioEntity> getDao() {
-        return usuarioDao;
-    }
+    public BaseDao<UsuarioApp, UsuarioEntity> getDao() { return usuarioDao; }
 
     @Override
     public Optional<UsuarioApp> getByMail(String mail) {
         try {
             List<DetalleUsuario> detallesUsuarios = detalleUsuarioDao.getFiltered(Filter.equalTo("mail", mail));
-  
+
             if (detallesUsuarios.isEmpty()) return Optional.empty();
 
-            List<UsuarioApp> usuarios = usuarioDao.getFiltered(Filter.equalTo("idDetalleUsuario", detallesUsuarios.get(0).getId()));
+            List<UsuarioApp> usuarios = usuarioDao
+                .getFiltered(Filter.equalTo("idDetalleUsuario", detallesUsuarios.get(0).getId()));
 
             if (usuarios.isEmpty()) return Optional.empty();
-            
+
             return Optional.of(usuarios.get(0));
         } catch (Exception e) {
             System.out.println(e);
@@ -58,7 +57,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     @Override
     public Optional<DetalleUsuario> getUserDetail(String id) {
         try {
-          return Optional.ofNullable(detalleUsuarioDao.get(id));
+            return Optional.ofNullable(detalleUsuarioDao.get(id));
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
@@ -107,16 +106,6 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
             UsuarioApp usuario = this.get(id);
             usuario.setFoto(foto);
             usuarioDao.save(usuario);
-        } catch (Exception e) {
-            System.out.println(e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Optional<DetalleUsuario> updateRestaurantesFavoritos(String id, List<String> restaurantes) {
-        try {
-            return Optional.ofNullable(detalleUsuarioDao.updateRestaurantesFavoritos(id, restaurantes));
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
