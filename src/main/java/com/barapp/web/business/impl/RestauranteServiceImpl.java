@@ -319,9 +319,16 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public Optional<DetalleRestaurante> getRestaurantDetail(String id) {
+    public Optional<DetalleRestaurante> getRestaurantDetail(String idRestaurante) {
         try {
-            return Optional.ofNullable(detalleRestauranteDao.get(id));
+            Restaurante restaurante = restauranteDao.get(idRestaurante);
+
+            if (restaurante == null) {
+                throw new IllegalStateException("El restaurante con ID " + idRestaurante + " no existe.");
+            }
+
+            DetalleRestaurante detalleRestaurante = detalleRestauranteDao.get(restaurante.getIdDetalleRestaurante());
+            return Optional.ofNullable(detalleRestaurante);
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
