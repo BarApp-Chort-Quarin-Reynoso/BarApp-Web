@@ -45,10 +45,11 @@ public class RestauranteRestController extends BaseController<Restaurante> {
         }
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/{id}/detalle")
     public ResponseEntity<DetalleRestaurante> getRestaurantDetail(@PathVariable String id) {
         try {
-            Optional<DetalleRestaurante> detalleRestaurante = this.restauranteService.getRestaurantDetail(id);
+            Optional<DetalleRestaurante> detalleRestaurante = this.restauranteService
+                .getRestaurantDetail(id);
             if (!detalleRestaurante.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

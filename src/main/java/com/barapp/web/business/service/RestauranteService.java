@@ -34,7 +34,7 @@ public interface RestauranteService extends BaseService<Restaurante> {
 
     Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio);
 
-    Optional<DetalleRestaurante> getRestaurantDetail(String id);
+    Optional<DetalleRestaurante> getRestaurantDetail(String idRestaurante);
 
     RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante);
 
