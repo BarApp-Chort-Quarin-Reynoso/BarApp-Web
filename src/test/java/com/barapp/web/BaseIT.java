@@ -1,17 +1,12 @@
 package com.barapp.web;
 
+import com.barapp.web.elements.views.HomeViewPO;
+import com.barapp.web.model.enums.EstadoRestaurante;
+import com.microsoft.playwright.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-
-import com.barapp.web.elements.views.HomeViewPO;
-import com.barapp.web.model.enums.EstadoRestaurante;
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
 
 public abstract class BaseIT {
     protected Page page;
@@ -44,13 +39,13 @@ public abstract class BaseIT {
     protected static void closeBrowser() {
         playwright.close();
     }
-    
+
     protected HomeViewPO goToHomeView() {
         page.navigate(rootUrl);
-        
+
         return new HomeViewPO(page);
     }
-    
+
     protected String crearBarConEstado(String username, EstadoRestaurante estado) {
         String estadoString = estado.toString();
         String route = rootUrl + "fakeview/crearUsuarioBarConEstado?params=" + username

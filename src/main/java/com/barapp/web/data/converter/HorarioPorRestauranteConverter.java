@@ -8,7 +8,6 @@ import com.barapp.web.model.HorarioPorRestaurante;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HorarioPorRestauranteConverter implements BaseConverter<HorarioPorRestaurante, HorarioPorRestauranteEntity> {
     private final ConfiguradorHorarioConverter chConverter = new ConfiguradorHorarioConverter();

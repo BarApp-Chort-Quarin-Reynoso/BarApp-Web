@@ -60,7 +60,10 @@ public class FormularioFinalizado extends VerticalLayout {
         botonesLayout.setWidthFull();
         botonesLayout.setJustifyContentMode(JustifyContentMode.CENTER);
 
-        this.add(tituloFormularioH3, textoFinalizarP1, textoFinalizarP2, textoFinalizarP3, textoFinalizarP4, botonesLayout);
+        this.add(
+                tituloFormularioH3, textoFinalizarP1, textoFinalizarP2, textoFinalizarP3, textoFinalizarP4,
+                botonesLayout
+        );
     }
 
     public void addSiguienteFormularioListener(SiguienteFormularioEvent listener) {

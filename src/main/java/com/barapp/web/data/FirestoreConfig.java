@@ -22,9 +22,9 @@ public class FirestoreConfig {
         FileInputStream serviceAccount = new FileInputStream("./firebase-private-key.json");
 
         FirebaseOptions options = FirebaseOptions.builder()
-                                                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                                                 .setStorageBucket("barapp-b1bc0.appspot.com")
-                                                 .build();
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setStorageBucket("barapp-b1bc0.appspot.com")
+                .build();
 
         return FirebaseApp.initializeApp(options, UUID.randomUUID().toString());
     }

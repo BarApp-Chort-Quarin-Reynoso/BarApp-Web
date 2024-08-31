@@ -4,10 +4,9 @@ import com.barapp.web.business.ImageContainer;
 import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UbicacionService;
-import com.barapp.web.model.Mesa;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.Ubicacion;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.BarappUtils;
 import com.barapp.web.views.components.pageElements.BarappFooter;
@@ -15,11 +14,7 @@ import com.barapp.web.views.components.pageElements.MainElement;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -40,7 +35,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,8 +43,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("serial")
 @PageTitle("Mi Bar")
@@ -121,7 +116,9 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         this.ubicacionService = ubicacionService;
         this.binder = new Binder<>(Restaurante.class);
 
-        UserDetails userDetails = this.securityService.getAuthenticatedUser().orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        UserDetails userDetails = this.securityService
+                .getAuthenticatedUser()
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         Optional<Restaurante> optRestaurante = this.restauranteService.getByCorreo(userDetails.getUsername());
         restaurante = optRestaurante.orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
 
@@ -161,7 +158,8 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
                 nombreBarTextfield,
                 correoTextfield,
                 telefonoTextfield,
-                cuitTextfield);
+                cuitTextfield
+        );
         infoBasicaSection.setClassName("info-basica-section");
     }
 
@@ -173,16 +171,17 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         descripcionTextarea.setValueChangeMode(ValueChangeMode.EAGER);
         descripcionTextarea.setHelperText("0/" + MAX_DESCRIPTION_LENGTH);
         descripcionTextarea.setHeight("250px");
-        descripcionTextarea.addValueChangeListener(e -> e.getSource().setHelperText(e.getValue().length() + "/" + MAX_DESCRIPTION_LENGTH));
+        descripcionTextarea.addValueChangeListener(
+                e -> e.getSource().setHelperText(e.getValue().length() + "/" + MAX_DESCRIPTION_LENGTH));
 
         linkMenuTextfield = new TextField(getTranslation("views.mibar.linkmenu"));
-
 
 
         detallesDelBarSection = new Section(
                 tituloDetallesDelBar,
                 descripcionTextarea,
-                linkMenuTextfield);
+                linkMenuTextfield
+        );
         detallesDelBarSection.setClassName("detalle-bar-section");
     }
 
@@ -368,17 +367,21 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
             if (binder.writeBeanIfValid(restaurante)) {
                 try {
                     // Guardar imágenes en Firebase Storage
-                    ImageContainer logo = new ImageContainer(new ByteArrayInputStream(logoByteArray), restaurante.getId(), logoMimeType);
-                    ImageContainer portada = new ImageContainer(new ByteArrayInputStream(portadaByteArray), restaurante.getId(), portadaMimeType);
+                    ImageContainer logo = new ImageContainer(
+                            new ByteArrayInputStream(logoByteArray), restaurante.getId(), logoMimeType);
+                    ImageContainer portada = new ImageContainer(
+                            new ByteArrayInputStream(portadaByteArray), restaurante.getId(), portadaMimeType);
 
                     // Buscar ubicacion y pasar la info de latitud y longitud
                     ubicacionService.setLatitudLongitud(restaurante.getUbicacion());
 
                     // Guardar Restaurante y Detalle
                     restauranteService.saveConFotos(restaurante, logo, portada);
-                    detalleRestauranteService.save(restaurante.getDetalleRestaurante(), restaurante.getIdDetalleRestaurante());
+                    detalleRestauranteService.save(
+                            restaurante.getDetalleRestaurante(), restaurante.getIdDetalleRestaurante());
 
-                    Notification notification = Notification.show(getTranslation("views.mibar.guardadoconexito"), 5000, Notification.Position.BOTTOM_END);
+                    Notification notification = Notification.show(
+                            getTranslation("views.mibar.guardadoconexito"), 5000, Notification.Position.BOTTOM_END);
                     notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
@@ -407,7 +410,7 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         );
         mainElement.addClassName("mi-bar-view");
 
-        this.add(mainElement,new BarappFooter());
+        this.add(mainElement, new BarappFooter());
     }
 
     private void configurarBinders() {
@@ -431,25 +434,53 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
 
         // Detalles de tu bar
         binder.forField(descripcionTextarea)
-                .withValidator(new StringLengthValidator(getTranslation("error.logitudmaxima", MAX_DESCRIPTION_LENGTH), 0,MAX_DESCRIPTION_LENGTH))
-                .bind(restaurante -> restaurante.getDetalleRestaurante().getDescripcion(),(restaurante, value) -> restaurante.getDetalleRestaurante().setDescripcion(value));
+                .withValidator(
+                        new StringLengthValidator(getTranslation("error.logitudmaxima", MAX_DESCRIPTION_LENGTH), 0,
+                                MAX_DESCRIPTION_LENGTH))
+                .bind(restaurante -> restaurante.getDetalleRestaurante().getDescripcion(),
+                        (restaurante, value) -> restaurante.getDetalleRestaurante().setDescripcion(value));
 
         binder.forField(linkMenuTextfield)
-                .withValidator(link -> link.isEmpty() || UrlValidator.getInstance().isValid(link), getTranslation("error.linkmenu"))
-                .bind(restaurante -> restaurante.getDetalleRestaurante().getMenu(),(restaurante, value) -> restaurante.getDetalleRestaurante().setMenu(value));
+                .withValidator(
+                        link -> link.isEmpty() || UrlValidator.getInstance().isValid(link),
+                        getTranslation("error.linkmenu")
+                )
+                .bind(restaurante -> restaurante.getDetalleRestaurante().getMenu(),
+                        (restaurante, value) -> restaurante.getDetalleRestaurante().setMenu(value));
 
         // Ubicacion
         binder.forField(direccionTextfield).asRequired(getTranslation("error.campoobligatorio"))
                 .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 50), 5, 50))
-                .bind(restaurante -> restaurante.getUbicacion().getCalle(), (restaurante, value) -> restaurante.getUbicacion().setCalle(value));
+                .bind(
+                        restaurante -> restaurante.getUbicacion().getCalle(),
+                        (restaurante, value) -> restaurante.getUbicacion().setCalle(value)
+                );
 
         binder.forField(numeroTextfield).asRequired(getTranslation("error.campoobligatorio"))
                 .withValidator(new IntegerRangeValidator(getTranslation("error.numeroentre", 1, 1000000), 1, 1000000))
-                .bind(restaurante -> restaurante.getUbicacion().getNumero(), (restaurante, value) -> restaurante.getUbicacion().setNumero(value));
+                .bind(
+                        restaurante -> restaurante.getUbicacion().getNumero(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNumero(value)
+                );
 
-        binder.forField(paisCombobox).asRequired(getTranslation("error.campoobligatorio")).bind(restaurante -> restaurante.getUbicacion().getNombrePais(), (restaurante, value) -> restaurante.getUbicacion().setNombrePais(value));
-        binder.forField(provinciaCombobox).asRequired(getTranslation("error.campoobligatorio")).bind(restaurante -> restaurante.getUbicacion().getNombreProvincia(), (restaurante, value) -> restaurante.getUbicacion().setNombreProvincia(value));
-        binder.forField(localidadCombobox).asRequired(getTranslation("error.campoobligatorio")).bind(restaurante -> restaurante.getUbicacion().getNombreLocalidad(), (restaurante, value) -> restaurante.getUbicacion().setNombreLocalidad(value));
+        binder
+                .forField(paisCombobox)
+                .asRequired(getTranslation("error.campoobligatorio"))
+                .bind(restaurante -> restaurante.getUbicacion().getNombrePais(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNombrePais(value)
+                );
+        binder
+                .forField(provinciaCombobox)
+                .asRequired(getTranslation("error.campoobligatorio"))
+                .bind(restaurante -> restaurante.getUbicacion().getNombreProvincia(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNombreProvincia(value)
+                );
+        binder
+                .forField(localidadCombobox)
+                .asRequired(getTranslation("error.campoobligatorio"))
+                .bind(restaurante -> restaurante.getUbicacion().getNombreLocalidad(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNombreLocalidad(value)
+                );
 
         // Imagenes
 

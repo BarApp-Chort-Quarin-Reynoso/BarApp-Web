@@ -2,20 +2,19 @@ package com.barapp.web.elements.views;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-
-import lombok.Getter;
 import lombok.AccessLevel;
+import lombok.Getter;
 
 @Getter
 public class LoginViewPO {
     @Getter(AccessLevel.NONE)
     private final Page page;
-    
+
     private final Locator emailField;
     private final Locator passwordField;
     private final Locator loginButton;
     private final Locator errorDiv;
-    
+
     public LoginViewPO(Page page) {
         this.page = page;
         this.emailField = page.locator("vaadin-text-field > input");

@@ -8,12 +8,10 @@ import com.barapp.web.model.CalificacionPromedio;
 import com.barapp.web.model.DetalleRestaurante;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Repository
 public class DetalleRestauranteDaoImpl extends BaseDaoImpl<DetalleRestaurante, DetalleRestauranteEntity> implements DetalleRestauranteDao {

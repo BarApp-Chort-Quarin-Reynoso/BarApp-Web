@@ -2,7 +2,6 @@ package com.barapp.web.views;
 
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.views.components.pageElements.BarappFooter;
-import com.barapp.web.views.components.pageElements.MainElement;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -16,7 +15,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 public class InicioView extends VerticalLayout implements BeforeEnterObserver {
 
     private final SecurityService securityService;
-    
+
     public InicioView(SecurityService securityService) {
         this.securityService = securityService;
 

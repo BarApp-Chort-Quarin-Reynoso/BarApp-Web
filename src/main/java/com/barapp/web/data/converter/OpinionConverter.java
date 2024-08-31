@@ -1,4 +1,5 @@
 package com.barapp.web.data.converter;
+
 import com.barapp.web.data.entities.OpinionEntity;
 import com.barapp.web.model.Opinion;
 import com.barapp.web.model.UsuarioApp;

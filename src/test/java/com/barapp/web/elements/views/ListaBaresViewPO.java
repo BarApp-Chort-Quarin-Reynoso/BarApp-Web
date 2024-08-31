@@ -34,7 +34,7 @@ public class ListaBaresViewPO {
     }
 
     private GridPw.RowPw getRowByCorreo(String correo) {
-        for (int i = 0; i<baresGrid.getRenderedRowCount(); i++) {
+        for (int i = 0; i < baresGrid.getRenderedRowCount(); i++) {
             GridPw.RowPw row = baresGrid.getRow(i);
             if (row.getCell(2).textContent().equals(correo)) {
                 return row;

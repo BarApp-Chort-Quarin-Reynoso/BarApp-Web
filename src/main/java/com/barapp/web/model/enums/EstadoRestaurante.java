@@ -2,10 +2,10 @@ package com.barapp.web.model.enums;
 
 import lombok.Getter;
 
-public enum EstadoRestaurante { 
-    ESPERANDO_HABILITACION("views.estadorestaurante.esperandohabilitacion"), 
+public enum EstadoRestaurante {
+    ESPERANDO_HABILITACION("views.estadorestaurante.esperandohabilitacion"),
     HABILITADO("views.estadorestaurante.habilitado"),
-    PAUSADO("views.estadorestaurante.pausado"), 
+    PAUSADO("views.estadorestaurante.pausado"),
     RECHAZADO("views.estadorestaurante.rechazado");
 
     @Getter

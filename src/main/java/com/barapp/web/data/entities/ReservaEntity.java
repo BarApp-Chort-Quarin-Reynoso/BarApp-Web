@@ -9,19 +9,19 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ReservaEntity extends BaseEntity{
-  String estado;
-  Integer cantidadPersonas;
-  String fecha;
-  String horario;
-  String idUsuario;
-  String idOpinion;
-  String idRestaurante;
-  String logo;
-  String portada;
-  String nombre;
-  Integer numero;
-  Double puntuacion;
-  String tipoComida;
-  String calle;
+public class ReservaEntity extends BaseEntity {
+    String estado;
+    Integer cantidadPersonas;
+    String fecha;
+    String horario;
+    String idUsuario;
+    String idOpinion;
+    String idRestaurante;
+    String logo;
+    String portada;
+    String nombre;
+    Integer numero;
+    Double puntuacion;
+    String tipoComida;
+    String calle;
 }

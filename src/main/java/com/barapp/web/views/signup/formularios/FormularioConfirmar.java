@@ -112,7 +112,8 @@ public class FormularioConfirmar extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
 
-        formLayout.add(nombreBarTextfield, correoElectronicoTextfield, direccionTextfield, telefonoTextfield, cuitTextfield);
+        formLayout.add(
+                nombreBarTextfield, correoElectronicoTextfield, direccionTextfield, telefonoTextfield, cuitTextfield);
         formLayout.setColspan(direccionTextfield, 2);
 
         imagenesLayout = new HorizontalLayout(logoImage, portadaImage);
@@ -124,7 +125,10 @@ public class FormularioConfirmar extends VerticalLayout {
         botonesLayout.setId("registro-botones-layout");
         botonesLayout.setWidthFull();
 
-        this.add(tituloFormularioH3, confirmaDatosParagraph, formLayout, imagenesParagraph, imagenesLayout, botonesLayout);
+        this.add(
+                tituloFormularioH3, confirmaDatosParagraph, formLayout, imagenesParagraph, imagenesLayout,
+                botonesLayout
+        );
     }
 
     private void configurarBinders() {
@@ -133,7 +137,9 @@ public class FormularioConfirmar extends VerticalLayout {
 
         binder.forField(correoElectronicoTextfield).bind(Restaurante::getCorreo, null);
 
-        binder.forField(direccionTextfield).bind(restaurante -> restaurante.getUbicacion().getFullFormatUbicacion(), null);
+        binder
+                .forField(direccionTextfield)
+                .bind(restaurante -> restaurante.getUbicacion().getFullFormatUbicacion(), null);
 
         binder.forField(telefonoTextfield).bind(Restaurante::getTelefono, null);
 

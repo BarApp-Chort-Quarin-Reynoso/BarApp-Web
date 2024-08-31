@@ -1,10 +1,7 @@
 package com.barapp.web.security;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.page.WebStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;

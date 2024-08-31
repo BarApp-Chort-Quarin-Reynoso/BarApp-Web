@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface ConfiguradorHorarioDao extends BaseDao<ConfiguradorHorario, ConfiguradorHorarioEntity> {
     List<ConfiguradorHorario> getAllByCorreoRestaurante(String correo);
+
     List<ConfiguradorHorarioNoLaboral> getAllNoLaboralByCorreoRestaurante(String correo);
 }

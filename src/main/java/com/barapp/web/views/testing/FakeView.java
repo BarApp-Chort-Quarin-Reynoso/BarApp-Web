@@ -1,17 +1,12 @@
 package com.barapp.web.views.testing;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Optional;
-
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UsuarioWebService;
-import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.Ubicacion;
 import com.barapp.web.model.UsuarioWeb;
+import com.barapp.web.model.enums.EstadoRestaurante;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.utils.TestConsts;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
@@ -23,12 +18,17 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Optional;
+
 @SuppressWarnings("serial")
 @PageTitle("Fake View")
 @Route(value = "fakeview")
 @AnonymousAllowed
 public class FakeView extends VerticalLayout implements HasUrlParameter<String> {
-    
+
     private final UsuarioWebService usuarioWebService;
     private final RestauranteService restauranteService;
 
@@ -37,7 +37,7 @@ public class FakeView extends VerticalLayout implements HasUrlParameter<String> 
     public FakeView(UsuarioWebService usuarioWebService, RestauranteService restauranteService) {
         this.usuarioWebService = usuarioWebService;
         this.restauranteService = restauranteService;
-        
+
         H1 title = new H1("This is a fake view");
 
         returnSpan.setId("return-span");
@@ -74,18 +74,18 @@ public class FakeView extends VerticalLayout implements HasUrlParameter<String> 
         EstadoRestaurante estado = EstadoRestaurante.valueOf(estadoString);
         String correo = username + TestConsts.DOMINIO_CORREO_TEST;
         UsuarioWeb usuarioWeb = UsuarioWeb
-            .builder()
+                .builder()
                 .email(correo)
                 .hashedPassword("$2a$10$gzxhNfZ545XcHXyOoKxAq.f.wEoy7vqyXiOIKG5N7QXTSkJJ1zXNi")
                 .rol(Rol.BAR)
                 .build();
         Restaurante restaurante = Restaurante
-            .builder()
+                .builder()
                 .nombre(username)
                 .correo(correo)
                 .cuit("99-99999999-9")
                 .ubicacion(Ubicacion
-                    .builder()
+                        .builder()
                         .calle("Ejemplo")
                         .numero(123)
                         .nombreLocalidad("Santa Fe")

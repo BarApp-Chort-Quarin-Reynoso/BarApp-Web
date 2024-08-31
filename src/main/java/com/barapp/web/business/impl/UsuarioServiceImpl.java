@@ -1,21 +1,16 @@
 package com.barapp.web.business.impl;
 
 import com.barapp.web.business.service.UsuarioService;
-import com.barapp.web.data.dao.BaseDao;
-import com.barapp.web.data.dao.DetalleUsuarioDao;
-import com.barapp.web.data.dao.RestauranteFavoritoDao;
-import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
-import com.barapp.web.data.dao.UsuarioDao;
+import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.UsuarioEntity;
 import com.barapp.web.model.DetalleUsuario;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioApp;
 import com.google.cloud.firestore.Filter;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements UsuarioService {
@@ -33,7 +28,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
     }
 
     @Override
-    public BaseDao<UsuarioApp, UsuarioEntity> getDao() { return usuarioDao; }
+    public BaseDao<UsuarioApp, UsuarioEntity> getDao() {return usuarioDao;}
 
     @Override
     public Optional<UsuarioApp> getByMail(String mail) {
@@ -43,7 +38,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<UsuarioApp> implements U
             if (detallesUsuarios.isEmpty()) return Optional.empty();
 
             List<UsuarioApp> usuarios = usuarioDao
-                .getFiltered(Filter.equalTo("idDetalleUsuario", detallesUsuarios.get(0).getId()));
+                    .getFiltered(Filter.equalTo("idDetalleUsuario", detallesUsuarios.get(0).getId()));
 
             if (usuarios.isEmpty()) return Optional.empty();
 

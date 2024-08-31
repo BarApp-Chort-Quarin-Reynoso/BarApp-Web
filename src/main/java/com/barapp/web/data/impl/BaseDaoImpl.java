@@ -10,7 +10,6 @@ import com.google.cloud.firestore.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
-
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -75,7 +74,7 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }        
+        }
     }
 
     @Override
@@ -93,61 +92,61 @@ public abstract class BaseDaoImpl<D extends BaseModel, E extends BaseEntity> imp
         String sortBy = null;
         int limit = Integer.MAX_VALUE;
         if (allParams != null && !allParams.isEmpty()) {
-          for (Entry<String, String> entry : allParams) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if("continue".equals(key)){
-              continue;
-            }
-            if ("order".equals(key)) {
-              order = value;
-              continue;
-            }
-            if ("sortBy".equals(key)) {
-                sortBy = value;
-                continue;
-            }
-            if ("limit".equals(key)) {
-              limit = Integer.parseInt(value);
-              continue;
-            }
-            result = result.stream().filter(obj -> {
-                try {
-                  Field field = obj.getClass().getDeclaredField(key);
-                  field.setAccessible(true);
-                  Object fieldValue = field.get(obj);
-                  if (fieldValue instanceof String) {
-                    return ((String) fieldValue).toLowerCase().contains(value.toLowerCase());
-                  } else {
-                      return fieldValue != null && fieldValue.toString().equals(value);
-                  }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    return false;
+            for (Entry<String, String> entry : allParams) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if ("continue".equals(key)) {
+                    continue;
                 }
-            }).collect(Collectors.toList());
-          }
+                if ("order".equals(key)) {
+                    order = value;
+                    continue;
+                }
+                if ("sortBy".equals(key)) {
+                    sortBy = value;
+                    continue;
+                }
+                if ("limit".equals(key)) {
+                    limit = Integer.parseInt(value);
+                    continue;
+                }
+                result = result.stream().filter(obj -> {
+                    try {
+                        Field field = obj.getClass().getDeclaredField(key);
+                        field.setAccessible(true);
+                        Object fieldValue = field.get(obj);
+                        if (fieldValue instanceof String) {
+                            return ((String) fieldValue).toLowerCase().contains(value.toLowerCase());
+                        } else {
+                            return fieldValue != null && fieldValue.toString().equals(value);
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        return false;
+                    }
+                }).collect(Collectors.toList());
+            }
         }
 
         if (sortBy != null) {
-          final String finalSortBy = sortBy;
-          @SuppressWarnings({ "unchecked", "rawtypes" })
-          Comparator<D> comparator = Comparator.comparing(obj -> {
-            try {
-                  Field field = obj.getClass().getDeclaredField(finalSortBy);
-                  field.setAccessible(true);
-                  Object fieldValue = field.get(obj);
-                  if (!(fieldValue instanceof Comparable)) {
-                      throw new RuntimeException("Field value is not Comparable");
-                  }
-                  return (Comparable) fieldValue;
-              } catch (NoSuchFieldException | IllegalAccessException e) {
-                  throw new RuntimeException(e);
-              }
-          });
-          if ("desc".equals(order)) {
-              comparator = comparator.reversed();
-          }
-          result.sort(comparator);
+            final String finalSortBy = sortBy;
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            Comparator<D> comparator = Comparator.comparing(obj -> {
+                try {
+                    Field field = obj.getClass().getDeclaredField(finalSortBy);
+                    field.setAccessible(true);
+                    Object fieldValue = field.get(obj);
+                    if (!(fieldValue instanceof Comparable)) {
+                        throw new RuntimeException("Field value is not Comparable");
+                    }
+                    return (Comparable) fieldValue;
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            if ("desc".equals(order)) {
+                comparator = comparator.reversed();
+            }
+            result.sort(comparator);
         }
 
         result = result.stream().limit(limit).collect(Collectors.toList());

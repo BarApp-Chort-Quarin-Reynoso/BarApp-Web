@@ -1,6 +1,5 @@
 package com.barapp.web.views.utils.events;
 
-import com.barapp.web.model.BaseModel;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
 import lombok.Getter;

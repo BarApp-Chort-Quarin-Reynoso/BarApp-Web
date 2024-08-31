@@ -1,12 +1,12 @@
 package com.barapp.web.model;
 
-import java.util.List;
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter

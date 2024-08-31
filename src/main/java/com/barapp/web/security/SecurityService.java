@@ -1,8 +1,8 @@
 package com.barapp.web.security;
 
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.views.login.BarEsperandoHabilitacionView;
 import com.barapp.web.views.login.BarRechazadoView;
 import com.vaadin.flow.component.ComponentUtil;

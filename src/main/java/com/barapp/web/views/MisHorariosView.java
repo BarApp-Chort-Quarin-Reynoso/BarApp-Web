@@ -11,13 +11,11 @@ import com.barapp.web.views.components.CapacidadField;
 import com.barapp.web.views.components.VisualizadorHorarios;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
-import com.barapp.web.views.dialogs.EditorCapacidadDialog;
 import com.barapp.web.views.dialogs.EditorConfigurardorHorarioDialog;
 import com.barapp.web.views.dialogs.EditorDiaNoLaboralDialog;
 import com.flowingcode.addons.ycalendar.MonthCalendar;
 import com.flowingcode.addons.ycalendar.YearMonthField;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -33,7 +31,10 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @PageTitle("Mis Horarios")
 @Route(value = "mis-horarios", layout = MainLayout.class)

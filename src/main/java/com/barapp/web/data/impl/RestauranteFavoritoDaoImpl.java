@@ -1,9 +1,5 @@
 package com.barapp.web.data.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.converter.RestauranteUsuarioConverter;
 import com.barapp.web.data.dao.RestauranteFavoritoDao;
@@ -11,8 +7,11 @@ import com.barapp.web.data.entities.RestauranteUsuarioEntity;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Filter;
+import com.google.cloud.firestore.Firestore;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RestauranteFavoritoDaoImpl extends BaseDaoImpl<RestauranteUsuario, RestauranteUsuarioEntity> implements RestauranteFavoritoDao {
@@ -39,14 +38,14 @@ public class RestauranteFavoritoDaoImpl extends BaseDaoImpl<RestauranteUsuario, 
     public List<RestauranteUsuario> getByUserId(String userId) {
         try {
             return this
-                .getFiltered(Filter
-                    .and(Filter.equalTo("idUsuario", userId), Filter
-                        .or(Filter.equalTo("estado", EstadoRestaurante.HABILITADO), Filter
-                            .equalTo("estado", EstadoRestaurante.PAUSADO))));
+                    .getFiltered(Filter
+                            .and(Filter.equalTo("idUsuario", userId), Filter
+                                    .or(Filter.equalTo("estado", EstadoRestaurante.HABILITADO), Filter
+                                            .equalTo("estado", EstadoRestaurante.PAUSADO))));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-  
+
 }

@@ -1,16 +1,16 @@
 package com.barapp.web.data.converter;
 
 import com.barapp.web.data.entities.RestauranteEntity;
-import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.Ubicacion;
+import com.barapp.web.model.enums.EstadoRestaurante;
 
 public class RestauranteConverter implements BaseConverter<Restaurante, RestauranteEntity> {
 
     @Override
     public RestauranteEntity toEntity(Restaurante dto) {
         return RestauranteEntity
-            .builder()
+                .builder()
                 .nombre(dto.getNombre())
                 .correo(dto.getCorreo())
                 .puntuacion(dto.getPuntuacion())
@@ -35,7 +35,7 @@ public class RestauranteConverter implements BaseConverter<Restaurante, Restaura
     @Override
     public Restaurante toDto(RestauranteEntity entity) {
         return Restaurante
-            .builder()
+                .builder()
                 .nombre(entity.getNombre())
                 .correo(entity.getCorreo())
                 .puntuacion(entity.getPuntuacion())
@@ -45,7 +45,7 @@ public class RestauranteConverter implements BaseConverter<Restaurante, Restaura
                 .telefono(entity.getTelefono())
                 .cuit(entity.getCuit())
                 .ubicacion(Ubicacion
-                    .builder()
+                        .builder()
                         .id(entity.getIdUbicacion())
                         .calle(entity.getCalle())
                         .numero(entity.getNumero())

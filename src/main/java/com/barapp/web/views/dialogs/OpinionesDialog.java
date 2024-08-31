@@ -8,8 +8,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.Renderer;
-import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

@@ -109,7 +109,8 @@ public class FormularioInformacionBasica extends VerticalLayout {
                     // Verificar que el email no se encuentre ya registrado
                     usuarioWebService.loadUserByUsername(bean.getCorreo());
 
-                    Notification notification = Notification.show(getTranslation("error.correoregistrado"), 5000, Notification.Position.BOTTOM_CENTER);
+                    Notification notification = Notification.show(
+                            getTranslation("error.correoregistrado"), 5000, Notification.Position.BOTTOM_CENTER);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
 
                 } catch (UsernameNotFoundException unfe) {
@@ -146,8 +147,12 @@ public class FormularioInformacionBasica extends VerticalLayout {
         ubicacionLayout.setId("registro-ubicacion-layout");
         ubicacionLayout.setWidthFull();
 
-        formInformacionBasicaLayout = new FormLayout(nombreBarTextfield, direccionTextfield, numeroTextfield, ubicacionLayout, correoTextfield, contraseniaTextfield, confirmarContraseniaTextfield, telefonoTextfield, cuitTextfield);
-        formInformacionBasicaLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("670px", 2));
+        formInformacionBasicaLayout = new FormLayout(
+                nombreBarTextfield, direccionTextfield, numeroTextfield, ubicacionLayout, correoTextfield,
+                contraseniaTextfield, confirmarContraseniaTextfield, telefonoTextfield, cuitTextfield
+        );
+        formInformacionBasicaLayout.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("670px", 2));
         formInformacionBasicaLayout.setColspan(nombreBarTextfield, 2);
         formInformacionBasicaLayout.setColspan(ubicacionLayout, 2);
         formInformacionBasicaLayout.setColspan(correoTextfield, 2);
@@ -163,44 +168,68 @@ public class FormularioInformacionBasica extends VerticalLayout {
         binder = new Binder<>(Restaurante.class);
 
         binder.forField(nombreBarTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 3, 40), 3, 40))
-              .bind(Restaurante::getNombre, Restaurante::setNombre);
+                .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 3, 40), 3, 40))
+                .bind(Restaurante::getNombre, Restaurante::setNombre);
 
         binder.forField(direccionTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 50), 5, 50))
-              .bind(restaurante -> restaurante.getUbicacion().getCalle(), (restaurante, value) -> restaurante.getUbicacion().setCalle(value));
+                .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 50), 5, 50))
+                .bind(
+                        restaurante -> restaurante.getUbicacion().getCalle(),
+                        (restaurante, value) -> restaurante.getUbicacion().setCalle(value)
+                );
 
         binder.forField(numeroTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new IntegerRangeValidator(getTranslation("error.numeroentre", 1, 1000000), 1, 1000000))
-              .bind(restaurante -> restaurante.getUbicacion().getNumero(), (restaurante, value) -> restaurante.getUbicacion().setNumero(value));
+                .withValidator(new IntegerRangeValidator(getTranslation("error.numeroentre", 1, 1000000), 1, 1000000))
+                .bind(
+                        restaurante -> restaurante.getUbicacion().getNumero(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNumero(value)
+                );
 
-        binder.forField(paisCombobox).asRequired(getTranslation("error.campoobligatorio")).bind(restaurante -> restaurante.getUbicacion().getNombrePais(), (restaurante, value) -> restaurante.getUbicacion().setNombrePais(value));
-        binder.forField(provinciaCombobox).asRequired(getTranslation("error.campoobligatorio")).bind(restaurante -> restaurante.getUbicacion().getNombreProvincia(), (restaurante, value) -> restaurante.getUbicacion().setNombreProvincia(value));
-        binder.forField(localidadCombobox).asRequired(getTranslation("error.campoobligatorio")).bind(restaurante -> restaurante.getUbicacion().getNombreLocalidad(), (restaurante, value) -> restaurante.getUbicacion().setNombreLocalidad(value));
+        binder
+                .forField(paisCombobox)
+                .asRequired(getTranslation("error.campoobligatorio"))
+                .bind(restaurante -> restaurante.getUbicacion().getNombrePais(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNombrePais(value)
+                );
+        binder
+                .forField(provinciaCombobox)
+                .asRequired(getTranslation("error.campoobligatorio"))
+                .bind(restaurante -> restaurante.getUbicacion().getNombreProvincia(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNombreProvincia(value)
+                );
+        binder
+                .forField(localidadCombobox)
+                .asRequired(getTranslation("error.campoobligatorio"))
+                .bind(restaurante -> restaurante.getUbicacion().getNombreLocalidad(),
+                        (restaurante, value) -> restaurante.getUbicacion().setNombreLocalidad(value)
+                );
 
         binder.forField(correoTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new EmailValidator(getTranslation("error.mailnovalido")))
-              .bind(Restaurante::getCorreo, Restaurante::setCorreo);
+                .withValidator(new EmailValidator(getTranslation("error.mailnovalido")))
+                .bind(Restaurante::getCorreo, Restaurante::setCorreo);
 
         binder.forField(contraseniaTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 30), 5, 30))
-              .withValidator(new RegexpValidator(getTranslation("error.contraseniacondigito"), ".*[0-9]+.*"))
-              .bind(restaurante -> this.contrasenia, (restaurante, pass) -> this.contrasenia = pass);
+                .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 30), 5, 30))
+                .withValidator(new RegexpValidator(getTranslation("error.contraseniacondigito"), ".*[0-9]+.*"))
+                .bind(restaurante -> this.contrasenia, (restaurante, pass) -> this.contrasenia = pass);
 
         binder.forField(confirmarContraseniaTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 30), 5, 30))
-              .withValidator(new RegexpValidator(getTranslation("error.contraseniacondigito"), ".*[0-9]+.*"))
-              .withValidator((repetedPass) -> repetedPass.equals(this.contraseniaTextfield.getValue()), getTranslation("error.coincidircontrasenias"))
-              .bind(restaurante -> this.repetirContrasenia, (restaurante, pass) -> this.repetirContrasenia = pass);
+                .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 5, 30), 5, 30))
+                .withValidator(new RegexpValidator(getTranslation("error.contraseniacondigito"), ".*[0-9]+.*"))
+                .withValidator(
+                        (repetedPass) -> repetedPass.equals(this.contraseniaTextfield.getValue()),
+                        getTranslation("error.coincidircontrasenias")
+                )
+                .bind(restaurante -> this.repetirContrasenia, (restaurante, pass) -> this.repetirContrasenia = pass);
 
         binder.forField(telefonoTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new RegexpValidator(getTranslation("error.telefono"), "^\\+?[0-9]+$"))
-              .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 6, 14), 6, 14))
-              .bind(Restaurante::getTelefono, Restaurante::setTelefono);
+                .withValidator(new RegexpValidator(getTranslation("error.telefono"), "^\\+?[0-9]+$"))
+                .withValidator(new StringLengthValidator(getTranslation("error.longitudtextonovalido", 6, 14), 6, 14))
+                .bind(Restaurante::getTelefono, Restaurante::setTelefono);
 
         binder.forField(cuitTextfield).asRequired(getTranslation("error.campoobligatorio"))
-              .withValidator(new RegexpValidator(getTranslation("error.formatocuit"), "^[0-9]{2}-[0-9]{8}-[0-9]{1}$"))
-              .bind(Restaurante::getCuit, Restaurante::setCuit);
+                .withValidator(new RegexpValidator(getTranslation("error.formatocuit"), "^[0-9]{2}-[0-9]{8}-[0-9]{1}$"))
+                .bind(Restaurante::getCuit, Restaurante::setCuit);
 
     }
 

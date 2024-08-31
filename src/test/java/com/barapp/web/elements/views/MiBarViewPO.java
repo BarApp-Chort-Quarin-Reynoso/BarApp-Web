@@ -1,7 +1,6 @@
 package com.barapp.web.elements.views;
 
 import com.microsoft.playwright.Page;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 
