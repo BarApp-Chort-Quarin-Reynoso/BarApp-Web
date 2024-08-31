@@ -10,7 +10,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
     @Override
     public RestauranteUsuarioEntity toEntity(RestauranteUsuario dto) {
         return RestauranteUsuarioEntity
-            .builder()
+                .builder()
                 .idUsuario(dto.getIdUsuario())
                 .idRestaurante(dto.getIdRestaurante())
                 .nombre(dto.getNombre())
@@ -34,7 +34,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
     @Override
     public RestauranteUsuario toDto(RestauranteUsuarioEntity entity) {
         return RestauranteUsuario
-            .builder()
+                .builder()
                 .idUsuario(entity.getIdUsuario())
                 .idRestaurante(entity.getIdRestaurante())
                 .nombre(entity.getNombre())
@@ -44,7 +44,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
                 .logo(entity.getLogo())
                 .portada(entity.getPortada())
                 .ubicacion(Ubicacion
-                    .builder()
+                        .builder()
                         .id(entity.getIdUbicacion())
                         .calle(entity.getCalle())
                         .numero(entity.getNumero())

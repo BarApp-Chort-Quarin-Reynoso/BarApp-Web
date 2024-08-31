@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface OpinionService extends BaseService<Opinion> {
     List<Opinion> getAllOpinionesByRestaurante(String idRestaurante);
+
     List<Opinion> getOpinionesRecientesByRestaurante(String idRestaurante);
 }

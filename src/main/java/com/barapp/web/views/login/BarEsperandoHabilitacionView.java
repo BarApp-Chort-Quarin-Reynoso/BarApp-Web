@@ -15,7 +15,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-
 import jakarta.annotation.security.RolesAllowed;
 
 @SuppressWarnings("serial")
@@ -31,12 +30,12 @@ public class BarEsperandoHabilitacionView extends VerticalLayout implements Befo
         this.securityService = securityService;
 
         setAlignItems(Alignment.CENTER);
-        
+
         VerticalLayout textWrapper = new VerticalLayout();
         textWrapper.setWidth("50%");
-        
+
         H3 title = new H3(getTranslation("views.esperandohabilitacion.estimadocliente"));
-        
+
         Paragraph parrafo1 = new Paragraph(getTranslation("views.esperandohabilitacion.parrafo1"));
         Paragraph parrafo2 = new Paragraph(getTranslation("views.esperandohabilitacion.parrafo2"));
         Paragraph atentamente = new Paragraph(getTranslation("views.esperandohabilitacion.atentamente"));
@@ -46,7 +45,7 @@ public class BarEsperandoHabilitacionView extends VerticalLayout implements Befo
         barApp.addClassName("appname");
         barApp.addClassName(FontSize.LARGE);
         atentamente.add(barApp);
-        
+
         textWrapper.add(title, parrafo1, parrafo2, atentamente);
         add(textWrapper);
     }

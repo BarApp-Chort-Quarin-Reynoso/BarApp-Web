@@ -1,14 +1,10 @@
 package com.barapp.web.data.converter;
-import com.barapp.web.data.entities.DetalleRestauranteEntity;
 
+import com.barapp.web.data.entities.DetalleRestauranteEntity;
 import com.barapp.web.model.CalificacionPromedio;
 import com.barapp.web.model.DetalleRestaurante;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.*;
 
 public class DetalleRestauranteConverter implements BaseConverter<DetalleRestaurante, DetalleRestauranteEntity> {
     @Override

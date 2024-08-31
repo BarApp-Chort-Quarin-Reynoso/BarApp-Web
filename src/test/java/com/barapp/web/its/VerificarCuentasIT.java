@@ -1,21 +1,20 @@
 package com.barapp.web.its;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-
+import com.barapp.web.BaseIT;
 import com.barapp.web.elements.views.HomeViewPO;
 import com.barapp.web.elements.views.ListaBaresViewPO;
 import com.barapp.web.elements.views.LoginViewPO;
+import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.utils.TestConsts;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.barapp.web.BaseIT;
-import com.barapp.web.model.enums.EstadoRestaurante;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class VerificarCuentasIT extends BaseIT {
     private Set<String> usersCreated = new HashSet<>();
@@ -23,6 +22,7 @@ public class VerificarCuentasIT extends BaseIT {
     protected VerificarCuentasIT() {
         super();
     }
+
     @Override
     @BeforeEach
     protected void beforeEach() {

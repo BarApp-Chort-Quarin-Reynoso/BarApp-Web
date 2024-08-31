@@ -18,7 +18,6 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.server.StreamResource;
 import lombok.Getter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -144,14 +143,16 @@ public class FormularioImagenes extends VerticalLayout {
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         });
 
-        InputStream defaultPortadaInputStream = getClass().getResourceAsStream("/META-INF.resources/images/portada_barapp.png");
+        InputStream defaultPortadaInputStream = getClass().getResourceAsStream(
+                "/META-INF.resources/images/portada_barapp.png");
         this.portadaMimeType = "image/png";
         defaultPortadaInputStream.mark(5242880);
         try {
             portadaByteArray = BarappUtils.convertInputStreamToByteArray(defaultPortadaInputStream);
             defaultPortadaInputStream.reset();
 
-            StreamResource portadaDefaultResource = new StreamResource("portada_barapp.png", () -> defaultPortadaInputStream);
+            StreamResource portadaDefaultResource = new StreamResource(
+                    "portada_barapp.png", () -> defaultPortadaInputStream);
             portadaImage.setSrc(portadaDefaultResource);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -195,7 +196,10 @@ public class FormularioImagenes extends VerticalLayout {
         botonesLayout.setId("registro-botones-layout");
         botonesLayout.setWidthFull();
 
-        this.add(tituloFormularioH3, seleccionaLogo, logoLayout, seleccionaPortada, portadaUpload, portadaLayout, botonesLayout);
+        this.add(
+                tituloFormularioH3, seleccionaLogo, logoLayout, seleccionaPortada, portadaUpload, portadaLayout,
+                botonesLayout
+        );
     }
 
     public void addSiguienteFormularioListener(SiguienteFormularioEvent listener) {

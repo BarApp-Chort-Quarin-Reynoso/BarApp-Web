@@ -3,7 +3,6 @@ package com.barapp.web.security;
 import com.barapp.web.business.service.UsuarioWebService;
 import com.barapp.web.views.login.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,15 +25,15 @@ public class SecurityConfig extends VaadinWebSecurity {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/images/*.png"))
-                    .permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/line-awesome/**/*.svg"))
-                    .permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/fakeview/*"))
-                    .permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/api/**"))
-                    .permitAll());
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/images/*.png"))
+                        .permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/line-awesome/**/*.svg"))
+                        .permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/fakeview/*"))
+                        .permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/**"))
+                        .permitAll());
 
         http.csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")));
 

@@ -11,18 +11,18 @@ public class HorarioConverter {
 
     public static HorarioEntity toEntity(Horario dto) {
         HorarioEntity entity = HorarioEntity.builder()
-                                            .hora(dto.getHorario().toString())
-                                            .tipoComida(dto.getTipoComida().toString())
-                                            .build();
+                .hora(dto.getHorario().toString())
+                .tipoComida(dto.getTipoComida().toString())
+                .build();
 
         return entity;
     }
 
     public static Horario toDto(HorarioEntity entity) {
         Horario horario = Horario.builder()
-                                 .horario(LocalTime.parse(entity.getHora()))
-                                 .tipoComida(TipoComida.valueOf(entity.getTipoComida()))
-                                 .build();
+                .horario(LocalTime.parse(entity.getHora()))
+                .tipoComida(TipoComida.valueOf(entity.getTipoComida()))
+                .build();
         return horario;
     }
 

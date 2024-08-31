@@ -2,7 +2,6 @@ package com.barapp.web.views.components;
 
 import com.barapp.web.model.IntervaloTiempo;
 import com.barapp.web.model.Mesa;
-import com.barapp.web.model.enums.TipoComida;
 import com.flowingcode.vaadin.addons.badgelist.Badge;
 import com.flowingcode.vaadin.addons.badgelist.BadgeList;
 import com.vaadin.flow.component.button.Button;

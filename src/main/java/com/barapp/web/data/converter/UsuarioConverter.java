@@ -8,22 +8,22 @@ public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity
     @Override
     public UsuarioEntity toEntity(UsuarioApp dto) {
         UsuarioEntity entity = UsuarioEntity.builder()
-                                            .nombre(dto.getNombre())
-                                            .apellido(dto.getApellido())
-                                            .idDetalleUsuario(dto.getIdDetalleUsuario())
-                                            .foto(dto.getFoto())
-                                            .build();
+                .nombre(dto.getNombre())
+                .apellido(dto.getApellido())
+                .idDetalleUsuario(dto.getIdDetalleUsuario())
+                .foto(dto.getFoto())
+                .build();
         return entity;
     }
 
     @Override
     public UsuarioApp toDto(UsuarioEntity entity) {
         UsuarioApp dto = UsuarioApp.builder()
-                                   .nombre(entity.getNombre())
-                                   .apellido(entity.getApellido())
-                                   .idDetalleUsuario(entity.getIdDetalleUsuario())
-                                   .foto(entity.getFoto())
-                                   .build();
+                .nombre(entity.getNombre())
+                .apellido(entity.getApellido())
+                .idDetalleUsuario(entity.getIdDetalleUsuario())
+                .foto(entity.getFoto())
+                .build();
         return dto;
     }
 

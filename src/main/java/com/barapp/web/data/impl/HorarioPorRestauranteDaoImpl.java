@@ -4,17 +4,13 @@ import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.converter.HorarioPorRestauranteConverter;
 import com.barapp.web.data.dao.HorarioPorRestauranteDao;
 import com.barapp.web.data.entities.HorarioPorRestauranteEntity;
-import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.HorarioPorRestaurante;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.Firestore;
 import org.springframework.stereotype.Repository;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class HorarioPorRestauranteDaoImpl extends BaseDaoImpl<HorarioPorRestaurante, HorarioPorRestauranteEntity> implements HorarioPorRestauranteDao {

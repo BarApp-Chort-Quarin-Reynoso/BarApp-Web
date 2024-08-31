@@ -5,14 +5,14 @@ import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.business.service.UbicacionService;
 import com.barapp.web.business.service.UsuarioWebService;
-import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.enums.Rol;
 import com.barapp.web.model.UsuarioWeb;
+import com.barapp.web.model.enums.EstadoRestaurante;
+import com.barapp.web.model.enums.Rol;
 import com.barapp.web.views.InicioView;
+import com.barapp.web.views.components.pageElements.CustomErrorWindow;
 import com.barapp.web.views.components.pageElements.MainElement;
 import com.barapp.web.views.signup.formularios.*;
-import com.barapp.web.views.components.pageElements.CustomErrorWindow;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
@@ -55,9 +55,11 @@ public class RegistroBarView extends VerticalLayout {
     DetalleRestauranteService detalleRestauranteService;
 
     @Autowired
-    public RegistroBarView(UbicacionService ubicacionService, UsuarioWebService usuarioWebService,
-                           RestauranteService restauranteService, PasswordEncoder passwordEncoder,
-                           DetalleRestauranteService detalleRestauranteService) {
+    public RegistroBarView(
+            UbicacionService ubicacionService, UsuarioWebService usuarioWebService,
+            RestauranteService restauranteService, PasswordEncoder passwordEncoder,
+            DetalleRestauranteService detalleRestauranteService
+    ) {
         this.binder = new Binder<>(Restaurante.class);
         this.usuarioWebService = usuarioWebService;
         this.ubicacionService = ubicacionService;
@@ -95,7 +97,8 @@ public class RegistroBarView extends VerticalLayout {
 
     private void configurarListenersFormularioInformacionBasica() {
         formularioInformacionBasica.addSiguienteFormularioListener(restaurante -> {
-            formularioUbicacion = new FormularioUbicacion(this.ubicacionService, formularioInformacionBasica, restaurante);
+            formularioUbicacion = new FormularioUbicacion(
+                    this.ubicacionService, formularioInformacionBasica, restaurante);
             baseLayout.add(formularioUbicacion);
             configurarListenersFormularioUbicacion();
         });
@@ -127,9 +130,18 @@ public class RegistroBarView extends VerticalLayout {
             ubicacionService.setLatitudLongitud(restaurante.getUbicacion());
 
             // Crear usuario web e Image Containers con la info de las fotos a guardar
-            UsuarioWeb usuarioWeb = new UsuarioWeb(restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()), Rol.BAR);
-            ImageContainer logo = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(), formularioImagenes.getLogoMimeType());
-            ImageContainer portada = new ImageContainer(new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(), formularioImagenes.getPortadaMimeType());
+            UsuarioWeb usuarioWeb = new UsuarioWeb(
+                    restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()),
+                    Rol.BAR
+            );
+            ImageContainer logo = new ImageContainer(
+                    new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(),
+                    formularioImagenes.getLogoMimeType()
+            );
+            ImageContainer portada = new ImageContainer(
+                    new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(),
+                    formularioImagenes.getPortadaMimeType()
+            );
             try {
                 restauranteService.registrarRestaurante(restaurante, usuarioWeb, logo, portada);
             } catch (Exception e) {
@@ -138,7 +150,8 @@ public class RegistroBarView extends VerticalLayout {
 
             // Guardar información del detalle restaurante
             try {
-                detalleRestauranteService.save(restaurante.getDetalleRestaurante(), restaurante.getIdDetalleRestaurante());
+                detalleRestauranteService.save(
+                        restaurante.getDetalleRestaurante(), restaurante.getIdDetalleRestaurante());
             } catch (Exception e) {
                 CustomErrorWindow.showError(e);
             }

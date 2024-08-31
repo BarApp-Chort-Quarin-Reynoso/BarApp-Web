@@ -103,7 +103,8 @@ public class EditorDiaNoLaboralDialog extends Dialog {
                 .asRequired(getTranslation("comp.editardianolaboral.fechaobligatoria"))
                 .withValidator(
                         this::validateNoLaboralExistenteEnMismaFecha,
-                        getTranslation("comp.editardianolaboral.yaexiste"))
+                        getTranslation("comp.editardianolaboral.yaexiste")
+                )
                 .bind(ConfiguradorHorarioNoLaboral::getFecha, ConfiguradorHorarioNoLaboral::setFecha);
     }
 

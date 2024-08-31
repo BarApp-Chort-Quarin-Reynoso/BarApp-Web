@@ -1,28 +1,22 @@
 package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.model.*;
+import com.barapp.web.model.DetalleRestaurante;
+import com.barapp.web.model.HorarioConCapacidadDisponible;
+import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.RestauranteUsuario;
+import com.google.type.LatLng;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.google.type.LatLng;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -38,7 +32,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     }
 
     @Override
-    public RestauranteService getService() { return restauranteService; }
+    public RestauranteService getService() {return restauranteService;}
 
     @Override
     @GetMapping()
@@ -70,7 +64,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     public ResponseEntity<Map<LocalDate, Map<String, HorarioConCapacidadDisponible>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio) {
         try {
             return new ResponseEntity<>(this.restauranteService
-                .horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
+                    .horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -81,7 +75,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     public ResponseEntity<List<String>> addFavorito(@PathVariable String id, @RequestParam String idDetalleUsuario, @RequestBody RestauranteUsuario restaurante) {
         try {
             return new ResponseEntity<>(this.restauranteService
-                .addFavorito(id, restaurante, idDetalleUsuario), HttpStatus.OK);
+                    .addFavorito(id, restaurante, idDetalleUsuario), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -92,7 +86,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     public ResponseEntity<List<String>> removeFavorito(@PathVariable String id, @RequestParam String idUsuario, @RequestParam String idDetalleUsuario) {
         try {
             return new ResponseEntity<>(this.restauranteService
-                .removeFavorito(id, idUsuario, idDetalleUsuario), HttpStatus.OK);
+                    .removeFavorito(id, idUsuario, idDetalleUsuario), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -124,17 +118,17 @@ public class RestauranteRestController extends BaseController<Restaurante> {
         try {
             logger.info("Busqueda area: ne: %s, %s sw: %s, %s".formatted(neLat, neLon, swLat, swLon));
             LatLng northeast = LatLng
-                .newBuilder()
+                    .newBuilder()
                     .setLatitude(Double.parseDouble(neLat))
                     .setLongitude(Double.parseDouble(neLon))
                     .build();
             LatLng southwest = LatLng
-                .newBuilder()
+                    .newBuilder()
                     .setLatitude(Double.parseDouble(swLat))
                     .setLongitude(Double.parseDouble(swLon))
                     .build();
             return new ResponseEntity<>(this.restauranteService
-                .getRestaurantesEnArea(northeast, southwest), HttpStatus.OK);
+                    .getRestaurantesEnArea(northeast, southwest), HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -11,5 +11,6 @@ public abstract class ConfiguradorHorarioValidator {
     }
 
     public abstract boolean colisiona(ConfiguradorHorarioDiaEspecifico chEspecifico);
+
     public abstract boolean colisiona(ConfiguradorHorarioSemanal chSemanal);
 }

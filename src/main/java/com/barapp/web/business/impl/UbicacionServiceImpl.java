@@ -39,7 +39,10 @@ public class UbicacionServiceImpl implements UbicacionService {
 
             Geocoding geocodingResponse = gson.fromJson(getResponse.body(), Geocoding.class);
 
-            Pair<Double, Double> latLong = new Pair<>(geocodingResponse.results.get(0).geometry.location.lat, geocodingResponse.results.get(0).geometry.location.lng);
+            Pair<Double, Double> latLong = new Pair<>(
+                    geocodingResponse.results.get(0).geometry.location.lat,
+                    geocodingResponse.results.get(0).geometry.location.lng
+            );
 
             return latLong;
         } catch (URISyntaxException | InterruptedException | IOException e) {

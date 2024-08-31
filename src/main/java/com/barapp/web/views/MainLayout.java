@@ -49,7 +49,9 @@ public class MainLayout extends AppLayout {
         list.addClassNames(Display.FLEX, Gap.SMALL, ListStyleType.NONE, Margin.NONE, Padding.NONE);
         nav.add(list);
 
-        list.add(new MenuItemInfo(getTranslation("views.inicio.titulo"), LineAwesomeIcon.HOME_SOLID.create(), InicioView.class));
+        list.add(new MenuItemInfo(getTranslation("views.inicio.titulo"), LineAwesomeIcon.HOME_SOLID.create(),
+                InicioView.class
+        ));
 
         HorizontalLayout navWrapper = new HorizontalLayout();
         navWrapper.getStyle().setPadding("var(--lumo-space-s) var(--lumo-space-m)");
@@ -87,17 +89,33 @@ public class MainLayout extends AppLayout {
     private MenuItemInfo[] createMenuItemsForLoggedInUsers() {
         UserDetails user = securityService.getAuthenticatedUser().get();
         List<MenuItemInfo> items = new ArrayList<>();
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
-            items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), MiBarView.class));
+        if (user
+                .getAuthorities()
+                .contains(new SimpleGrantedAuthority(MiBarView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.mibar.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(),
+                    MiBarView.class
+            ));
         }
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(MisHorariosView.rolAllowed.getGrantedAuthorityName()))) {
-            items.add(new MenuItemInfo(getTranslation("views.mishorarios.titulo"), LineAwesomeIcon.CALENDAR.create(), MisHorariosView.class));
-}
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(ListaOpinionesView.rolAllowed.getGrantedAuthorityName()))) {
-            items.add(new MenuItemInfo(getTranslation("views.opiniones.titulo"), LineAwesomeIcon.STAR.create(), ListaOpinionesView.class));
+        if (user
+                .getAuthorities()
+                .contains(new SimpleGrantedAuthority(MisHorariosView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.mishorarios.titulo"), LineAwesomeIcon.CALENDAR.create(),
+                    MisHorariosView.class
+            ));
         }
-        if (user.getAuthorities().contains(new SimpleGrantedAuthority(ListaBaresView.rolAllowed.getGrantedAuthorityName()))) {
-            items.add(new MenuItemInfo(getTranslation("views.bares.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(), ListaBaresView.class));
+        if (user
+                .getAuthorities()
+                .contains(new SimpleGrantedAuthority(ListaOpinionesView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.opiniones.titulo"), LineAwesomeIcon.STAR.create(),
+                    ListaOpinionesView.class
+            ));
+        }
+        if (user
+                .getAuthorities()
+                .contains(new SimpleGrantedAuthority(ListaBaresView.rolAllowed.getGrantedAuthorityName()))) {
+            items.add(new MenuItemInfo(getTranslation("views.bares.titulo"), LineAwesomeIcon.UTENSILS_SOLID.create(),
+                    ListaBaresView.class
+            ));
         }
         return items.toArray(new MenuItemInfo[]{});
     }
@@ -109,7 +127,10 @@ public class MainLayout extends AppLayout {
         public MenuItemInfo(String menuTitle, Component icon, Class<? extends Component> view) {
             this.view = view;
             RouterLink link = new RouterLink();
-            link.addClassNames(Display.FLEX, Gap.XSMALL, Height.MEDIUM, AlignItems.CENTER, Padding.Horizontal.SMALL, TextColor.BODY);
+            link.addClassNames(
+                    Display.FLEX, Gap.XSMALL, Height.MEDIUM, AlignItems.CENTER, Padding.Horizontal.SMALL,
+                    TextColor.BODY
+            );
             link.setRoute(view);
 
             Span text = new Span(menuTitle);

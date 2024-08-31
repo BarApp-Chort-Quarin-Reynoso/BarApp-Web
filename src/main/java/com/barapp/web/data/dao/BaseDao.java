@@ -1,7 +1,7 @@
 package com.barapp.web.data.dao;
 
-import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.QueryParams;
+import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.entities.BaseEntity;
 import com.barapp.web.model.BaseModel;
 import com.google.cloud.firestore.CollectionReference;

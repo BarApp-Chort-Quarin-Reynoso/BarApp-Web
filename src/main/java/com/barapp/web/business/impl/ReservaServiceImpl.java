@@ -10,7 +10,6 @@ import com.barapp.web.utils.FormatUtils;
 import com.google.cloud.firestore.Filter;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;

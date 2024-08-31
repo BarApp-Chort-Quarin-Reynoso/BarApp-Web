@@ -4,9 +4,7 @@ import com.barapp.web.model.Mesa;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -14,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class IntervaloTiempoEntity extends BaseEntity  {
+public class IntervaloTiempoEntity extends BaseEntity {
     String desde;
     String hasta;
     List<String> horarios;

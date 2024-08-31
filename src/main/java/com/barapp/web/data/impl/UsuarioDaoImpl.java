@@ -26,15 +26,15 @@ public class UsuarioDaoImpl extends BaseDaoImpl<UsuarioApp, UsuarioEntity> imple
     }
 
     @Override
-    public CollectionReference getCollection() { return firestore.collection("usuarios"); }
+    public CollectionReference getCollection() {return firestore.collection("usuarios");}
 
     @Override
-    public BaseConverter<UsuarioApp, UsuarioEntity> getConverter() { return new UsuarioConverter(); }
+    public BaseConverter<UsuarioApp, UsuarioEntity> getConverter() {return new UsuarioConverter();}
 
     @Override
     public String registrarUsuario(String mail, String contrasenia) throws FirebaseAuthException {
         UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-            .setEmail(mail)
+                .setEmail(mail)
                 .setPassword(contrasenia);
 
         UserRecord userRecord = firebaseAuth.createUser(request);

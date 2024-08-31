@@ -15,7 +15,7 @@ public class BarappUtils {
      * como prefijo. Si la extensión es "jpg", se convierte a "jpeg". Si la URL no contiene una extensión de archivo,
      * se devuelve un tipo MIME predeterminado.</p>
      *
-     * @param url La URL de la imagen almacenada en Firebase Storage. Debe ser una URL válida y bien formada.
+     * @param url             La URL de la imagen almacenada en Firebase Storage. Debe ser una URL válida y bien formada.
      * @param defaultMimeType El tipo MIME predeterminado a devolver si la URL no contiene una extensión.
      * @return El tipo MIME de la imagen si la extensión está presente en la URL; de lo contrario, el tipo MIME predeterminado.
      * @throws RuntimeException Si la URL es mal formada o no puede ser procesada.

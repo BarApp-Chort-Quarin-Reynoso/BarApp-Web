@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ConfiguradorHorarioService extends BaseService<ConfiguradorHorario> {
     List<ConfiguradorHorario> getAllByCorreoRestaurante(String correo);
+
     List<ConfiguradorHorarioNoLaboral> getAllNoLaboralByCorreoRestaurante(String correo);
 }

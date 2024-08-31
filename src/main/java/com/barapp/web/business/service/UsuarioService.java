@@ -1,11 +1,11 @@
 package com.barapp.web.business.service;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.barapp.web.model.DetalleUsuario;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioApp;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface UsuarioService extends BaseService<UsuarioApp> {
     Optional<UsuarioApp> getByMail(String mail);

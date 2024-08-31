@@ -15,7 +15,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-
 import jakarta.annotation.security.RolesAllowed;
 
 @SuppressWarnings("serial")
@@ -24,7 +23,7 @@ import jakarta.annotation.security.RolesAllowed;
 @RolesAllowed(value = {"BAR"})
 public class BarRechazadoView extends VerticalLayout implements BeforeEnterObserver {
     public static final Rol rolAllowed = Rol.BAR;
-    
+
     Span returnSpan = new Span();
 
     private final SecurityService securityService;
@@ -33,12 +32,12 @@ public class BarRechazadoView extends VerticalLayout implements BeforeEnterObser
         this.securityService = securityService;
 
         setAlignItems(Alignment.CENTER);
-        
+
         VerticalLayout textWrapper = new VerticalLayout();
         textWrapper.setWidth("50%");
-        
+
         H3 title = new H3(getTranslation("views.barrechazado.estimadocliente"));
-        
+
         Paragraph parrafo = new Paragraph(getTranslation("views.barrechazado.parrafo"));
         Paragraph atentamente = new Paragraph(getTranslation("views.barrechazado.atentamente"));
         atentamente.getElement().appendChild(ElementFactory.createBr());
@@ -47,7 +46,7 @@ public class BarRechazadoView extends VerticalLayout implements BeforeEnterObser
         barApp.addClassName("appname");
         barApp.addClassName(FontSize.LARGE);
         atentamente.add(barApp);
-        
+
         textWrapper.add(title, parrafo, atentamente);
         add(textWrapper);
     }
@@ -59,6 +58,6 @@ public class BarRechazadoView extends VerticalLayout implements BeforeEnterObser
             event.forwardTo(InicioView.class);
         }
     }
-    
-    
+
+
 }

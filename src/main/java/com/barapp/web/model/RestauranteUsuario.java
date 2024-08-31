@@ -1,7 +1,6 @@
 package com.barapp.web.model;
 
 import com.barapp.web.model.enums.EstadoRestaurante;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;

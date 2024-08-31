@@ -4,7 +4,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -41,11 +40,13 @@ public class BarappFooter extends Footer {
         Button whatsapp = new Button(LineAwesomeIcon.WHATSAPP.create());
         whatsapp.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(home, sobreNosotros, terminosCondiciones, nuestroEquipo, blog,ayuda);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(
+                home, sobreNosotros, terminosCondiciones, nuestroEquipo, blog, ayuda);
         horizontalLayout.setClassName("items-list");
-        HorizontalLayout container = new HorizontalLayout(horizontalLayout,new HorizontalLayout(facebook, instagram, twitter, whatsapp));
+        HorizontalLayout container = new HorizontalLayout(horizontalLayout,
+                new HorizontalLayout(facebook, instagram, twitter, whatsapp));
         container.setClassName("footer-layout-container");
 
-        this.add(container,copyright);
+        this.add(container, copyright);
     }
 }

@@ -2,7 +2,6 @@ package com.barapp.web.views.dialogs;
 
 import com.barapp.web.model.*;
 import com.barapp.web.model.enums.TipoComida;
-import com.barapp.web.views.components.CapacidadField;
 import com.barapp.web.views.components.IntervaloTiempoSelector;
 import com.barapp.web.views.utils.events.CrudEvent;
 import com.barapp.web.views.utils.validation.ConfiguradorHorarioDiaEspecificoValidator;

@@ -5,21 +5,12 @@ import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.model.DetalleUsuario;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.UsuarioApp;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/usuarios")
@@ -33,7 +24,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
     }
 
     @Override
-    public BaseService<UsuarioApp> getService() { return usuarioService; }
+    public BaseService<UsuarioApp> getService() {return usuarioService;}
 
     @GetMapping("/mail/{mail}")
     public ResponseEntity<UsuarioApp> getByMail(@PathVariable String mail) {
@@ -112,7 +103,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
     public ResponseEntity<Void> updateRecentSearches(@PathVariable String id, @RequestBody List<String> busquedasRecientes) {
         try {
             Optional<DetalleUsuario> detalleUsuario = this.usuarioService
-                .updateBusquedasRecientes(id, busquedasRecientes);
+                    .updateBusquedasRecientes(id, busquedasRecientes);
             if (!detalleUsuario.isPresent()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

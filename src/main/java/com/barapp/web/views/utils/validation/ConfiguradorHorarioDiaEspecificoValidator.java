@@ -1,6 +1,5 @@
 package com.barapp.web.views.utils.validation;
 
-import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.ConfiguradorHorarioDiaEspecifico;
 import com.barapp.web.model.ConfiguradorHorarioSemanal;
 import lombok.Getter;

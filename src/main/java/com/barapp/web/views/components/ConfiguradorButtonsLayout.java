@@ -1,8 +1,6 @@
 package com.barapp.web.views.components;
 
-import com.barapp.web.model.ConfiguradorHorario;
 import com.barapp.web.model.enums.TipoConfigurador;
-import com.barapp.web.views.dialogs.EditorConfigurardorHorarioDialog;
 import com.barapp.web.views.utils.events.CrudEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
