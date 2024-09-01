@@ -11,6 +11,7 @@ public class DetalleRestauranteConverter implements BaseConverter<DetalleRestaur
     public DetalleRestauranteEntity toEntity(DetalleRestaurante dto) {
         return DetalleRestauranteEntity.builder()
                 .idDetalleRestaurante(dto.getId())
+                .idRestaurante(dto.getIdRestaurante())
                 .descripcion(dto.getDescripcion())
                 .menu(dto.getMenu())
                 .capacidadTotal(new ArrayList<>(dto.getCapacidadTotal()))
@@ -22,6 +23,7 @@ public class DetalleRestauranteConverter implements BaseConverter<DetalleRestaur
     public DetalleRestaurante toDto(DetalleRestauranteEntity entity) {
         return DetalleRestaurante.builder()
                 .id(entity.getIdDetalleRestaurante())
+                .idRestaurante(entity.getIdRestaurante())
                 .descripcion(entity.getDescripcion())
                 .capacidadTotal(new LinkedHashSet<>(entity.getCapacidadTotal()))
                 .menu(entity.getMenu())

@@ -13,6 +13,7 @@ import java.util.*;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetalleRestaurante extends BaseModel {
+    String idRestaurante;
     String descripcion;
     List<Horario> listaHorarios;
     List<Opinion> listaOpiniones;

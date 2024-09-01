@@ -15,6 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetalleRestauranteEntity extends BaseEntity {
+    String idRestaurante;
     String idDetalleRestaurante;
     String descripcion;
     String menu;

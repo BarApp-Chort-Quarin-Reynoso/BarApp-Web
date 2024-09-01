@@ -1,5 +1,6 @@
 package com.barapp.web.controllers;
 
+import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.HorarioConCapacidadDisponible;
@@ -26,9 +27,11 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final RestauranteService restauranteService;
+    private final DetalleRestauranteService detalleRestauranteService;
 
-    public RestauranteRestController(RestauranteService restauranteService) {
+    public RestauranteRestController(RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService) {
         this.restauranteService = restauranteService;
+        this.detalleRestauranteService = detalleRestauranteService;
     }
 
     @Override
@@ -48,13 +51,11 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     @GetMapping("/{id}/detalle")
     public ResponseEntity<DetalleRestaurante> getRestaurantDetail(@PathVariable String id) {
         try {
-            Optional<DetalleRestaurante> detalleRestaurante = this.restauranteService
-                .getRestaurantDetail(id);
-            if (!detalleRestaurante.isPresent()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            Optional<DetalleRestaurante> detalleRestaurante = detalleRestauranteService.getByIdRestaurante(id);
+            return detalleRestaurante
+                    .map(restaurante -> new ResponseEntity<>(restaurante, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-            return new ResponseEntity<>(detalleRestaurante.get(), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
