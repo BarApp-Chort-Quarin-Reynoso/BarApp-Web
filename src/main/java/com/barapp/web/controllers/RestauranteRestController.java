@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,10 +64,16 @@ public class RestauranteRestController extends BaseController<Restaurante> {
     }
 
     @GetMapping("/{correo}/horarios")
-    public ResponseEntity<Map<LocalDate, Map<String, HorarioConCapacidadDisponible>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio) {
+    public ResponseEntity<Map<LocalDate, Map<String, HorarioConCapacidadDisponible>>> getHorarios(@PathVariable String correo, @RequestParam YearMonth mesAnio, @RequestParam(required = false) Integer cantMeses) {
         try {
-            return new ResponseEntity<>(this.restauranteService
-                    .horariosEnMesDisponiblesSegunDiaHoraActual(correo, mesAnio), HttpStatus.OK);
+            if (cantMeses == null)
+                cantMeses = 1;
+            Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horarios = new LinkedHashMap<>();
+            for (int i = 0; i < cantMeses; i++) {
+                YearMonth month = mesAnio.plusMonths(i);
+                horarios.putAll(restauranteService.horariosEnMesDisponiblesSegunDiaHoraActual(correo, month));
+            }
+            return new ResponseEntity<>(horarios, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
