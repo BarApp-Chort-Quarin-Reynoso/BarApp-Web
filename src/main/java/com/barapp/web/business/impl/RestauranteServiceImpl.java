@@ -319,23 +319,6 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public Optional<DetalleRestaurante> getRestaurantDetail(String idRestaurante) {
-        try {
-            Restaurante restaurante = restauranteDao.get(idRestaurante);
-
-            if (restaurante == null) {
-                throw new IllegalStateException("El restaurante con ID " + idRestaurante + " no existe.");
-            }
-
-            DetalleRestaurante detalleRestaurante = detalleRestauranteDao.get(restaurante.getIdDetalleRestaurante());
-            return Optional.ofNullable(detalleRestaurante);
-        } catch (Exception e) {
-            System.out.println(e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public RestauranteUsuario addVistoRecientemente(String idRestaurante, RestauranteUsuario restaurante) {
         try {
             if (restauranteDao.get(restaurante.getIdRestaurante()) == null) {
