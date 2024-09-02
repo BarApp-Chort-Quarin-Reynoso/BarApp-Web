@@ -7,6 +7,7 @@ import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.*;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.security.SecurityService;
+import com.barapp.web.utils.FormatUtils;
 import com.barapp.web.views.components.VisualizadorOpinion;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
@@ -148,7 +149,7 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
 
         opinionesRecientes = opinionService.getOpinionesRecientesByRestaurante(restaurante.getId());
 
-        puntuacion.add(String.valueOf(restaurante.getPuntuacion()));
+        puntuacion.add(FormatUtils.puntuacionFormat().format(restaurante.getPuntuacion()));
         stars.setValue(restaurante.getPuntuacion());
         cantidadOpiniones.add(restaurante.getCantidadOpiniones() != 1
                 ? getTranslation("views.opiniones.cantidadopiniones.opiniones", restaurante.getCantidadOpiniones())
