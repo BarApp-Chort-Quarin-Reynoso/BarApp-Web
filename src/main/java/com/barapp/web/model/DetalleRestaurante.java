@@ -15,8 +15,7 @@ import java.util.*;
 public class DetalleRestaurante extends BaseModel {
     String idRestaurante;
     String descripcion;
-    List<Horario> listaHorarios;
-    List<Opinion> listaOpiniones;
+    List<Opinion> opiniones;
     String menu;
     Set<Mesa> capacidadTotal;
     Map<String, CalificacionPromedio> caracteristicas;
@@ -24,8 +23,7 @@ public class DetalleRestaurante extends BaseModel {
     public DetalleRestaurante() {
         this.id = UUID.randomUUID().toString();
         this.descripcion = "";
-        this.listaHorarios = new ArrayList<>();
-        this.listaOpiniones = new ArrayList<>();
+        this.opiniones = new ArrayList<>();
         this.menu = "";
         this.capacidadTotal = new LinkedHashSet<>();
         this.caracteristicas = new LinkedHashMap<>();
