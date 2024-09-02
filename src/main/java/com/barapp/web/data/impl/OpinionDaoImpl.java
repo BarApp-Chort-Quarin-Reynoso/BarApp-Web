@@ -39,7 +39,7 @@ public class OpinionDaoImpl extends BaseDaoImpl<Opinion, OpinionEntity> implemen
         try {
             QueryParams queryParams = new QueryParams();
             queryParams.addFilter(Filter.equalTo("idRestaurante", idRestaurante));
-            queryParams.addOrder("fecha", Query.Direction.ASCENDING);
+            queryParams.addOrder("fecha", Query.Direction.DESCENDING);
 
             return this.getByParams(queryParams);
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class OpinionDaoImpl extends BaseDaoImpl<Opinion, OpinionEntity> implemen
         try {
             QueryParams queryParams = new QueryParams();
             queryParams.addFilter(Filter.equalTo("idRestaurante", idRestaurante));
-            queryParams.addOrder("fecha", Query.Direction.ASCENDING);
+            queryParams.addOrder("fecha", Query.Direction.DESCENDING);
             queryParams.setLimit(3);
 
             return this.getByParams(queryParams);
