@@ -2,8 +2,12 @@ package com.barapp.web.utils;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 public class FormatUtils {
     public static DatePicker.DatePickerI18n datePickerI18n() {
@@ -33,5 +37,10 @@ public class FormatUtils {
 
     public static DateTimeFormatter persistenceDateFormatter() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    }
+
+    public static NumberFormat puntuacionFormat() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        return new DecimalFormat("0.0", symbols);
     }
 }
