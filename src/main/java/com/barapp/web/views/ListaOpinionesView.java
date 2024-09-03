@@ -58,6 +58,8 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
 
     private final VerticalLayout opinionesLayout;
 
+    private final Span noHayOpiniones;
+
     public ListaOpinionesView(SecurityService securityService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService, OpinionService opinionService, ConfiguracionService configuracionService) {
         this.securityService = securityService;
         this.restauranteService = restauranteService;
@@ -72,6 +74,7 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
         gestionarCaracteristicasButton = new Button(getTranslation("views.opiniones.gestionarcaracteristicas"));
         verListaOpinionesButton = new Button(getTranslation("views.opiniones.verlistaopiniones"));
         opinionesLayout = new VerticalLayout();
+        noHayOpiniones = new Span(getTranslation("views.opiniones.nohayopiniones"));
 
         configurarUI();
         cargarDatos();
@@ -170,18 +173,23 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
             caracteristicasLayout.setVisible(false);
         }
 
-        for (int i = 0; i < 3; i++) {
-            if (i < opinionesRecientes.size()) {
-                VisualizadorOpinion opinion = new VisualizadorOpinion();
-                opinion.setWidthFull();
-                opinion.addClassName(LumoUtility.Padding.MEDIUM);
-                opinion.setValue(opinionesRecientes.get(i));
-                opinionesLayout.add(opinion);
+        if (restaurante.getCantidadOpiniones() == 0) {
+            noHayOpiniones.addClassNames("empty-label", LumoUtility.Padding.MEDIUM);
+            opinionesLayout.add(noHayOpiniones);
+        } else {
+            for (int i = 0; i < 3; i++) {
+                if (i < opinionesRecientes.size()) {
+                    VisualizadorOpinion opinion = new VisualizadorOpinion();
+                    opinion.setWidthFull();
+                    opinion.addClassName(LumoUtility.Padding.MEDIUM);
+                    opinion.setValue(opinionesRecientes.get(i));
+                    opinionesLayout.add(opinion);
+                }
             }
-        }
 
-        if (restaurante.getCantidadOpiniones() > 3) {
-            opinionesLayout.add(verListaOpinionesButton);
+            if (restaurante.getCantidadOpiniones() > 3) {
+                opinionesLayout.add(verListaOpinionesButton);
+            }
         }
     }
 
