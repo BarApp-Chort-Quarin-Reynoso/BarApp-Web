@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,9 +18,10 @@ public class UsuarioApp extends BaseModel {
     private String idDetalleUsuario;
     private String foto;
     private DetalleUsuario detalleUsuario;
+    private Set<String> fcmTokens;
 
     @Override
     public String toString() {
-        return "UsuarioDto [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + "]";
+        return "UsuarioApp [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + "]";
     }
 }

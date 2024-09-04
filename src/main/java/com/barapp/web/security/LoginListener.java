@@ -18,8 +18,8 @@ public class LoginListener implements ApplicationListener<AbstractAuthentication
 
         String username = abstractAuthenticationEvent.getAuthentication().getName();
 
-        if (abstractAuthenticationEvent instanceof AbstractAuthenticationFailureEvent) {
-            logger.warn("Invalid login detected with username '{}'", username);
+        if (abstractAuthenticationEvent instanceof AbstractAuthenticationFailureEvent event) {
+            logger.warn("Invalid login detected with username '{}'. '{}'", username, event.getException().toString());
 
         } else if (abstractAuthenticationEvent instanceof AuthenticationSuccessEvent) {
             logger.info("User '{}' logged in successfully", username);
