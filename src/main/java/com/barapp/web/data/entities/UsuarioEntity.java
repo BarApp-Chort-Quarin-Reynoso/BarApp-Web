@@ -2,6 +2,8 @@ package com.barapp.web.data.entities;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -12,4 +14,5 @@ public class UsuarioEntity extends BaseEntity {
     private String apellido;
     private String idDetalleUsuario;
     private String foto;
+    private List<String> fcmTokens;
 }

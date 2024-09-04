@@ -7,6 +7,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -47,4 +48,9 @@ public class FirestoreConfig {
         return StorageClient.getInstance(firebaseApp);
     }
 
+    @Bean
+    @Scope(scopeName = "singleton")
+    public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) throws Exception {
+        return FirebaseMessaging.getInstance(firebaseApp);
+    }
 }

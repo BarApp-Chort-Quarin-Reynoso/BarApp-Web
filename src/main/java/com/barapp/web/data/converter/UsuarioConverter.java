@@ -3,6 +3,9 @@ package com.barapp.web.data.converter;
 import com.barapp.web.data.entities.UsuarioEntity;
 import com.barapp.web.model.UsuarioApp;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity> {
 
     @Override
@@ -12,6 +15,7 @@ public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity
                 .apellido(dto.getApellido())
                 .idDetalleUsuario(dto.getIdDetalleUsuario())
                 .foto(dto.getFoto())
+                .fcmTokens(new ArrayList<>(dto.getFcmTokens()))
                 .build();
         return entity;
     }
@@ -23,6 +27,7 @@ public class UsuarioConverter implements BaseConverter<UsuarioApp, UsuarioEntity
                 .apellido(entity.getApellido())
                 .idDetalleUsuario(entity.getIdDetalleUsuario())
                 .foto(entity.getFoto())
+                .fcmTokens(entity.getFcmTokens() != null ? new HashSet<>(entity.getFcmTokens()) : new HashSet<>())
                 .build();
         return dto;
     }
