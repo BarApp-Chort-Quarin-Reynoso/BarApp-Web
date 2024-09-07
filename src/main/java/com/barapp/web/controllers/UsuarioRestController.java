@@ -37,7 +37,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
             return new ResponseEntity<>(usuario.get(), HttpStatus.OK);
             // return new ResponseEntity<UsuarioApp>(this.usuarioService.getByCorreo(id), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -52,7 +52,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
 
             return new ResponseEntity<>(detalleUsuario.get(), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -62,7 +62,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
         try {
             return new ResponseEntity<>(this.usuarioService.addUserDetail(id, detalleUsuario), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -73,7 +73,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
             List<RestauranteUsuario> restaurantes = this.usuarioService.getFavoritos(id);
             return new ResponseEntity<>(restaurantes, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,6 +84,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
             List<RestauranteUsuario> restaurantes = this.usuarioService.getVistosRecientemente(id);
             return new ResponseEntity<>(restaurantes, HttpStatus.OK);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -94,7 +95,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
             this.usuarioService.updateFoto(id, foto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -111,7 +112,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
             return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -121,7 +122,7 @@ public class UsuarioRestController extends BaseController<UsuarioApp> {
         try {
             return new ResponseEntity<>(this.usuarioService.registrarUsuario(mail, contrasenia), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

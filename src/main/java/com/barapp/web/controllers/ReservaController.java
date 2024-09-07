@@ -32,7 +32,7 @@ public class ReservaController extends BaseController<Reserva> {
         try {
             return new ResponseEntity<>(this.reservaService.updateEstado(id, estado), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
