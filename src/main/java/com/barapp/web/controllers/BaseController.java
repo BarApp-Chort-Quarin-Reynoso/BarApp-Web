@@ -2,6 +2,8 @@ package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.BaseService;
 import com.barapp.web.model.BaseModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +13,14 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class BaseController<D extends BaseModel> {
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping()
     public ResponseEntity<List<D>> getAll(@RequestParam Map<String, String> allParams) {
         try {
             return new ResponseEntity<>(getService().getAll(allParams.entrySet()), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -30,7 +33,7 @@ public abstract class BaseController<D extends BaseModel> {
             }
             return new ResponseEntity<>(getService().save(dto, id), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -40,7 +43,7 @@ public abstract class BaseController<D extends BaseModel> {
         try {
             return new ResponseEntity<>(getService().get(id), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -50,7 +53,7 @@ public abstract class BaseController<D extends BaseModel> {
         try {
             return new ResponseEntity<>(getService().save(dto, id), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -61,7 +64,7 @@ public abstract class BaseController<D extends BaseModel> {
             getService().delete(id);
             return new ResponseEntity<>(id, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

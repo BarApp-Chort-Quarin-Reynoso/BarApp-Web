@@ -44,7 +44,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
         try {
             return new ResponseEntity<>(this.restauranteService.getAvailableOrPausedRestaurants(), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -58,7 +58,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,7 +75,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
             }
             return new ResponseEntity<>(horarios, HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -86,7 +86,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
             return new ResponseEntity<>(this.restauranteService
                     .addFavorito(id, restaurante, idDetalleUsuario), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -97,7 +97,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
             return new ResponseEntity<>(this.restauranteService
                     .removeFavorito(id, idUsuario, idDetalleUsuario), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -107,7 +107,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
         try {
             return new ResponseEntity<>(this.restauranteService.addVistoRecientemente(id, restaurante), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -117,7 +117,7 @@ public class RestauranteRestController extends BaseController<Restaurante> {
         try {
             return new ResponseEntity<>(this.restauranteService.getDestacados(), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
