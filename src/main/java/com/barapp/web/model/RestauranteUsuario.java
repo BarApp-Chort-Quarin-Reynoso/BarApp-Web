@@ -29,6 +29,9 @@ public class RestauranteUsuario extends BaseModel {
     Double puntuacion = 0.0;
 
     @Builder.Default
+    Integer cantidadOpiniones = 0;
+
+    @Builder.Default
     String logo = "";
 
     @Builder.Default

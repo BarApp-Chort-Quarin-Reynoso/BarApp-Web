@@ -17,6 +17,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
                 .estado(dto.getEstado().toString())
                 .correo(dto.getCorreo())
                 .puntuacion(dto.getPuntuacion())
+                .cantidadOpiniones(dto.getCantidadOpiniones())
                 .logo(dto.getLogo())
                 .portada(dto.getPortada())
                 .idUbicacion(dto.getUbicacion().getId())
@@ -41,6 +42,7 @@ public class RestauranteUsuarioConverter implements BaseConverter<RestauranteUsu
                 .estado(entity.getEstado() != null ? EstadoRestaurante.valueOf(entity.getEstado()) : null)
                 .correo(entity.getCorreo())
                 .puntuacion(entity.getPuntuacion())
+                .cantidadOpiniones(entity.getCantidadOpiniones())
                 .logo(entity.getLogo())
                 .portada(entity.getPortada())
                 .ubicacion(Ubicacion
