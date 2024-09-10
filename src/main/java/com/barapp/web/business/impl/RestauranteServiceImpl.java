@@ -33,20 +33,25 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final RestauranteFavoritoDao restauranteFavoritoDao;
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final ConfiguradorHorarioDao configuradorHorarioDao;
-    private final DetalleRestauranteDao detalleRestauranteDao;
     private final DetalleUsuarioDao detalleUsuarioDao;
+    private final OpinionDao opinionDao;
     private final HorarioPorRestauranteService horarioPorRestauranteService;
     private final ReservaService reservaService;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, ConfiguradorHorarioDao configuradorHorarioDao, DetalleRestauranteDao detalleRestauranteDao, DetalleUsuarioDao detalleUsuarioDao, HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService, StorageClient storageClient, ImageDao imageDao) {
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao,
+            RestauranteVistoRecientementeDao restauranteVistoRecientementeDao,
+            ConfiguradorHorarioDao configuradorHorarioDao,
+            DetalleUsuarioDao detalleUsuarioDao, OpinionDao opinionDao,
+            HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService,
+            StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.configuradorHorarioDao = configuradorHorarioDao;
-        this.detalleRestauranteDao = detalleRestauranteDao;
         this.detalleUsuarioDao = detalleUsuarioDao;
+        this.opinionDao = opinionDao;
         this.horarioPorRestauranteService = horarioPorRestauranteService;
         this.reservaService = reservaService;
         this.storageClient = storageClient;
@@ -453,6 +458,16 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public List<Restaurante> getDestacados() {
         try {
             return restauranteDao.getFiltered(Filter.greaterThanOrEqualTo("puntuacion", 4.0));
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Opinion> getAllOpiniones(String idRestaurante) {
+        try {
+            return opinionDao.getOpinionesByRestaurante(idRestaurante);
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);

@@ -4,6 +4,7 @@ import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.HorarioConCapacidadDisponible;
+import com.barapp.web.model.Opinion;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.RestauranteUsuario;
 import com.google.type.LatLng;
@@ -140,6 +141,16 @@ public class RestauranteRestController extends BaseController<Restaurante> {
                     .getRestaurantesEnArea(northeast, southwest), HttpStatus.OK);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}/opiniones")
+    public ResponseEntity<List<Opinion>> getAllOpiniones(@PathVariable String id) {
+        try {
+            return new ResponseEntity<>(this.restauranteService.getAllOpiniones(id), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
