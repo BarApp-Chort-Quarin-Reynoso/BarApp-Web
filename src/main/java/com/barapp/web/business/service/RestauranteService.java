@@ -43,4 +43,6 @@ public interface RestauranteService extends BaseService<Restaurante> {
     List<Restaurante> getDestacados();
 
     List<Restaurante> getRestaurantesEnArea(LatLng northeast, LatLng southwest);
+
+    List<Opinion> getAllOpiniones(String idRestaurante);
 }
