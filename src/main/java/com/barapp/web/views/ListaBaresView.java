@@ -1,7 +1,11 @@
 package com.barapp.web.views;
 
+import com.barapp.web.business.MobileNotification;
+import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.RestauranteService;
+import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.model.Restaurante;
+import com.barapp.web.model.UsuarioApp;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.views.components.pageElements.BarappFooter;
@@ -20,6 +24,9 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,11 +38,16 @@ public class ListaBaresView extends VerticalLayout {
 
     private Grid<Restaurante> baresGrid;
     private Div noRestaurantesLabel;
+    private Button notificationButton;
 
     private final RestauranteService restauranteService;
+    private final NotificationService notificationService;
+    private final UsuarioService usuarioService;
 
-    public ListaBaresView(RestauranteService restauranteService) {
+    public ListaBaresView(RestauranteService restauranteService, NotificationService notificationService, UsuarioService usuarioService) {
         this.restauranteService = restauranteService;
+        this.notificationService = notificationService;
+        this.usuarioService = usuarioService;
 
         configurarGrid();
         configurarUi();
@@ -43,9 +55,22 @@ public class ListaBaresView extends VerticalLayout {
 
     private void configurarUi() {
         noRestaurantesLabel = new Div(getTranslation("views.bares.sinresultados"));
+        notificationButton = new Button("Enviar notificación");
+        notificationButton.addClickListener(ce -> {
+            UsuarioApp usuarioApp = usuarioService.getByMail("fedequarin@gmail.com").orElseThrow();
+            notificationService.scheduleNotificacion(
+                    usuarioApp,
+                    MobileNotification.builder()
+                            .title("Alarma")
+                            .body("Alarma de prueba")
+                            .build(),
+                    LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0))
+            );
+        });
 
         MainElement mainElement = new MainElement();
         mainElement.addClassName("lista-bares-view");
+        mainElement.add(notificationButton);
 
         try {
             List<Restaurante> restaurantes = restauranteService

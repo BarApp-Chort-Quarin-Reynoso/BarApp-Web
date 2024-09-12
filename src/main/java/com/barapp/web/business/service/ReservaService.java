@@ -20,4 +20,6 @@ public interface ReservaService extends BaseService<Reserva> {
     Map<LocalDate, List<Reserva>> getReservasPendientesPorMes(String idRestaurante, YearMonth mes);
 
     Reserva updateEstado(String idReserva, String estado);
+
+    void inicializarNotificaciones();
 }
