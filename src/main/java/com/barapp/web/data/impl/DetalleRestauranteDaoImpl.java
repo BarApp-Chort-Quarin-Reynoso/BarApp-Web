@@ -6,6 +6,7 @@ import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.entities.DetalleRestauranteEntity;
 import com.barapp.web.model.CalificacionPromedio;
 import com.barapp.web.model.DetalleRestaurante;
+import com.barapp.web.model.Opinion;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
@@ -40,6 +41,31 @@ public class DetalleRestauranteDaoImpl extends BaseDaoImpl<DetalleRestaurante, D
             docRef.update("caracteristicas", caracteristicas).get();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void actualizarPorNuevaOpinion(DetalleRestaurante detalleRestaurante, Opinion opinion) {
+        for (Map.Entry<String, Integer> caracteristicaValoracion : opinion.getCaracteristicas().entrySet()) {
+            String caracteristica = caracteristicaValoracion.getKey();
+            Integer valoracion = caracteristicaValoracion.getValue();
+
+            CalificacionPromedio cantidadOpinionesYValoracion = detalleRestaurante
+                    .getCaracteristicas()
+                    .get(caracteristica);
+            Double nuevaValoracionCaracteristica = (cantidadOpinionesYValoracion
+                    .getPuntuacion()
+                    * cantidadOpinionesYValoracion
+                            .getCantidadOpiniones()
+                    + valoracion)
+                    / (cantidadOpinionesYValoracion
+                            .getCantidadOpiniones() + 1);
+            nuevaValoracionCaracteristica = Math.round(nuevaValoracionCaracteristica * 10.0) / 10.0;
+            cantidadOpinionesYValoracion.setPuntuacion(nuevaValoracionCaracteristica);
+            cantidadOpinionesYValoracion
+                    .setCantidadOpiniones(cantidadOpinionesYValoracion.getCantidadOpiniones() + 1);
+
+            detalleRestaurante.getCaracteristicas().put(caracteristica, cantidadOpinionesYValoracion);
         }
     }
 }
