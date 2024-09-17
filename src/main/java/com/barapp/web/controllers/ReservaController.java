@@ -1,6 +1,7 @@
 package com.barapp.web.controllers;
 
 import com.barapp.web.business.service.ReservaService;
+import com.barapp.web.model.Opinion;
 import com.barapp.web.model.Reserva;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,4 +38,14 @@ public class ReservaController extends BaseController<Reserva> {
         }
     }
 
+    @PostMapping(value = "/{id}/opinar")
+    public ResponseEntity<Opinion> reviewOnBooking(@PathVariable("id") String id, @RequestBody Opinion opinion) {
+        try {
+            System.out.println("Opinion: " + opinion);
+            return new ResponseEntity<>(this.reservaService.reviewOnBooking(id, opinion), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

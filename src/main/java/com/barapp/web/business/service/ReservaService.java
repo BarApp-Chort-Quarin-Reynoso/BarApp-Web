@@ -1,5 +1,6 @@
 package com.barapp.web.business.service;
 
+import com.barapp.web.model.Opinion;
 import com.barapp.web.model.Reserva;
 import com.barapp.web.model.enums.EstadoReserva;
 
@@ -22,4 +23,6 @@ public interface ReservaService extends BaseService<Reserva> {
     Reserva updateEstado(String idReserva, String estado);
 
     void inicializarNotificaciones();
+
+    Opinion reviewOnBooking(String idReserva, Opinion opinion);
 }

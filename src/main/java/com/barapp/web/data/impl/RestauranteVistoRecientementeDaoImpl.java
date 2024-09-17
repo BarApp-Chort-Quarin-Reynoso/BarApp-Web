@@ -4,6 +4,8 @@ import com.barapp.web.data.converter.BaseConverter;
 import com.barapp.web.data.converter.RestauranteUsuarioConverter;
 import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.entities.RestauranteUsuarioEntity;
+import com.barapp.web.model.Opinion;
+import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.RestauranteUsuario;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.google.cloud.firestore.CollectionReference;
@@ -79,4 +81,17 @@ public class RestauranteVistoRecientementeDaoImpl extends BaseDaoImpl<Restaurant
         }
     }
 
+    @Override
+    public void actualizarYGuardarPorNuevaOpinion(Restaurante restaurante, Opinion opinion, Integer nuevaCantidadOpiniones, Double nuevaPuntuacion) throws Exception {
+        this.getFiltered(Filter.equalTo("idRestaurante", restaurante.getId()))
+                .forEach(restauranteUsuario -> {
+                    restauranteUsuario.setCantidadOpiniones(nuevaCantidadOpiniones);
+                    restauranteUsuario.setPuntuacion(nuevaPuntuacion);
+                    try {
+                        this.save(restauranteUsuario, restauranteUsuario.getId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
 }

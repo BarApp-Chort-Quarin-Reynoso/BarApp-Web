@@ -4,9 +4,17 @@ import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.data.dao.BaseDao;
+import com.barapp.web.data.dao.DetalleRestauranteDao;
+import com.barapp.web.data.dao.OpinionDao;
 import com.barapp.web.data.dao.ReservaDao;
+import com.barapp.web.data.dao.RestauranteDao;
+import com.barapp.web.data.dao.RestauranteFavoritoDao;
+import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
 import com.barapp.web.data.entities.ReservaEntity;
+import com.barapp.web.model.DetalleRestaurante;
+import com.barapp.web.model.Opinion;
 import com.barapp.web.model.Reserva;
+import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.enums.EstadoReserva;
 import com.barapp.web.utils.FormatUtils;
 import com.google.cloud.firestore.Filter;
@@ -25,16 +33,24 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
 
     private final ReservaDao reservaDao;
     private final NotificationService notificationService;
+    private final OpinionDao opinionDao;
+    private final RestauranteDao restauranteDao;
+    private final RestauranteFavoritoDao restauranteFavoritoDao;
+    private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
+    private final DetalleRestauranteDao detalleRestauranteDao;
 
-    public ReservaServiceImpl(ReservaDao reservaDao, NotificationService notificationService) {
+    public ReservaServiceImpl(ReservaDao reservaDao, NotificationService notificationService, OpinionDao opinionDao, RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, DetalleRestauranteDao detalleRestauranteDao) {
         this.reservaDao = reservaDao;
         this.notificationService = notificationService;
+        this.opinionDao = opinionDao;
+        this.restauranteDao = restauranteDao;
+        this.restauranteFavoritoDao = restauranteFavoritoDao;
+        this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
+        this.detalleRestauranteDao = detalleRestauranteDao;
     }
 
     @Override
-    public BaseDao<Reserva, ReservaEntity> getDao() {
-        return reservaDao;
-    }
+    public BaseDao<Reserva, ReservaEntity> getDao() { return reservaDao; }
 
     @Override
     public String save(Reserva dto, String id) throws Exception {
@@ -192,4 +208,76 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                 .build();
     }
 
+    @Override
+    public Opinion reviewOnBooking(String idReserva, Opinion opinion) {
+        try {
+            Reserva reserva = this.get(idReserva);
+            Restaurante restaurante = restauranteDao.get(opinion.getIdRestaurante());
+            DetalleRestaurante detalleRestaurante = detalleRestauranteDao.get(restaurante.getIdDetalleRestaurante());
+            this.validateReviewAndBooking(reserva, opinion, detalleRestaurante);
+
+            Integer cantidadOpinionesActual = restaurante.getCantidadOpiniones();
+            Double puntuacionActual = restaurante.getPuntuacion();
+
+            Integer nuevaCantidadOpiniones = cantidadOpinionesActual + 1;
+            Double nuevaPuntuacionRestaurante = (puntuacionActual * cantidadOpinionesActual + opinion
+                    .getNota()) / (cantidadOpinionesActual + 1);
+            nuevaPuntuacionRestaurante = Math.round(nuevaPuntuacionRestaurante * 10.0) / 10.0;
+
+            reservaDao.actualizarPorNuevaOpinion(reserva, opinion.getId());
+            restauranteDao.actualizarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            detalleRestauranteDao.actualizarPorNuevaOpinion(detalleRestaurante, opinion);    
+
+            this.save(reserva, idReserva);
+            opinionDao.save(opinion);
+            restauranteDao.save(restaurante, restaurante.getId());
+            detalleRestauranteDao.save(detalleRestaurante, detalleRestaurante.getId());
+
+            restauranteFavoritoDao.actualizarYGuardarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            restauranteVistoRecientementeDao.actualizarYGuardarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+
+            return opinion;
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void validateReviewAndBooking(Reserva reserva, Opinion opinion, DetalleRestaurante detalleRestaurante) {
+        if (reserva == null) {
+            throw new RuntimeException("Reserva no encontrada");
+        }
+
+        if (!reserva.getEstado().equals(EstadoReserva.CONCRETADA)) {
+            throw new RuntimeException("La reserva no se encuentra CONCRETADA");
+        }
+
+        if (reserva.getIdOpinion() != null) {
+            throw new RuntimeException("La reserva ya tiene una opinion asociada");
+        }
+
+        if (opinion == null) {
+            throw new RuntimeException("Opinion no encontrada");
+        }
+
+        if (opinion.getNota() == null) {
+            throw new RuntimeException("La nota es requerida");
+        }
+
+        if (opinion.getNota() < 1 || opinion.getNota() > 5) {
+            throw new RuntimeException("La nota debe ser un valor entre 1 y 5");
+        }
+
+        if (!opinion.getIdRestaurante().equals(reserva.getRestaurante().getId())) {
+            throw new RuntimeException("La opinion no corresponde al restaurante de la reserva");
+        }
+
+        if (!opinion.getUsuario().getId().equals(reserva.getUsuario().getId())) {
+            throw new RuntimeException("La opinion no corresponde al usuario de la reserva");
+        }
+
+        if (!detalleRestaurante.getCaracteristicas().keySet().containsAll(opinion.getCaracteristicas().keySet())) {
+            throw new RuntimeException("La opinion tiene caracteristicas que el restaurante no tiene");
+        }
+    }
 }

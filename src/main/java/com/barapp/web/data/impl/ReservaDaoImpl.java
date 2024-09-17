@@ -28,5 +28,10 @@ public class ReservaDaoImpl extends BaseDaoImpl<Reserva, ReservaEntity> implemen
     public BaseConverter<Reserva, ReservaEntity> getConverter() {
         return new ReservaConverter();
     }
+
+    @Override
+    public void actualizarPorNuevaOpinion(Reserva reserva, String idOpinion) throws Exception {
+        reserva.setIdOpinion(idOpinion);
+    }
 }
 

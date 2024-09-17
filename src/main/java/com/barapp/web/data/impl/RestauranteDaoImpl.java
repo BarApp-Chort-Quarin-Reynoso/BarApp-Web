@@ -7,6 +7,7 @@ import com.barapp.web.data.dao.RestauranteDao;
 import com.barapp.web.data.dao.UsuarioWebDao;
 import com.barapp.web.data.entities.RestauranteEntity;
 import com.barapp.web.model.HorarioPorRestaurante;
+import com.barapp.web.model.Opinion;
 import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.UsuarioWeb;
 import com.google.cloud.firestore.CollectionReference;
@@ -55,4 +56,9 @@ public class RestauranteDaoImpl extends BaseDaoImpl<Restaurante, RestauranteEnti
         return new RestauranteConverter();
     }
 
+    @Override
+    public void actualizarPorNuevaOpinion(Restaurante restaurante, Opinion opinion, Integer nuevaCantidadOpiniones, Double nuevaPuntuacion) throws Exception {
+        restaurante.setCantidadOpiniones(nuevaCantidadOpiniones);
+        restaurante.setPuntuacion(nuevaPuntuacion);
+    }
 }
