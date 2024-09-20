@@ -48,4 +48,17 @@ public class ReservaController extends BaseController<Reserva> {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(value = "/ultimas")
+    public ResponseEntity<List<Reserva>> getUltimasReservasPendientes(@RequestParam("idRestaurante") String idRestaurante, @RequestParam("idUsuario") String idUsuario, @RequestParam("cantidad") int cantidadMax) {
+        try {
+            return new ResponseEntity<>(
+                    this.reservaService.getUltimasReservasPendiente(idRestaurante, idUsuario, cantidadMax), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

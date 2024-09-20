@@ -22,6 +22,8 @@ public interface ReservaService extends BaseService<Reserva> {
 
     Reserva updateEstado(String idReserva, String estado);
 
+    List<Reserva> getUltimasReservasPendiente(String idRestaurante, String idUsuario, int cantidadMax);
+
     void inicializarNotificaciones();
 
     Opinion reviewOnBooking(String idReserva, Opinion opinion);

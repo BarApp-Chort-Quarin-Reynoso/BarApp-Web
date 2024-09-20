@@ -3,6 +3,7 @@ package com.barapp.web.business.impl;
 import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
+import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.dao.OpinionDao;
@@ -164,6 +165,24 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             }
 
             return reserva;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Reserva> getUltimasReservasPendiente(String idRestaurante, String idUsuario, int cantidadMax) {
+        try {
+            List<Reserva> reservas = reservaDao.getFiltered(Filter.and(
+                    Filter.equalTo("idRestaurante", idRestaurante),
+                    Filter.equalTo("idUsuario", idUsuario),
+                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString())
+            ));
+
+            return reservas.stream()
+                    .sorted(Comparator.comparing(Reserva::getFecha).reversed())
+                    .limit(cantidadMax)
+                    .toList();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
