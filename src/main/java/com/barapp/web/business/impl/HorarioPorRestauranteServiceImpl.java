@@ -102,8 +102,14 @@ public class HorarioPorRestauranteServiceImpl extends BaseServiceImpl<HorarioPor
                 horario.getIdRestaurante(), EstadoReserva.PENDIENTE);
 
         horario.filterReservasInvalidas(reservasPendientes)
-                .forEach(reserva -> reservaService.updateEstado(
-                        reserva.getId(), EstadoReserva.CANCELADA_BAR.toString()));
+                .forEach(reserva ->
+                        reservaService.cancelarReserva(
+                                reserva.getId(),
+                                EstadoReserva.CANCELADA_BAR.toString(),
+                                "Se ha modificado el horario donde usted reservó. " +
+                                        "Por favor, vuelva a realizar la reserva si lo desea."
+
+                        ));
 
         return super.save(horario);
     }

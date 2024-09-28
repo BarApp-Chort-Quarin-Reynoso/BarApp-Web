@@ -3,7 +3,6 @@ package com.barapp.web.business.impl;
 import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
-import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.dao.BaseDao;
 import com.barapp.web.data.dao.DetalleRestauranteDao;
 import com.barapp.web.data.dao.OpinionDao;
@@ -231,20 +230,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             count++;
         }
 
-        logger.info("Se inicializaron {} notificaciones de reservas pendientes", count);
-    }
-
-    private MobileNotification getReservaNotification(Reserva reserva) {
-        return MobileNotification.builder()
-                .id(reserva.getId())
-                .title_loc_key("notificacion_reserva_title")
-                .title_loc_args(List.of(reserva.getRestaurante().getNombre()))
-                .body_loc_key("notificacion_reserva_text")
-                .body_loc_args(List.of(reserva.getRestaurante().getNombre()))
-                .image(reserva.getRestaurante().getLogo())
-                .click_action("barapp.RESERVA_CERCANA")
-                .data(Map.of("origen", "1", "idReserva", reserva.getId()))
-                .build();
+        logger.info("Se programaron {} notificaciones de reservas pendientes", count);
     }
 
     @Override
@@ -282,6 +268,51 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         }
     }
 
+    @Override
+    public Reserva cancelarReserva(String id, String estado, String motivo) {
+        try {
+            EstadoReserva estadoReserva = EstadoReserva.valueOf(estado);
+            Reserva reserva = this.get(id);
+            reserva.setEstado(estadoReserva);
+            reserva.setMotivoCancelacion(motivo);
+            this.save(reserva, id);
+
+            notificationService.cancelNotificacion(id);
+            if (estadoReserva.equals(EstadoReserva.CANCELADA_BAR)) {
+                notificationService.sendNotification(reserva.getUsuario(), getReservaCanceladaBarNotification(reserva));
+            }
+
+            return reserva;
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private MobileNotification getReservaNotification(Reserva reserva) {
+        return MobileNotification.builder()
+                .id(reserva.getId())
+                .title_key("notificacion_reserva_title")
+                .title_args(List.of(reserva.getRestaurante().getNombre()))
+                .body_key("notificacion_reserva_text")
+                .body_args(List.of(reserva.getRestaurante().getNombre()))
+                .image(reserva.getRestaurante().getLogo())
+                .click_action("barapp.RESERVA_CERCANA")
+                .data(Map.of("origen", "1", "idReserva", reserva.getId()))
+                .build();
+    }
+
+    private MobileNotification getReservaCanceladaBarNotification(Reserva reserva) {
+        return MobileNotification.builder()
+                .id(reserva.getId())
+                .title_key("notificacion_reserva_cancelada_bar_title")
+                .body_key("notificacion_reserva_cancelada_bar_text")
+                .body_args(List.of(reserva.getRestaurante().getNombre(), reserva.getMotivoCancelacion()))
+                .image(reserva.getRestaurante().getLogo())
+                .data(Map.of("origen", "1", "idReserva", reserva.getId()))
+                .build();
+    }
+
     private void validateReviewAndBooking(Reserva reserva, Opinion opinion, DetalleRestaurante detalleRestaurante) {
         if (reserva == null) {
             throw new RuntimeException("Reserva no encontrada");
@@ -317,21 +348,6 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
 
         if (!detalleRestaurante.getCaracteristicas().keySet().containsAll(opinion.getCaracteristicas().keySet())) {
             throw new RuntimeException("La opinion tiene caracteristicas que el restaurante no tiene");
-        }
-    }
-
-    @Override
-    public Reserva cancelarReserva(String id, String estado, String motivo) {
-        try {
-            Reserva reserva = this.get(id);
-            reserva.setEstado(EstadoReserva.valueOf(estado));
-            reserva.setMotivoCancelacion(motivo);
-            this.save(reserva, id);
-
-            return reserva;
-        } catch (Exception e) {
-            System.out.println(e);
-            throw new RuntimeException(e);
         }
     }
 }
