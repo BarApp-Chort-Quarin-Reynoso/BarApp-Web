@@ -5,18 +5,13 @@ import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.model.UsuarioApp;
 import com.barapp.web.utils.scheduling.ScheduleManager;
-import com.barapp.web.utils.scheduling.ScheduleUtils;
 import com.google.firebase.messaging.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -30,6 +25,15 @@ public class NotificationServiceImpl implements NotificationService {
         this.firebaseMessaging = firebaseMessaging;
         this.usuarioService = usuarioService;
         this.scheduleManager = scheduleManager;
+    }
+
+    @Override
+    public void sendNotification(UsuarioApp usuario, MobileNotification notificacion) {
+        Objects.requireNonNull(notificacion.getId(), "El id de la notificación no puede ser nulo");
+
+        String idUsuario = usuario.getId();
+
+        enviarNotificacionATokens(idUsuario, notificacion);
     }
 
     @Override
@@ -82,10 +86,10 @@ public class NotificationServiceImpl implements NotificationService {
                         .setTtl(3600 * 1000)
                         .setNotification(AndroidNotification.builder()
                                 .setColor("#e75a09") // Lumo primary color
-                                .setTitleLocalizationKey(notificacion.getTitle_loc_key())
-                                .addAllTitleLocalizationArgs(notificacion.getTitle_loc_args())
-                                .setBodyLocalizationKey(notificacion.getBody_loc_key())
-                                .addAllBodyLocalizationArgs(notificacion.getBody_loc_args())
+                                .setTitleLocalizationKey(notificacion.getTitle_key())
+                                .addAllTitleLocalizationArgs(notificacion.getTitle_args())
+                                .setBodyLocalizationKey(notificacion.getBody_key())
+                                .addAllBodyLocalizationArgs(notificacion.getBody_args())
                                 .build())
                         .build())
                 .setToken(token);

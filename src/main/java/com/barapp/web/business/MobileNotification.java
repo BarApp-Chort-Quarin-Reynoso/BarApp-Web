@@ -2,6 +2,7 @@ package com.barapp.web.business;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,11 @@ public class MobileNotification {
     private String body;
     private String image;
     private String click_action;
-    private String title_loc_key;
-    private List<String> title_loc_args;
-    private String body_loc_key;
-    private List<String> body_loc_args;
+    private String title_key;
+    @Builder.Default
+    private List<String> title_args = new ArrayList<>();
+    private String body_key;
+    private List<String> body_args = new ArrayList<>();
 
     @Builder.Default
     private Map<String, String> data = new HashMap<>();
