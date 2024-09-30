@@ -12,7 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.UUID;
 
 @Configuration
@@ -20,7 +21,10 @@ public class FirestoreConfig {
     @Bean
     @Scope(scopeName = "singleton")
     public FirebaseApp firebaseApp() throws Exception {
-        FileInputStream serviceAccount = new FileInputStream("./firebase-private-key.json");
+        InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("firebase-private-key.json");
+        if (serviceAccount == null) {
+            throw new FileNotFoundException("No se pudo encontrar el archivo firebase-private-key.json");
+        }
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
