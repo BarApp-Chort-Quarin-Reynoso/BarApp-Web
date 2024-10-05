@@ -1,4 +1,47 @@
-#inicio-view {
-    height: 100%;
-    padding: 0;
+.inicio-view {
+    display:flex;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.reservas-container {
+    width: 100%;
+    align-items: center;
+}
+
+.reserva-card {
+    flex-basis: 300px;
+    min-width: 150px;
+    flex-grow: 1;
+    gap: var(--lumo-space-s)
+}
+
+.reserva-card h4 {
+    width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.reserva-card span {
+    font-size: var(--lumo-font-size-s);
+    font-weight: 400;
+    color: var(--lumo-body-text-color);
+}
+
+.novedades-card_logo {
+    width: 15%;
+    border-radius: var(--lumo-border-radius-l) 0 0 var(--lumo-border-radius-l);
+    object-fit: contain;
+}
+
+.novedades-card:hover {
+    cursor: pointer;
+
+}
+
+@media (max-width: 1240px) {
+    .reservas-container .reserva-card:nth-of-type(3) {
+        display: none;
+    }
 }

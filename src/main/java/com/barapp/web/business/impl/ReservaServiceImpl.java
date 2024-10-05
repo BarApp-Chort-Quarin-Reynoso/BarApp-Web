@@ -4,6 +4,7 @@ import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.EstadisticaService;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
+import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.ReservaEntity;
 import com.barapp.web.model.DetalleRestaurante;
@@ -13,6 +14,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.enums.EstadoReserva;
 import com.barapp.web.utils.FormatUtils;
 import com.google.cloud.firestore.Filter;
+import com.google.cloud.firestore.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -92,7 +94,6 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         }
     }
 
-    @Override
     public List<Reserva> getReservasByRestaurante(String idRestaurante) {
         try {
             return reservaDao.getFiltered(Filter.equalTo("idRestaurante", idRestaurante));
@@ -108,6 +109,23 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                     Filter.equalTo("idRestaurante", idRestaurante),
                     Filter.equalTo("estado", estado.toString())
             ));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Reserva> getReservasPendientesDeHoy(String idRestaurante, int limit) {
+        try {
+            QueryParams qp = new QueryParams();
+            qp.addFilter(Filter.and(
+                    Filter.equalTo("idRestaurante", idRestaurante),
+                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString()),
+                    Filter.equalTo("fecha", LocalDate.now().format(FormatUtils.persistenceDateFormatter()))
+            ));
+            qp.addOrder("horario", Query.Direction.DESCENDING);
+            qp.setLimit(limit);
+            return reservaDao.getByParams(qp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

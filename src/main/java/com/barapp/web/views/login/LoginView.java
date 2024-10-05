@@ -73,7 +73,7 @@ public class LoginView extends Div implements BeforeEnterObserver {
         Div infoContainer = new Div();
         infoContainer.setClassName("info-container");
         Image imagen = new Image();
-        imagen.setClassName("imagen");
+        imagen.setClassName("login-imagen");
         InputStream imagenInputStream = getClass().getResourceAsStream("/META-INF.resources/images/Restaurante.jpg");
         StreamResource imagenDefaultResource = new StreamResource("Restaurante.jpg", () -> imagenInputStream);
         imagen.setSrc(imagenDefaultResource);
