@@ -16,6 +16,8 @@ public interface ReservaService extends BaseService<Reserva> {
 
     List<Reserva> getReservasByRestauranteEstado(String idRestaurante, EstadoReserva estado);
 
+    List<Reserva> getReservasPendientesDeHoy(String idRestaurante, int limit);
+
     List<Reserva> getReservasByEstado(String estado);
 
     Map<LocalDate, List<Reserva>> getReservasPendientesPorMes(String idRestaurante, YearMonth mes);

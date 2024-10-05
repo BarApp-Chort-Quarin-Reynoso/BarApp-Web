@@ -37,7 +37,35 @@ html {
     --lumo-success-text-color: hsl(159, 61%, 40%);
     --lumo-font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 
-    background-color: #ededed;
+    scrollbar-color: var(--scrollbar-thumb) var(--background-body);
+      scrollbar-width: thin;
+}
+
+body {
+  line-height: 1.4;
+  word-wrap: break-word;
+  background: #ededed;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+b,
+strong,
+th {
+  font-weight: 600;
+}
+
+h2 {
+    font-size: var(--lumo-font-size-xl);
+}
+
+h3 {
+    font-size: var(--lumo-font-size-l);
 }
 
 h4 {
@@ -86,4 +114,14 @@ vaadin-login-form-wrapper::part(form-title) {
 .divider {
     border-bottom: 1px solid var(--lumo-contrast-10pct);
     margin: var(--lumo-size-m) 0;
+}
+
+.outlined-card {
+    border: 1px solid var(--lumo-contrast-20pct);
+    border-radius: var(--lumo-border-radius-l);
+}
+
+.elevated-card {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3);
+    border-radius: var(--lumo-border-radius-l);
 }
