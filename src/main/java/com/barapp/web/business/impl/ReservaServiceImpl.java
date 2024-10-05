@@ -4,13 +4,7 @@ import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.data.QueryParams;
-import com.barapp.web.data.dao.BaseDao;
-import com.barapp.web.data.dao.DetalleRestauranteDao;
-import com.barapp.web.data.dao.OpinionDao;
-import com.barapp.web.data.dao.ReservaDao;
-import com.barapp.web.data.dao.RestauranteDao;
-import com.barapp.web.data.dao.RestauranteFavoritoDao;
-import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
+import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.ReservaEntity;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Opinion;
@@ -19,6 +13,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.enums.EstadoReserva;
 import com.barapp.web.utils.FormatUtils;
 import com.google.cloud.firestore.Filter;
+import com.google.cloud.firestore.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,7 +46,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
-    public BaseDao<Reserva, ReservaEntity> getDao() { return reservaDao; }
+    public BaseDao<Reserva, ReservaEntity> getDao() {return reservaDao;}
 
     @Override
     public String save(Reserva dto, String id) throws Exception {
@@ -102,7 +97,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             Reserva reserva = reservaDao.get(idReserva);
 
             if (!reserva.getRestaurante().getId().equals(idRestaurante) ||
-                !reserva.getUsuario().getId().equals(idUsuario)) {
+                    !reserva.getUsuario().getId().equals(idUsuario)) {
                 return null;
             }
 
@@ -132,6 +127,23 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                     Filter.equalTo("idRestaurante", idRestaurante),
                     Filter.equalTo("estado", estado.toString())
             ));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Reserva> getReservasPendientesDeHoy(String idRestaurante, int limit) {
+        try {
+            QueryParams qp = new QueryParams();
+            qp.addFilter(Filter.and(
+                    Filter.equalTo("idRestaurante", idRestaurante),
+                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString()),
+                    Filter.equalTo("fecha", LocalDate.now().format(FormatUtils.persistenceDateFormatter()))
+            ));
+            qp.addOrder("horario", Query.Direction.DESCENDING);
+            qp.setLimit(limit);
+            return reservaDao.getByParams(qp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -264,16 +276,19 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             nuevaPuntuacionRestaurante = Math.round(nuevaPuntuacionRestaurante * 10.0) / 10.0;
 
             reservaDao.actualizarPorNuevaOpinion(reserva, opinion.getId());
-            restauranteDao.actualizarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
-            detalleRestauranteDao.actualizarPorNuevaOpinion(detalleRestaurante, opinion);    
+            restauranteDao.actualizarPorNuevaOpinion(
+                    restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            detalleRestauranteDao.actualizarPorNuevaOpinion(detalleRestaurante, opinion);
 
             this.save(reserva, idReserva);
             opinionDao.save(opinion);
             restauranteDao.save(restaurante, restaurante.getId());
             detalleRestauranteDao.save(detalleRestaurante, detalleRestaurante.getId());
 
-            restauranteFavoritoDao.actualizarYGuardarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
-            restauranteVistoRecientementeDao.actualizarYGuardarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            restauranteFavoritoDao.actualizarYGuardarPorNuevaOpinion(
+                    restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            restauranteVistoRecientementeDao.actualizarYGuardarPorNuevaOpinion(
+                    restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
 
             return opinion;
         } catch (Exception e) {
