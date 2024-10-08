@@ -3,13 +3,7 @@ package com.barapp.web.business.impl;
 import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
-import com.barapp.web.data.dao.BaseDao;
-import com.barapp.web.data.dao.DetalleRestauranteDao;
-import com.barapp.web.data.dao.OpinionDao;
-import com.barapp.web.data.dao.ReservaDao;
-import com.barapp.web.data.dao.RestauranteDao;
-import com.barapp.web.data.dao.RestauranteFavoritoDao;
-import com.barapp.web.data.dao.RestauranteVistoRecientementeDao;
+import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.ReservaEntity;
 import com.barapp.web.model.DetalleRestaurante;
 import com.barapp.web.model.Opinion;
@@ -50,7 +44,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
-    public BaseDao<Reserva, ReservaEntity> getDao() { return reservaDao; }
+    public BaseDao<Reserva, ReservaEntity> getDao() {return reservaDao;}
 
     @Override
     public String save(Reserva dto, String id) throws Exception {
@@ -62,8 +56,8 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     public String save(Reserva dto) throws Exception {
         String id = super.save(dto);
 
-        if (notificationService.isNotificationScheduled(id)) {
-            notificationService.cancelNotificacion(id);
+        if (notificationService.isNotificationScheduled("RESERVA-" + id)) {
+            cancelarNotificacionesDeReserva(id);
         }
 
         notificationService.scheduleNotificacion(
@@ -79,7 +73,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     public void delete(String id) throws Exception {
         super.delete(id);
 
-        notificationService.cancelNotificacion(id);
+        cancelarNotificacionesDeReserva(id);
     }
 
     @Override
@@ -87,35 +81,10 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         try {
             List<Reserva> reservas = reservaDao.getFiltered(Filter.equalTo("idUsuario", idUsuario));
 
-            reservas.sort(Comparator.comparing(Reserva::getFecha));
+            reservas.sort(Comparator.comparing(Reserva::getFechaHora).reversed());
 
             return reservas;
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Reserva concretarReserva(String idReserva, String idUsuario, String idRestaurante) {
-        try {
-            Reserva reserva = reservaDao.get(idReserva);
-
-            if (!reserva.getRestaurante().getId().equals(idRestaurante) ||
-                !reserva.getUsuario().getId().equals(idUsuario)) {
-                return reserva;
-            }
-
-            boolean sePuedeConcretar = LocalDateTime.now().isAfter(LocalDateTime.of(reserva.getFecha(),reserva.getHorario().getHorario()).minusMinutes(30));
-            if (!sePuedeConcretar) {
-                return reserva;
-            }
-
-            reserva.setEstado(EstadoReserva.CONCRETADA);
-            this.save(reserva, idReserva);
-
-            return reserva;
-        } catch (Exception e) {
-            System.out.println(e);
             throw new RuntimeException(e);
         }
     }
@@ -177,24 +146,6 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
-    public Reserva updateEstado(String id, String estado) {
-        try {
-            Reserva reserva = this.get(id);
-            EstadoReserva estadoReserva = EstadoReserva.valueOf(estado);
-            reserva.setEstado(estadoReserva);
-            super.save(reserva, id);
-
-            if (estadoReserva == EstadoReserva.CANCELADA_BAR || estadoReserva == EstadoReserva.CANCELADA_USUARIO) {
-                notificationService.cancelNotificacion(id);
-            }
-
-            return reserva;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public List<Reserva> getUltimasReservasPendiente(String idRestaurante, String idUsuario, int cantidadMax) {
         try {
             List<Reserva> reservas = reservaDao.getFiltered(Filter.and(
@@ -213,29 +164,78 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     }
 
     @Override
-    public void inicializarNotificaciones() {
-        int count = 0;
-        List<Reserva> reservas = this.getReservasByEstado(EstadoReserva.PENDIENTE.toString());
-        for (Reserva reserva : reservas) {
-            LocalDateTime horaNotificacion = reserva
-                    .getFecha()
-                    .atTime(reserva.getHorario().getHorario())
-                    .minusMinutes(30);
+    public Reserva updateEstado(String id, String estado) {
+        try {
+            Reserva reserva = this.get(id);
+            EstadoReserva estadoReserva = EstadoReserva.valueOf(estado);
+            reserva.setEstado(estadoReserva);
+            super.save(reserva, id);
 
-            if (horaNotificacion.isBefore(LocalDateTime.now())) {
-                continue;
+            if (estadoReserva == EstadoReserva.CANCELADA_BAR || estadoReserva == EstadoReserva.CANCELADA_USUARIO) {
+                cancelarNotificacionesDeReserva(id);
             }
-            MobileNotification notificacion = getReservaNotification(reserva);
+
+            return reserva;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Reserva cancelarReserva(String id, String estado, String motivo) {
+        try {
+            EstadoReserva estadoReserva = EstadoReserva.valueOf(estado);
+            Reserva reserva = this.get(id);
+            reserva.setEstado(estadoReserva);
+            reserva.setMotivoCancelacion(motivo);
+            this.save(reserva, id);
+
+            cancelarNotificacionesDeReserva(id);
+
+            if (estadoReserva.equals(EstadoReserva.CANCELADA_BAR)) {
+                notificationService.sendNotification(reserva.getUsuario(), getReservaCanceladaBarNotification(reserva));
+            }
+
+            return reserva;
+        } catch (Exception e) {
+            logger.error("Error al cancelar reserva", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Reserva concretarReserva(String idReserva, String idUsuario, String idRestaurante) {
+        try {
+            Reserva reserva = reservaDao.get(idReserva);
+
+            if (!reserva.getRestaurante().getId().equals(idRestaurante) ||
+                    !reserva.getUsuario().getId().equals(idUsuario)) {
+                return reserva;
+            }
+
+            boolean sePuedeConcretar = LocalDateTime.now()
+                    .isAfter(LocalDateTime
+                            .of(reserva.getFecha(), reserva.getHorario().getHorario())
+                            .minusMinutes(30));
+            if (!sePuedeConcretar) {
+                return reserva;
+            }
+
+            reserva.setEstado(EstadoReserva.CONCRETADA);
+            this.save(reserva, idReserva);
+
             notificationService.scheduleNotificacion(
                     reserva.getUsuario(),
-                    notificacion,
-                    horaNotificacion
+                    getSolicitarOpinionNotification(reserva),
+                    reserva.getFechaHora()
+                            .plusMinutes(2)
             );
 
-            count++;
+            return reserva;
+        } catch (Exception e) {
+            logger.error("Error al concretar reserva", e);
+            throw new RuntimeException(e);
         }
-
-        logger.info("Se programaron {} notificaciones de reservas pendientes", count);
     }
 
     @Override
@@ -255,48 +255,70 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             nuevaPuntuacionRestaurante = Math.round(nuevaPuntuacionRestaurante * 10.0) / 10.0;
 
             reservaDao.actualizarPorNuevaOpinion(reserva, opinion.getId());
-            restauranteDao.actualizarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
-            detalleRestauranteDao.actualizarPorNuevaOpinion(detalleRestaurante, opinion);    
+            restauranteDao.actualizarPorNuevaOpinion(
+                    restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            detalleRestauranteDao.actualizarPorNuevaOpinion(detalleRestaurante, opinion);
 
             this.save(reserva, idReserva);
             opinionDao.save(opinion);
             restauranteDao.save(restaurante, restaurante.getId());
             detalleRestauranteDao.save(detalleRestaurante, detalleRestaurante.getId());
 
-            restauranteFavoritoDao.actualizarYGuardarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
-            restauranteVistoRecientementeDao.actualizarYGuardarPorNuevaOpinion(restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            restauranteFavoritoDao.actualizarYGuardarPorNuevaOpinion(
+                    restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
+            restauranteVistoRecientementeDao.actualizarYGuardarPorNuevaOpinion(
+                    restaurante, opinion, nuevaCantidadOpiniones, nuevaPuntuacionRestaurante);
 
             return opinion;
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error("Error al guardar opinion", e);
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Reserva cancelarReserva(String id, String estado, String motivo) {
-        try {
-            EstadoReserva estadoReserva = EstadoReserva.valueOf(estado);
-            Reserva reserva = this.get(id);
-            reserva.setEstado(estadoReserva);
-            reserva.setMotivoCancelacion(motivo);
-            this.save(reserva, id);
+    public void inicializarNotificaciones() {
+        int count = 0;
+        List<Reserva> reservas = this.getReservasByEstado(EstadoReserva.PENDIENTE.toString());
+        for (Reserva reserva : reservas) {
+            LocalDateTime horaNotiReservaProxima = reserva
+                    .getFecha()
+                    .atTime(reserva.getHorario().getHorario())
+                    .minusMinutes(30);
 
-            notificationService.cancelNotificacion(id);
-            if (estadoReserva.equals(EstadoReserva.CANCELADA_BAR)) {
-                notificationService.sendNotification(reserva.getUsuario(), getReservaCanceladaBarNotification(reserva));
+            LocalDateTime horaNotiPedirOpinion = reserva
+                    .getFechaHora()
+                    .plusMinutes(2);
+
+            if (horaNotiReservaProxima.isAfter(LocalDateTime.now())) {
+                MobileNotification notificacion = getReservaNotification(reserva);
+                notificationService.scheduleNotificacion(
+                        reserva.getUsuario(),
+                        notificacion,
+                        horaNotiReservaProxima
+                );
+
+                count++;
             }
 
-            return reserva;
-        } catch (Exception e) {
-            System.out.println(e);
-            throw new RuntimeException(e);
+            if (horaNotiPedirOpinion.isAfter(LocalDateTime.now())) {
+                MobileNotification notificacion = getSolicitarOpinionNotification(reserva);
+                notificationService.scheduleNotificacion(
+                        reserva.getUsuario(),
+                        notificacion,
+                        horaNotiPedirOpinion
+                );
+
+                count++;
+            }
         }
+
+        logger.info("Se programaron {} notificaciones pendientes", count);
     }
 
     private MobileNotification getReservaNotification(Reserva reserva) {
         return MobileNotification.builder()
-                .id(reserva.getId())
+                .id("RESERVA-" + reserva.getId())
                 .title_key("notificacion_reserva_title")
                 .title_args(List.of(reserva.getRestaurante().getNombre()))
                 .body_key("notificacion_reserva_text")
@@ -316,6 +338,22 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                 .image(reserva.getRestaurante().getLogo())
                 .data(Map.of("origen", "1", "idReserva", reserva.getId()))
                 .build();
+    }
+
+    private MobileNotification getSolicitarOpinionNotification(Reserva reserva) {
+        return MobileNotification.builder()
+                .id("OPINION-" + reserva.getId())
+                .title_key("notificacion_pedir_opinion_title")
+                .body_key("notificacion_pedir_opinion_text")
+                .body_args(List.of(reserva.getRestaurante().getNombre()))
+                .image(reserva.getRestaurante().getLogo())
+                .data(Map.of("origen", "3", "idReserva", reserva.getId()))
+                .build();
+    }
+
+    private void cancelarNotificacionesDeReserva(String idReserva) {
+        notificationService.cancelNotificacion("RESERVA-" + idReserva);
+        notificationService.cancelNotificacion("OPINION-" + idReserva);
     }
 
     private void validateReviewAndBooking(Reserva reserva, Opinion opinion, DetalleRestaurante detalleRestaurante) {

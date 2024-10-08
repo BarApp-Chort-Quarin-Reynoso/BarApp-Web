@@ -31,6 +31,10 @@ public class FormatUtils {
         return DateTimeFormatter.ofPattern("HH:mm");
     }
 
+    public static DateTimeFormatter timestampFormatter() {
+        return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    }
+
     public static DateTimeFormatter visualizationDateFormatter() {
         return DateTimeFormatter.ofPattern("dd/MM/yyyy");
     }
