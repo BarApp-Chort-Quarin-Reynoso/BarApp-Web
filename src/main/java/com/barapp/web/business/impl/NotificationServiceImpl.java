@@ -4,6 +4,7 @@ import com.barapp.web.business.MobileNotification;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.UsuarioService;
 import com.barapp.web.model.UsuarioApp;
+import com.barapp.web.utils.FormatUtils;
 import com.barapp.web.utils.scheduling.ScheduleManager;
 import com.google.firebase.messaging.*;
 import org.slf4j.Logger;
@@ -42,11 +43,22 @@ public class NotificationServiceImpl implements NotificationService {
 
         String idUsuario = usuario.getId();
 
+        if (horario.isBefore(LocalDateTime.now())) {
+            logger.warn(
+                    "No se puede programar una notificación en el pasado. Hora programada: {}",
+                    horario.format(FormatUtils.timestampFormatter()));
+            return;
+        }
+
         scheduleManager.schedule(
                 () -> enviarNotificacionATokens(idUsuario, notificacion),
                 horario,
                 notificacion.getId()
         );
+
+        logger.info(
+                "Notificacion programada para {}",
+                horario.format(FormatUtils.timestampFormatter()));
     }
 
     @Override
@@ -100,8 +112,8 @@ public class NotificationServiceImpl implements NotificationService {
         Message message = builder.build();
 
         try {
-            String response = firebaseMessaging.send(message);
-            logger.info("Mensaje enviado exitosamente: {}", response);
+            firebaseMessaging.send(message);
+            logger.info("Mensaje enviado exitosamente. ID: {}", notificacion.getId());
             return Status.SUCCESS;
         } catch (FirebaseMessagingException e) {
             if (e.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
