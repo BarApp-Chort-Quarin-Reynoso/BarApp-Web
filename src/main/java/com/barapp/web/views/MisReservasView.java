@@ -331,7 +331,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         Button concretarManualmenteButton = new Button(getTranslation("view.misreservas.concretarmanualmente"));
         concretarManualmenteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         concretarManualmenteButton.addClickListener(event -> {
-            Reserva reservaActualizada = this.reservaService.updateEstado(reserva.getId(), EstadoReserva.CONCRETADA.toString());
+            Reserva reservaActualizada = this.reservaService.concretarReserva(reserva.getId(), reserva.getUsuario().getId(), reserva.getRestaurante().getId());
             this.reservasPendientesList.remove(reserva);
             this.reservasPasadasList.add(reservaActualizada);
             this.updateGrids();
