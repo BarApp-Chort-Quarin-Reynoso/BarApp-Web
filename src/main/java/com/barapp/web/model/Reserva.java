@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,5 +30,9 @@ public class Reserva extends BaseModel {
     @Override
     public String toString() {
         return "Reserva [id=" + id + ", estado=" + estado + ", cantidadPersonas=" + cantidadPersonas + ", fecha=" + fecha + ", horario=" + horario + ", usuario=" + usuario + ", restaurante=" + restaurante + ", idOpinion=" + idOpinion + "]";
+    }
+
+    public LocalDateTime getFechaHora() {
+        return LocalDateTime.of(fecha, horario.getHorario());
     }
 }
