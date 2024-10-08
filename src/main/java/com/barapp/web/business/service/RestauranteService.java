@@ -16,6 +16,8 @@ public interface RestauranteService extends BaseService<Restaurante> {
 
     List<Restaurante> getAvailableOrPausedRestaurants();
 
+    Restaurante getAvailableOrPausedRestaurantsWithDetail(String id);
+
     String saveLogo(InputStream inputStream, String id, String contentType);
 
     String savePortada(InputStream inputStream, String id, String contentType);

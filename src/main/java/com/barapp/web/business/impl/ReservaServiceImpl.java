@@ -102,7 +102,12 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
 
             if (!reserva.getRestaurante().getId().equals(idRestaurante) ||
                 !reserva.getUsuario().getId().equals(idUsuario)) {
-                return null;
+                return reserva;
+            }
+
+            boolean sePuedeConcretar = LocalDateTime.now().isAfter(LocalDateTime.of(reserva.getFecha(),reserva.getHorario().getHorario()).minusMinutes(30));
+            if (!sePuedeConcretar) {
+                return reserva;
             }
 
             reserva.setEstado(EstadoReserva.CONCRETADA);

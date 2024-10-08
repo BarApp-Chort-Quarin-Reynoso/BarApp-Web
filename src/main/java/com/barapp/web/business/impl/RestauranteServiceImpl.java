@@ -1,6 +1,7 @@
 package com.barapp.web.business.impl;
 
 import com.barapp.web.business.ImageContainer;
+import com.barapp.web.business.service.DetalleRestauranteService;
 import com.barapp.web.business.service.HorarioPorRestauranteService;
 import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.business.service.RestauranteService;
@@ -35,18 +36,21 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleUsuarioDao detalleUsuarioDao;
     private final OpinionDao opinionDao;
+    private final DetalleRestauranteService detalleRestauranteService;
     private final HorarioPorRestauranteService horarioPorRestauranteService;
     private final ReservaService reservaService;
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao,
+    public RestauranteServiceImpl(RestauranteDao restauranteDao, DetalleRestauranteService detalleRestauranteService,
+                                  RestauranteFavoritoDao restauranteFavoritoDao,
             RestauranteVistoRecientementeDao restauranteVistoRecientementeDao,
             ConfiguradorHorarioDao configuradorHorarioDao,
             DetalleUsuarioDao detalleUsuarioDao, OpinionDao opinionDao,
             HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService,
             StorageClient storageClient, ImageDao imageDao) {
         this.restauranteDao = restauranteDao;
+        this.detalleRestauranteService = detalleRestauranteService;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.configuradorHorarioDao = configuradorHorarioDao;
@@ -75,6 +79,32 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Restaurante getAvailableOrPausedRestaurantsWithDetail(String id) {
+        try {
+            Restaurante restaurante = restauranteDao.get(id);
+
+            if (restaurante == null) {
+                throw new RuntimeException("Restaurante " + id + " no existe");
+            }
+
+            DetalleRestaurante detalle = detalleRestauranteService.getByIdRestaurante(restaurante.getId())
+                    .orElseThrow(() -> new RuntimeException("No existe detalle restaurante para el id de restaurante: " + restaurante.getId()));
+
+            if (detalle == null) {
+                throw new RuntimeException("Detalle no existe");
+            }
+
+            restaurante.setDetalleRestaurante(detalle);
+
+            return restaurante;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public String saveLogo(InputStream inputStream, String id, String contentType) {

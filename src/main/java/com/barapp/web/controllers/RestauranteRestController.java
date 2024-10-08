@@ -50,6 +50,18 @@ public class RestauranteRestController extends BaseController<Restaurante> {
         }
     }
 
+
+
+    @GetMapping("/{id}/con-detalle")
+    public ResponseEntity<Restaurante> getRestaurantWithDetail(@PathVariable String id) {
+        try {
+            return new ResponseEntity<>(this.restauranteService.getAvailableOrPausedRestaurantsWithDetail(id), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/{id}/detalle")
     public ResponseEntity<DetalleRestaurante> getRestaurantDetail(@PathVariable String id) {
         try {
