@@ -81,7 +81,10 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         try {
             List<Reserva> reservas = reservaDao.getFiltered(Filter.equalTo("idUsuario", idUsuario));
 
-            reservas.sort(Comparator.comparing(Reserva::getFechaHora).reversed());
+            reservas.sort(Comparator
+                    .comparing(Reserva::getFecha)
+                    .thenComparing(reserva -> reserva.getHorario().getHorario())
+                    .reversed());
 
             return reservas;
         } catch (Exception e) {
