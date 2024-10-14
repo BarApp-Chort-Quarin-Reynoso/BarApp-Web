@@ -38,7 +38,6 @@ public class ListaBaresView extends VerticalLayout {
 
     private Grid<Restaurante> baresGrid;
     private Div noRestaurantesLabel;
-    private Button notificationButton;
 
     private final RestauranteService restauranteService;
     private final NotificationService notificationService;
@@ -55,22 +54,9 @@ public class ListaBaresView extends VerticalLayout {
 
     private void configurarUi() {
         noRestaurantesLabel = new Div(getTranslation("views.bares.sinresultados"));
-        notificationButton = new Button("Enviar notificación");
-        notificationButton.addClickListener(ce -> {
-            UsuarioApp usuarioApp = usuarioService.getByMail("fedequarin@gmail.com").orElseThrow();
-            notificationService.scheduleNotificacion(
-                    usuarioApp,
-                    MobileNotification.builder()
-                            .title("Alarma")
-                            .body("Alarma de prueba")
-                            .build(),
-                    LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0))
-            );
-        });
 
         MainElement mainElement = new MainElement();
         mainElement.addClassName("lista-bares-view");
-        mainElement.add(notificationButton);
 
         try {
             List<Restaurante> restaurantes = restauranteService

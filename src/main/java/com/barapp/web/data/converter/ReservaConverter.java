@@ -68,7 +68,7 @@ public class ReservaConverter implements BaseConverter<Reserva, ReservaEntity> {
                 .usuario(UsuarioApp
                         .builder()
                         .id(entity.getIdUsuario())
-                        .nombre(entity.getNombreRestaurante())
+                        .nombre(entity.getNombreUsuario())
                         .apellido(entity.getApellidoUsuario())
                         .build())
                 .idOpinion(entity.getIdOpinion())
