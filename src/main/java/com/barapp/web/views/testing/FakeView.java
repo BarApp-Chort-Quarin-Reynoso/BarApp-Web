@@ -1,10 +1,7 @@
 package com.barapp.web.views.testing;
 
-import com.barapp.web.business.service.RestauranteService;
-import com.barapp.web.business.service.UsuarioWebService;
-import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.Ubicacion;
-import com.barapp.web.model.UsuarioWeb;
+import com.barapp.web.business.service.*;
+import com.barapp.web.model.*;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.enums.Rol;
 import com.barapp.web.utils.TestConsts;
@@ -20,6 +17,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +29,18 @@ public class FakeView extends VerticalLayout implements HasUrlParameter<String> 
 
     private final UsuarioWebService usuarioWebService;
     private final RestauranteService restauranteService;
+    private final DetalleRestauranteService detalleRestauranteService;
+    private final HorarioPorRestauranteService horarioPorRestauranteService;
+    private final OpinionService opinionService;
 
     Span returnSpan = new Span();
 
-    public FakeView(UsuarioWebService usuarioWebService, RestauranteService restauranteService) {
+    public FakeView(UsuarioWebService usuarioWebService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService, HorarioPorRestauranteService horarioPorRestauranteService, OpinionService opinionService) {
         this.usuarioWebService = usuarioWebService;
         this.restauranteService = restauranteService;
+        this.detalleRestauranteService = detalleRestauranteService;
+        this.horarioPorRestauranteService = horarioPorRestauranteService;
+        this.opinionService = opinionService;
 
         H1 title = new H1("This is a fake view");
 
@@ -93,11 +97,19 @@ public class FakeView extends VerticalLayout implements HasUrlParameter<String> 
                         .nombrePais("Argentina")
                         .build())
                 .estado(estado)
+                .portada("https://firebasestorage.googleapis.com/v0/b/barapp-b1bc0.appspot.com/o/images%2Ffotos%2F0afd62a8-7a79-4764-bf4b-b00e8f2e109e.png?alt=media&token=c0aaaec8-f1bc-4170-a0c5-e4a12dec0cbc")
+                .logo("https://firebasestorage.googleapis.com/v0/b/barapp-b1bc0.appspot.com/o/images%2Flogos%2F0afd62a8-7a79-4764-bf4b-b00e8f2e109e.png?alt=media&token=d28a0d36-e684-4a39-9c56-1cbdc5727d4b")
                 .build();
+        DetalleRestaurante detalleRestaurante = DetalleRestaurante
+                .builder()
+                .idRestaurante(restaurante.getId())
+                .build();
+        restaurante.setIdDetalleRestaurante(detalleRestaurante.getId());
 
         try {
             restauranteService.save(restaurante, restaurante.getId());
             usuarioWebService.save(usuarioWeb, usuarioWeb.getId());
+            detalleRestauranteService.save(detalleRestaurante, detalleRestaurante.getId());
 
             returnSpan.setText(correo);
         } catch (Exception e) {
@@ -113,7 +125,38 @@ public class FakeView extends VerticalLayout implements HasUrlParameter<String> 
             usuarioWebService.delete(usuarioWeb.getId());
             if (restauranteOpt.isPresent()) {
                 restauranteService.delete(restauranteOpt.get().getId());
+                detalleRestauranteService.delete(restauranteOpt.get().getIdDetalleRestaurante());
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void eliminarOpinion(String id) {
+        try {
+            opinionService.delete(id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void crearOpinion(String correoBar, String comentario, String puntuacion) {
+        Restaurante restaurante = restauranteService.getByCorreo(correoBar).orElseThrow();
+        Opinion opinion = Opinion
+                .builder()
+                .idRestaurante(restaurante.getId())
+                .usuario(UsuarioApp.builder()
+                        .nombre("Usuario")
+                        .apellido("Test")
+                        .foto("https://firebasestorage.googleapis.com/v0/b/barapp-b1bc0.appspot.com/o/images%2Flogos%2F0afd62a8-7a79-4764-bf4b-b00e8f2e109e.png?alt=media&token=d28a0d36-e684-4a39-9c56-1cbdc5727d4b")
+                        .build())
+                .comentario(comentario)
+                .nota(Double.parseDouble(puntuacion))
+                .fecha(LocalDate.now().minusMonths(1))
+                .build();
+        try {
+            opinionService.save(opinion, opinion.getId());
+            returnSpan.setText(opinion.getId());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

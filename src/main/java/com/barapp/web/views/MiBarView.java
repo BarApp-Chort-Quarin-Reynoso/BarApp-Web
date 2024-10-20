@@ -11,6 +11,7 @@ import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.BarappUtils;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
+import com.vaadin.componentfactory.addons.inputmask.InputMask;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -153,6 +154,8 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         telefonoTextfield = new TextField(getTranslation("views.registro.telefono"));
         telefonoTextfield.setMaxLength(14);
         cuitTextfield = new TextField(getTranslation("views.registro.cuit"));
+        InputMask cuitTextfieldMask = new InputMask("00-00000000-0");
+        cuitTextfieldMask.extend(cuitTextfield);
         infoBasicaSection = new Section(
                 tituloInformacionBasica,
                 nombreBarTextfield,
