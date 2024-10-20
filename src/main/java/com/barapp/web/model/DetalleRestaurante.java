@@ -14,18 +14,18 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetalleRestaurante extends BaseModel {
     String idRestaurante;
-    String descripcion;
-    List<Opinion> opiniones;
-    String menu;
-    Set<Mesa> capacidadTotal;
-    Map<String, CalificacionPromedio> caracteristicas;
+    @Builder.Default
+    String descripcion = "";
+    @Builder.Default
+    List<Opinion> opiniones = new ArrayList<>();
+    @Builder.Default
+    String menu = "";
+    @Builder.Default
+    Set<Mesa> capacidadTotal = new HashSet<>();
+    @Builder.Default
+    Map<String, CalificacionPromedio> caracteristicas = new LinkedHashMap<>();
 
     public DetalleRestaurante() {
         this.id = UUID.randomUUID().toString();
-        this.descripcion = "";
-        this.opiniones = new ArrayList<>();
-        this.menu = "";
-        this.capacidadTotal = new LinkedHashSet<>();
-        this.caracteristicas = new LinkedHashMap<>();
     }
 }

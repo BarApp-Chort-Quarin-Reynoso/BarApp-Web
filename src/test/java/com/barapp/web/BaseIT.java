@@ -27,6 +27,8 @@ public abstract class BaseIT {
         context = browser.newContext(new Browser.NewContextOptions());
         page = context.newPage();
 
+        page.setViewportSize(1500, 700);
+
         page.navigate(rootUrl);
     }
 
