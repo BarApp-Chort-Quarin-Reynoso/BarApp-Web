@@ -13,12 +13,18 @@ import java.util.*;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DetalleRestaurante extends BaseModel {
-    String idRestaurante;
-    String descripcion;
-    List<Opinion> opiniones;
-    String menu;
-    Set<Mesa> capacidadTotal;
-    Map<String, CalificacionPromedio> caracteristicas;
+    @Builder.Default
+    String idRestaurante = "";
+    @Builder.Default
+    String descripcion = "";
+    @Builder.Default
+    List<Opinion> opiniones = new ArrayList<>();
+    @Builder.Default
+    String menu = "";
+    @Builder.Default
+    Set<Mesa> capacidadTotal = new LinkedHashSet<>();
+    @Builder.Default
+    Map<String, CalificacionPromedio> caracteristicas = new LinkedHashMap<>();
 
     public DetalleRestaurante() {
         this.id = UUID.randomUUID().toString();

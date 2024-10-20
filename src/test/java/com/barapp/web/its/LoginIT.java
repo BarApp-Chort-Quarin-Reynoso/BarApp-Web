@@ -28,7 +28,7 @@ public class LoginIT extends BaseIT {
     }
 
     @Test
-    @DisplayName("Probar login y roles")
+    @DisplayName("Logearse con cuenta bar y admin")
     public void testLogin() {
         String correo = crearBarConEstado("testbar", EstadoRestaurante.HABILITADO);
         usersCreated.add(correo);

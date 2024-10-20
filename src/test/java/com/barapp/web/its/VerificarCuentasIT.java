@@ -36,7 +36,7 @@ public class VerificarCuentasIT extends BaseIT {
     }
 
     @Test
-    @DisplayName("Probar a aceptar una cuenta")
+    @DisplayName("Aceptar una cuenta")
     public void testAceptarCuenta() {
         String correo = crearBarConEstado("esperandohabilitacion", EstadoRestaurante.ESPERANDO_HABILITACION);
         usersCreated.add(correo);
@@ -71,7 +71,7 @@ public class VerificarCuentasIT extends BaseIT {
     }
 
     @Test
-    @DisplayName("Probar a rechazar una cuenta")
+    @DisplayName("Rechazar una cuenta")
     public void testRechzarCuenta() {
         String correo = crearBarConEstado("rechazar", EstadoRestaurante.ESPERANDO_HABILITACION);
         usersCreated.add(correo);

@@ -27,6 +27,8 @@ public abstract class BaseIT {
         context = browser.newContext(new Browser.NewContextOptions());
         page = context.newPage();
 
+        page.setViewportSize(1500, 700);
+
         page.navigate(rootUrl);
     }
 
@@ -53,11 +55,31 @@ public abstract class BaseIT {
         page.navigate(route);
         page.waitForURL(route);
 
-        return page.locator("#return-span").textContent();
+        String retorno = page.locator("#return-span").textContent();
+        page.navigate(rootUrl);
+        return retorno;
+    }
+
+    protected String crearOpinion(String correoBar, String comentario, int puntuacion) {
+        String route = rootUrl + "fakeview/crearOpinion?params=" + correoBar
+                + "&params=" + comentario
+                + "&params=" + puntuacion;
+        page.navigate(route);
+        page.waitForURL(route);
+
+        String retorno = page.locator("#return-span").textContent();
+        page.navigate(rootUrl);
+        return retorno;
     }
 
     protected void eliminarUsuarioBar(String correo) {
         String route = rootUrl + "fakeview/eliminarUsuarioBar?params=" + correo;
+        page.navigate(route);
+        page.waitForURL(route);
+    }
+
+    protected void eliminarOpinion(String id) {
+        String route = rootUrl + "fakeview/eliminarOpinion?params=" + id;
         page.navigate(route);
         page.waitForURL(route);
     }

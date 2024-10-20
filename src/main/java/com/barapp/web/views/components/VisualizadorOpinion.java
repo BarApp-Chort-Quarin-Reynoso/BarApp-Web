@@ -35,6 +35,8 @@ public class VisualizadorOpinion extends VerticalLayout {
         usuarioLayout.add(avatar, usuario, fecha);
 
         add(usuarioLayout, puntuacion, comentario);
+
+        setClassName("opinion-layout");
     }
 
     public VisualizadorOpinion(Opinion opinion) {

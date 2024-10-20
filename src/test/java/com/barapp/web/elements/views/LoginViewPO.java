@@ -1,12 +1,13 @@
 package com.barapp.web.elements.views;
 
+import com.barapp.web.elements.BaseViewPO;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import lombok.AccessLevel;
 import lombok.Getter;
 
 @Getter
-public class LoginViewPO {
+public class LoginViewPO extends BaseViewPO {
     @Getter(AccessLevel.NONE)
     private final Page page;
 
@@ -16,6 +17,8 @@ public class LoginViewPO {
     private final Locator errorDiv;
 
     public LoginViewPO(Page page) {
+        super(page, "login");
+
         this.page = page;
         this.emailField = page.locator("vaadin-text-field > input");
         this.passwordField = page.locator("vaadin-password-field > input");
