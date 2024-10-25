@@ -11,6 +11,7 @@ import com.barapp.web.views.components.ReservaCard;
 import com.barapp.web.views.components.ReservasPausadasCard;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -23,9 +24,17 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.Theme;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @PageTitle("Inicio")
@@ -48,7 +57,6 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
         this.restauranteService = restauranteService;
         this.reservaService = reservaService;
 
-        configureLoggedUserUI();
         configureBasicUI();
     }
 
@@ -59,27 +67,14 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
         contentLayout.setPadding(false);
         contentLayout.setSpacing(false);
         contentLayout.getStyle().set("gap", "3rem");
+        contentLayout.addClassName("inicio-view");
 
-        MainElement mainElement = new MainElement(contentLayout);
+        MainElement mainElement = new MainElement();
         mainElement.addClassName("inicio-view");
 
-        configureNovedadesLayout();
+        configurarLandingPage();
 
-        add(mainElement, new BarappFooter());
-    }
-
-    private void configureLoggedUserUI() {
-        if (securityService.isAuthenticated()) {
-            restaurante = restauranteService
-                    .getByCorreo(securityService.getAuthenticatedUser().orElseThrow().getUsername())
-                    .orElseThrow();
-
-            if (restaurante.getEstado().equals(EstadoRestaurante.PAUSADO)) {
-                configureReservasPausadasLayout();
-            }
-
-            configureReservasLayout();
-        }
+        add(contentLayout, new BarappFooter());
     }
 
     private void configureNovedadesLayout() {
@@ -129,6 +124,24 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
             reservasPausadasCard.setVisible(false);
         });
         contentLayout.add(reservasPausadasCard);
+    }
+
+    private void configurarLandingPage() {
+        VerticalLayout landingLayout = new VerticalLayout();
+
+        landingLayout.addClassName("landing-layout");
+
+        File htmlFile = new File("./frontend/landing.html");
+
+        try {
+            Html landing = new Html(new FileInputStream(htmlFile));
+            landingLayout.add(landing);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        contentLayout.add(landingLayout);
     }
 
     @Override
