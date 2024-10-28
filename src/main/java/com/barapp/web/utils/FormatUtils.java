@@ -35,8 +35,8 @@ public class FormatUtils {
         return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     }
 
-    public static DateTimeFormatter visualizationDateFormatter() {
-        return DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static DateTimeFormatter presentationDateFormatter() {
+        return DateTimeFormatter.ofPattern("dd MMM. yyyy");
     }
 
     public static DateTimeFormatter persistenceDateFormatter() {

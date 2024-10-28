@@ -178,7 +178,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         pendientesGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         Grid.Column<Reserva> nombreUsuarioColumn = pendientesGrid.addColumn(reserva -> reserva.getUsuario().getNombre() + " " + reserva.getUsuario().getApellido()).setSortable(true);
-        Grid.Column<Reserva> diaColumn = pendientesGrid.addColumn(new LocalDateRenderer<>(Reserva::getFecha,"dd/MM")).setSortable(true).setComparator(Reserva::getFecha);
+        Grid.Column<Reserva> diaColumn = pendientesGrid.addColumn(new LocalDateRenderer<>(Reserva::getFecha,"dd MMM.")).setSortable(true).setComparator(Reserva::getFecha);
         Grid.Column<Reserva> horaColumn = pendientesGrid.addColumn(new LocalDateTimeRenderer<>(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario()),"kk:mm")).setSortable(true).setComparator(Comparator.comparing(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario())));
         Grid.Column<Reserva> cantidadPersonasColumn = pendientesGrid.addColumn(Reserva::getCantidadPersonas).setSortable(true);
 
