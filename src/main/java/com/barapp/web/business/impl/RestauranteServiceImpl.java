@@ -33,7 +33,6 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final RestauranteDao restauranteDao;
     private final RestauranteFavoritoDao restauranteFavoritoDao;
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
-    private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleUsuarioDao detalleUsuarioDao;
     private final OpinionDao opinionDao;
     private final DetalleRestauranteService detalleRestauranteService;
@@ -42,18 +41,18 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, DetalleRestauranteService detalleRestauranteService,
-                                  RestauranteFavoritoDao restauranteFavoritoDao,
+    public RestauranteServiceImpl(
+            RestauranteDao restauranteDao, DetalleRestauranteService detalleRestauranteService,
+            RestauranteFavoritoDao restauranteFavoritoDao,
             RestauranteVistoRecientementeDao restauranteVistoRecientementeDao,
-            ConfiguradorHorarioDao configuradorHorarioDao,
             DetalleUsuarioDao detalleUsuarioDao, OpinionDao opinionDao,
             HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService,
-            StorageClient storageClient, ImageDao imageDao) {
+            StorageClient storageClient, ImageDao imageDao
+    ) {
         this.restauranteDao = restauranteDao;
         this.detalleRestauranteService = detalleRestauranteService;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
-        this.configuradorHorarioDao = configuradorHorarioDao;
         this.detalleUsuarioDao = detalleUsuarioDao;
         this.opinionDao = opinionDao;
         this.horarioPorRestauranteService = horarioPorRestauranteService;
