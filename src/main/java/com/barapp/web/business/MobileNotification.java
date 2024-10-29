@@ -1,6 +1,7 @@
 package com.barapp.web.business;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,18 +13,20 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MobileNotification {
-    private String id;
-    private String title;
-    private String body;
-    private String image;
-    private String click_action;
-    private String title_key;
-    @Builder.Default
-    private List<String> title_args = new ArrayList<>();
-    private String body_key;
-    private List<String> body_args = new ArrayList<>();
+    String id;
+    String title;
+    String body;
+    String image;
+    String click_action;
+    String title_key;
+    String body_key;
 
     @Builder.Default
-    private Map<String, String> data = new HashMap<>();
+    List<String> title_args = new ArrayList<>();
+    @Builder.Default
+    List<String> body_args = new ArrayList<>();
+    @Builder.Default
+    Map<String, String> data = new HashMap<>();
 }
