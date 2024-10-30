@@ -65,7 +65,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-@PageTitle("Mis reservas")
+@PageTitle("Mis Reservas")
 @Route(value = "mis-reservas", layout = MainLayout.class)
 @RolesAllowed(value = {"BAR"})
 public class MisReservasView extends VerticalLayout implements BeforeEnterObserver {

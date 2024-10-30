@@ -1,15 +1,15 @@
 package com.barapp.web.views;
 
-import com.barapp.web.business.service.ConfiguracionService;
-import com.barapp.web.business.service.DetalleRestauranteService;
-import com.barapp.web.business.service.OpinionService;
-import com.barapp.web.business.service.RestauranteService;
+import com.barapp.web.business.service.*;
 import com.barapp.web.model.*;
 import com.barapp.web.model.enums.Rol;
+import com.barapp.web.model.enums.TipoComida;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.FormatUtils;
 import com.barapp.web.views.components.VisualizadorOpinion;
+import com.barapp.web.views.components.charts.BarappCharts;
 import com.barapp.web.views.components.pageElements.BarappFooter;
+import com.barapp.web.views.components.pageElements.Divider;
 import com.barapp.web.views.components.pageElements.MainElement;
 import com.barapp.web.views.components.puntuacion.EstrellasPuntuacion;
 import com.barapp.web.views.dialogs.EditorCaracteristicasOpinionDialog;
@@ -17,7 +17,7 @@ import com.barapp.web.views.dialogs.OpinionesDialog;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -27,11 +27,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("serial")
-@PageTitle("Mis opiniones")
+@PageTitle("Mis estadísticas")
 @Route(value = "mis-opiniones", layout = MainLayout.class)
 @RolesAllowed(value = {"BAR"})
 public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObserver {
@@ -42,10 +42,12 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
     private final DetalleRestauranteService detalleRestauranteService;
     private final OpinionService opinionService;
     private final ConfiguracionService configuracionService;
+    private final EstadisticaService estadisticaService;
 
     private Restaurante restaurante;
     private DetalleRestaurante detalleRestaurante;
     private List<Opinion> opinionesRecientes;
+    private Estadistica estadistica;
 
     private final EstrellasPuntuacion stars;
     private final Span puntuacion;
@@ -59,13 +61,20 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
     private final VerticalLayout opinionesLayout;
 
     private final Span noHayOpiniones;
+    private final Span diasActivo;
+    private final Span reservasConcretadas;
+    private final Span clientesAtendidos;
 
-    public ListaOpinionesView(SecurityService securityService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService, OpinionService opinionService, ConfiguracionService configuracionService) {
+    private final Div chartOcupacionxDiaContainer = new Div();
+    private final Div chartOcupacionxTipoComidaContainer = new Div();
+
+    public ListaOpinionesView(SecurityService securityService, RestauranteService restauranteService, DetalleRestauranteService detalleRestauranteService, OpinionService opinionService, ConfiguracionService configuracionService, EstadisticaService estadisticaService) {
         this.securityService = securityService;
         this.restauranteService = restauranteService;
         this.detalleRestauranteService = detalleRestauranteService;
         this.opinionService = opinionService;
         this.configuracionService = configuracionService;
+        this.estadisticaService = estadisticaService;
 
         stars = new EstrellasPuntuacion();
         puntuacion = new Span();
@@ -75,12 +84,25 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
         verListaOpinionesButton = new Button(getTranslation("views.opiniones.verlistaopiniones"));
         opinionesLayout = new VerticalLayout();
         noHayOpiniones = new Span(getTranslation("views.opiniones.nohayopiniones"));
+        reservasConcretadas = new Span();
+        diasActivo = new Span();
+        clientesAtendidos = new Span();
 
         configurarUI();
         cargarDatos();
     }
 
     private void configurarUI() {
+        MainElement mainElement = new MainElement(getOpinionesSection(), new Divider(), getEstadisticasSection());
+        mainElement.addClassName("mis-opiniones-view");
+
+        this.add(mainElement, new BarappFooter());
+        this.setPadding(false);
+        this.setSpacing(false);
+        this.setSizeFull();
+    }
+
+    private VerticalLayout getOpinionesSection() {
         puntuacion.setClassName("puntuacion-label");
         stars.addClassNames(LumoUtility.Padding.Horizontal.XSMALL);
         cantidadOpiniones.addClassNames(LumoUtility.Padding.Horizontal.SMALL);
@@ -113,13 +135,15 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
         });
 
         VerticalLayout primeraColumnaLayout = new VerticalLayout();
-        primeraColumnaLayout.setSpacing(false);
+        primeraColumnaLayout.getThemeList().clear();
         primeraColumnaLayout.setWidth("300px");
         primeraColumnaLayout.add(puntuacionLayout, caracteristicasLayout, gestionarCaracteristicasButton);
 
+        opinionesLayout.getThemeList().clear();
         opinionesLayout.setHeightFull();
         opinionesLayout.setWidth("300px");
         opinionesLayout.setFlexGrow(1.0);
+        opinionesLayout.addClassNames(LumoUtility.Padding.MEDIUM, "opiniones-opinionesLayout");
 
         verListaOpinionesButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         verListaOpinionesButton.addClassName(LumoUtility.Margin.MEDIUM);
@@ -129,15 +153,62 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
             opinionesDialog.open();
         });
 
-        opinionesLayout.addClassNames(LumoUtility.Padding.MEDIUM, "opiniones-opinionesLayout");
+        HorizontalLayout columnsWrapper = new HorizontalLayout(primeraColumnaLayout, opinionesLayout);
+        columnsWrapper.setWidthFull();
 
-        MainElement mainElement = new MainElement(new HorizontalLayout(primeraColumnaLayout, opinionesLayout));
-        mainElement.addClassName("mis-opiniones-view");
+        VerticalLayout section = new VerticalLayout();
+        section.add(new H2(getTranslation("views.opiniones.opiniones.title")), columnsWrapper);
+        return section;
+    }
 
-        this.add(mainElement, new BarappFooter());
-        this.setPadding(false);
-        this.setSpacing(false);
-        this.setSizeFull();
+    private VerticalLayout getEstadisticasSection() {
+        reservasConcretadas.setClassName("estadisticas-dato");
+        H4 reservasConcretadasLabel = new H4(getTranslation("views.opiniones.reservasconcretadas.label"));
+        reservasConcretadasLabel.setClassName("estadisticas-titulo");
+
+        diasActivo.setClassName("estadisticas-dato");
+        H4 diasActivoLabel = new H4(getTranslation("views.opiniones.diasactivo.label"));
+        diasActivoLabel.setClassName("estadisticas-titulo");
+
+        clientesAtendidos.setClassName("estadisticas-dato");
+        H4 clientesAtendidosLabel = new H4(getTranslation("views.opiniones.clientesatendidos.label"));
+        clientesAtendidosLabel.setClassName("estadisticas-titulo");
+
+        VerticalLayout reservasConcretadasLayout = new VerticalLayout(reservasConcretadas, reservasConcretadasLabel);
+        reservasConcretadasLayout.setSpacing(false);
+        reservasConcretadasLayout.setAlignItems(Alignment.CENTER);
+        reservasConcretadasLayout.setWidth("unset");
+
+        VerticalLayout diasActivoLayout = new VerticalLayout(diasActivo, diasActivoLabel);
+        diasActivoLayout.setSpacing(false);
+        diasActivoLayout.setAlignItems(Alignment.CENTER);
+        diasActivoLayout.setWidth("unset");
+
+        VerticalLayout clientesAtendidosLayout = new VerticalLayout(clientesAtendidos, clientesAtendidosLabel);
+        clientesAtendidosLayout.setSpacing(false);
+        clientesAtendidosLayout.setAlignItems(Alignment.CENTER);
+        clientesAtendidosLayout.setWidth("unset");
+
+        HorizontalLayout datosLayout = new HorizontalLayout(
+                reservasConcretadasLayout, diasActivoLayout, clientesAtendidosLayout);
+        datosLayout.setWidthFull();
+        datosLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
+
+        HorizontalLayout chartsInnerLayout = new HorizontalLayout(
+                chartOcupacionxTipoComidaContainer, chartOcupacionxDiaContainer);
+
+        VerticalLayout chartsLayout = new VerticalLayout();
+        chartsLayout.add(new H3(getTranslation("views.opiniones.ocupacion.title")), chartsInnerLayout);
+
+        VerticalLayout estadisticasLayout = new VerticalLayout();
+        estadisticasLayout.add(datosLayout, chartsLayout);
+        estadisticasLayout.setSpacing(false);
+        estadisticasLayout.addClassNames(LumoUtility.Gap.LARGE);
+
+        VerticalLayout statisticsSection = new VerticalLayout();
+        statisticsSection.add(new H2(getTranslation("views.opiniones.estadisticas")));
+        statisticsSection.add(estadisticasLayout);
+        return statisticsSection;
     }
 
     private void cargarDatos() {
@@ -146,6 +217,7 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
                 .orElseThrow();
         try {
             detalleRestaurante = detalleRestauranteService.get(restaurante.getIdDetalleRestaurante());
+            estadistica = estadisticaService.getByCorreoRestaurante(restaurante.getCorreo()).orElseThrow();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -191,6 +263,25 @@ public class ListaOpinionesView extends VerticalLayout implements BeforeEnterObs
                 opinionesLayout.add(verListaOpinionesButton);
             }
         }
+
+        reservasConcretadas.add(String.valueOf(estadistica.getReservasConcretadas()));
+        diasActivo.add(String.valueOf(estadistica.getDiasActivo()));
+        clientesAtendidos.add(String.valueOf(estadistica.getClientesAtendidos()));
+        chartOcupacionxTipoComidaContainer.add(BarappCharts.getBarChart(
+                Arrays
+                        .stream(TipoComida.values())
+                        .map(tipo -> getTranslation(tipo.getTranslationKey()))
+                        .toArray(String[]::new),
+                estadistica.getPorcentajeOcupacionxTipoComida().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                        .map(Map.Entry::getValue).toArray(Double[]::new),
+                getTranslation("views.opiniones.ocupacion.ocupacionxtipocomida")
+        ));
+        chartOcupacionxDiaContainer.add(BarappCharts.getBarChart(
+                FormatUtils.getWeekdays().toArray(String[]::new),
+                estadistica.getPorcentajeOcupacionxDiaSemana().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                        .map(Map.Entry::getValue).toArray(Double[]::new),
+                getTranslation("views.opiniones.ocupacion.ocupacionxdiasemana")
+        ));
     }
 
     @Override

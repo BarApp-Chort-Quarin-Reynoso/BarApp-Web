@@ -1,6 +1,7 @@
 package com.barapp.web.business.impl;
 
 import com.barapp.web.business.MobileNotification;
+import com.barapp.web.business.service.EstadisticaService;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.data.dao.*;
@@ -26,14 +27,15 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ReservaDao reservaDao;
-    private final NotificationService notificationService;
     private final OpinionDao opinionDao;
     private final RestauranteDao restauranteDao;
     private final RestauranteFavoritoDao restauranteFavoritoDao;
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
+    private final NotificationService notificationService;
+    private final EstadisticaService estadisticaService;
 
-    public ReservaServiceImpl(ReservaDao reservaDao, NotificationService notificationService, OpinionDao opinionDao, RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, DetalleRestauranteDao detalleRestauranteDao) {
+    public ReservaServiceImpl(ReservaDao reservaDao, NotificationService notificationService, OpinionDao opinionDao, RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, DetalleRestauranteDao detalleRestauranteDao, EstadisticaService estadisticaService) {
         this.reservaDao = reservaDao;
         this.notificationService = notificationService;
         this.opinionDao = opinionDao;
@@ -41,6 +43,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.detalleRestauranteDao = detalleRestauranteDao;
+        this.estadisticaService = estadisticaService;
     }
 
     @Override
@@ -223,6 +226,8 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
 
             reserva.setEstado(EstadoReserva.CONCRETADA);
             this.save(reserva, idReserva);
+
+            estadisticaService.sumarReservaConcretada(idRestaurante);
 
             notificationService.scheduleNotificacion(
                     reserva.getUsuario(),
