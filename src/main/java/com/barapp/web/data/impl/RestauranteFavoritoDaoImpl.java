@@ -39,11 +39,12 @@ public class RestauranteFavoritoDaoImpl extends BaseDaoImpl<RestauranteUsuario, 
     @Override
     public List<RestauranteUsuario> getByUserId(String userId) {
         try {
-            return this
-                    .getFiltered(Filter
-                            .and(Filter.equalTo("idUsuario", userId), Filter
-                                    .or(Filter.equalTo("estado", EstadoRestaurante.HABILITADO), Filter
-                                            .equalTo("estado", EstadoRestaurante.PAUSADO))));
+            List<RestauranteUsuario> userFavoriteRestaurants = this.getFiltered(Filter
+                    .and(Filter.equalTo("idUsuario", userId), Filter
+                            .or(Filter.equalTo("estado", EstadoRestaurante.HABILITADO), Filter
+                                    .equalTo("estado", EstadoRestaurante.PAUSADO))));
+            userFavoriteRestaurants.sort((a, b) -> b.getFechaGuardado().compareTo(a.getFechaGuardado()));
+            return userFavoriteRestaurants;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
