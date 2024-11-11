@@ -107,7 +107,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
                 .collect(partitioningBy(reserva -> reserva.getEstado().equals(EstadoReserva.PENDIENTE)));
         reservasPendientesList = pendientesPasadas.get(true); // Obtener reservas pendientes del map
         reservasPasadasList = pendientesPasadas.get(false); // Obtener eservas pasadas del map
-        
+
         this.setPadding(false);
         this.setMargin(false);
         this.setSpacing(false);
@@ -212,7 +212,11 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         ).setHeader(getTranslation("view.misreservas.acciones"));
 
         pendientesGrid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
-        pendientesGrid.sort(List.of(new GridSortOrder<>(diaColumn, SortDirection.ASCENDING), new GridSortOrder<>(cantidadPersonasColumn, SortDirection.DESCENDING)));
+        pendientesGrid.sort(List.of(
+                new GridSortOrder<>(diaColumn, SortDirection.ASCENDING),
+                new GridSortOrder<>(horaColumn, SortDirection.ASCENDING),
+                new GridSortOrder<>(cantidadPersonasColumn, SortDirection.DESCENDING)
+        ));
         pendientesGrid.setPartNameGenerator(reserva -> {
             if (reserva.getFecha().isEqual(LocalDate.now()))
                 return "es-hoy";
@@ -257,7 +261,10 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         })).setHeader(getTranslation("view.misreservas.estados"));
 
         pasadasGrid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
-        pasadasGrid.sort(List.of(new GridSortOrder<>(diaColumn, SortDirection.ASCENDING)));
+        pasadasGrid.sort(List.of(
+                new GridSortOrder<>(diaColumn, SortDirection.DESCENDING),
+                new GridSortOrder<>(horaColumn, SortDirection.DESCENDING)
+        ));
 
         return pasadasGrid;
     }
@@ -269,7 +276,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
 
         VerticalLayout dialogLayout = new VerticalLayout();
         dialogLayout.setClassName("concretar-content");
-        
+
         RestauranteInfoQR restauranteInfoQR = new RestauranteInfoQR(restaurante.getId());
         Gson gson = new Gson();
         String restauranteQR = gson.toJson(restauranteInfoQR);
