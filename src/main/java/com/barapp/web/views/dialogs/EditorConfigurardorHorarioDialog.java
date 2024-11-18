@@ -373,11 +373,6 @@ public class EditorConfigurardorHorarioDialog extends Dialog {
     private void configurarInfoText() {
         infotext.add(getTranslation("comp.editarhorariodialog.info.text1"));
         infotext.getStyle().set("text-align", "justify");
-        infotext
-                .getElement()
-                .appendChild(ElementFactory.createListItem(getTranslation("comp.editarhorariodialog.info.codicion1")));
-        infotext.getElement()
-                .appendChild(ElementFactory.createListItem(getTranslation("comp.editarhorariodialog.info.codicion2")));
     }
 
     public static class SaveEvent extends CrudEvent<EditorConfigurardorHorarioDialog, ConfiguradorHorario> {
