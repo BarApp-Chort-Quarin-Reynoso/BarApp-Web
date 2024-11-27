@@ -16,6 +16,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -38,7 +39,7 @@ public class ListaBaresView extends VerticalLayout {
 
     private Grid<Restaurante> baresGrid;
     private Div noRestaurantesLabel;
-    private Button notificationButton;
+    private H2 tituloView;
 
     private final RestauranteService restauranteService;
     private final NotificationService notificationService;
@@ -55,22 +56,12 @@ public class ListaBaresView extends VerticalLayout {
 
     private void configurarUi() {
         noRestaurantesLabel = new Div(getTranslation("views.bares.sinresultados"));
-        notificationButton = new Button("Enviar notificación");
-        notificationButton.addClickListener(ce -> {
-            UsuarioApp usuarioApp = usuarioService.getByMail("fedequarin@gmail.com").orElseThrow();
-            notificationService.scheduleNotificacion(
-                    usuarioApp,
-                    MobileNotification.builder()
-                            .title("Alarma")
-                            .body("Alarma de prueba")
-                            .build(),
-                    LocalDateTime.of(LocalDate.now(), LocalTime.of(17, 0))
-            );
-        });
 
         MainElement mainElement = new MainElement();
         mainElement.addClassName("lista-bares-view");
-        mainElement.add(notificationButton);
+
+        tituloView = new H2(getTranslation("views.bares.habilitacionbares"));
+        tituloView.setClassName("titulo-view");
 
         try {
             List<Restaurante> restaurantes = restauranteService
@@ -80,9 +71,9 @@ public class ListaBaresView extends VerticalLayout {
                     .toList();
             if (!restaurantes.isEmpty()) {
                 baresGrid.setItems(restaurantes);
-                mainElement.add(baresGrid);
+                mainElement.add(tituloView, baresGrid);
             } else {
-                mainElement.add(noRestaurantesLabel);
+                mainElement.add(tituloView, noRestaurantesLabel);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -4,7 +4,7 @@
  
  ![GitHub issues](https://img.shields.io/github/issues/BarApp-Chort-Quarin-Reynoso/BarApp-Web?style=flat-square) ![GitHub forks](https://img.shields.io/github/forks/BarApp-Chort-Quarin-Reynoso/BarApp-Web?style=flat-square) ![GitHub stars](https://img.shields.io/github/stars/BarApp-Chort-Quarin-Reynoso/BarApp-Web?style=flat-square) ![GitHub pull requests](https://img.shields.io/github/issues-pr/BarApp-Chort-Quarin-Reynoso/BarApp-Web?style=flat-square)
 
-  <!-- TODO: Add mockup.png <img src="public/mockups.png" alt="Mockups de la aplicación" width="100%"> -->
+  <img src="public/mis_reservas.png" alt="Sección de 'Mis reservas'" width="80%">
 
 [Reportar error](https://github.com/BarApp-Chort-Quarin-Reynoso/BarApp-Web/issues) · [Ver plan de proyecto](https://docs.google.com/document/d/1dDYaoWykSRaM1nkCH1_gco9MEoXOnQTWLxpbtQdcf0A/edit?usp=sharing)
 

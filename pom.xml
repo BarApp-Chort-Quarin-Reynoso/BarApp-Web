@@ -171,6 +171,12 @@
             <artifactId>file-download-wrapper</artifactId>
             <version>7.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.appreciated</groupId>
+            <artifactId>apexcharts</artifactId>
+            <version>24.0.1</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

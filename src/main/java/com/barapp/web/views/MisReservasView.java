@@ -3,17 +3,15 @@ package com.barapp.web.views;
 import com.barapp.web.business.service.ReservaService;
 import com.barapp.web.business.service.RestauranteService;
 import com.barapp.web.http.request.RestauranteInfoQR;
-import com.barapp.web.model.Horario;
 import com.barapp.web.model.Reserva;
 import com.barapp.web.model.Restaurante;
-import com.barapp.web.model.UsuarioApp;
 import com.barapp.web.model.enums.EstadoReserva;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.enums.Rol;
-import com.barapp.web.model.enums.TipoComida;
 import com.barapp.web.security.SecurityService;
 import com.barapp.web.utils.QRCodeGenerator;
 import com.barapp.web.utils.UiUtils;
+import com.barapp.web.views.components.ReservasPausadasCard;
 import com.barapp.web.views.components.pageElements.BarappFooter;
 import com.barapp.web.views.components.pageElements.MainElement;
 import com.flowingcode.vaadin.addons.badgelist.Badge;
@@ -24,7 +22,10 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.grid.*;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -57,15 +58,17 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-@PageTitle("Mis reservas")
+@PageTitle("Mis Reservas")
 @Route(value = "mis-reservas", layout = MainLayout.class)
 @RolesAllowed(value = {"BAR"})
 public class MisReservasView extends VerticalLayout implements BeforeEnterObserver {
@@ -87,9 +90,12 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
     VerticalLayout pasadasEmptyState;
     Component pendientesComponent;
     Component pasadasComponent;
-    TextArea motivo = new TextArea(getTranslation("view.misreservas.motivocancelacion"), getTranslation("view.misreservas.ejemplocancelacion"));
+    TextArea motivo = new TextArea(
+            getTranslation("view.misreservas.motivocancelacion"),
+            getTranslation("view.misreservas.ejemplocancelacion")
+    );
 
-    HorizontalLayout reservasPausadasContainer;
+    ReservasPausadasCard reservasPausadasContainer;
     HorizontalLayout reservasActivadasContainer;
 
     public MisReservasView(SecurityService securityService, RestauranteService restauranteService, ReservaService reservaService) {
@@ -98,7 +104,9 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         this.reservaService = reservaService;
         this.addClassName("mis-reservas-view");
 
-        UserDetails userDetails = this.securityService.getAuthenticatedUser().orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        UserDetails userDetails = this.securityService
+                .getAuthenticatedUser()
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         Optional<Restaurante> optRestaurante = this.restauranteService.getByCorreo(userDetails.getUsername());
         restaurante = optRestaurante.orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
 
@@ -107,7 +115,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
                 .collect(partitioningBy(reserva -> reserva.getEstado().equals(EstadoReserva.PENDIENTE)));
         reservasPendientesList = pendientesPasadas.get(true); // Obtener reservas pendientes del map
         reservasPasadasList = pendientesPasadas.get(false); // Obtener eservas pasadas del map
-        
+
         this.setPadding(false);
         this.setMargin(false);
         this.setSpacing(false);
@@ -161,7 +169,10 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
     }
 
     private HorizontalLayout configurarPausa() {
-        reservasPausadasContainer = getReservasPausadasContainer();
+        reservasPausadasContainer = new ReservasPausadasCard();
+        reservasPausadasContainer.addReservasReanudadasListener(event -> {
+            setPausado(false);
+        });
         reservasActivadasContainer = getReservasActivadasContainer();
         HorizontalLayout pausaContainer = new HorizontalLayout(reservasPausadasContainer, reservasActivadasContainer);
         pausaContainer.setPadding(false);
@@ -178,7 +189,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         pendientesGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         Grid.Column<Reserva> nombreUsuarioColumn = pendientesGrid.addColumn(reserva -> reserva.getUsuario().getNombre() + " " + reserva.getUsuario().getApellido()).setSortable(true);
-        Grid.Column<Reserva> diaColumn = pendientesGrid.addColumn(new LocalDateRenderer<>(Reserva::getFecha,"dd/MM")).setSortable(true).setComparator(Reserva::getFecha);
+        Grid.Column<Reserva> diaColumn = pendientesGrid.addColumn(new LocalDateRenderer<>(Reserva::getFecha,"dd MMM.")).setSortable(true).setComparator(Reserva::getFecha);
         Grid.Column<Reserva> horaColumn = pendientesGrid.addColumn(new LocalDateTimeRenderer<>(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario()),"kk:mm")).setSortable(true).setComparator(Comparator.comparing(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario())));
         Grid.Column<Reserva> cantidadPersonasColumn = pendientesGrid.addColumn(Reserva::getCantidadPersonas).setSortable(true);
 
@@ -188,10 +199,25 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         pendientesGrid.getHeaderRows().clear();
         HeaderRow headerRow = pendientesGrid.appendHeaderRow();
 
-        headerRow.getCell(nombreUsuarioColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.nombreusuario"), reservaFilter::setNombre));
-        headerRow.getCell(diaColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.dia"), reservaFilter::setDia));
-        headerRow.getCell(horaColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.horario"), reservaFilter::setHorario));
-        headerRow.getCell(cantidadPersonasColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.cantidadpersonas"), reservaFilter::setCantidadPersonas));
+        headerRow
+                .getCell(nombreUsuarioColumn)
+                .setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.nombreusuario"),
+                        reservaFilter::setNombre
+                ));
+        headerRow
+                .getCell(diaColumn)
+                .setComponent(
+                        UiUtils.createFilterHeader(getTranslation("view.misreservas.dia"), reservaFilter::setDia));
+        headerRow
+                .getCell(horaColumn)
+                .setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.horario"),
+                        reservaFilter::setHorario
+                ));
+        headerRow
+                .getCell(cantidadPersonasColumn)
+                .setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.cantidadpersonas"),
+                        reservaFilter::setCantidadPersonas
+                ));
         pendientesGrid.addColumn(new ComponentRenderer<>(MenuBar::new, (menu, reserva) -> {
                     menu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
                     MenuItem qr = menu.addItem(new Icon(VaadinIcon.CHECK_CIRCLE_O), e -> {
@@ -212,7 +238,11 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         ).setHeader(getTranslation("view.misreservas.acciones"));
 
         pendientesGrid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
-        pendientesGrid.sort(List.of(new GridSortOrder<>(diaColumn, SortDirection.ASCENDING), new GridSortOrder<>(cantidadPersonasColumn, SortDirection.DESCENDING)));
+        pendientesGrid.sort(List.of(
+                new GridSortOrder<>(diaColumn, SortDirection.ASCENDING),
+                new GridSortOrder<>(horaColumn, SortDirection.ASCENDING),
+                new GridSortOrder<>(cantidadPersonasColumn, SortDirection.DESCENDING)
+        ));
         pendientesGrid.setPartNameGenerator(reserva -> {
             if (reserva.getFecha().isEqual(LocalDate.now()))
                 return "es-hoy";
@@ -225,10 +255,22 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
     private Component getGridPasadas() {
         pasadasGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-        Grid.Column<Reserva> nombreUsuarioColumn = pasadasGrid.addColumn(reserva -> reserva.getUsuario().getNombre() + " " + reserva.getUsuario().getApellido()).setSortable(true);
-        Grid.Column<Reserva> diaColumn = pasadasGrid.addColumn(new LocalDateRenderer<>(Reserva::getFecha,"dd/MM")).setSortable(true).setComparator(Reserva::getFecha);
-        Grid.Column<Reserva> horaColumn = pasadasGrid.addColumn(new LocalDateTimeRenderer<>(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario()),"kk:mm")).setSortable(true).setComparator(Comparator.comparing(reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario())));
-        Grid.Column<Reserva> cantidadPersonasColumn = pasadasGrid.addColumn(Reserva::getCantidadPersonas).setSortable(true);
+        Grid.Column<Reserva> nombreUsuarioColumn = pasadasGrid
+                .addColumn(reserva -> reserva.getUsuario().getNombre() + " " + reserva.getUsuario().getApellido())
+                .setSortable(true);
+        Grid.Column<Reserva> diaColumn = pasadasGrid
+                .addColumn(new LocalDateRenderer<>(Reserva::getFecha, "dd/MM"))
+                .setSortable(true)
+                .setComparator(Reserva::getFecha);
+        Grid.Column<Reserva> horaColumn = pasadasGrid
+                .addColumn(new LocalDateTimeRenderer<>(
+                        reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario()), "kk:mm"))
+                .setSortable(true)
+                .setComparator(Comparator.comparing(
+                        reserva -> LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario())));
+        Grid.Column<Reserva> cantidadPersonasColumn = pasadasGrid
+                .addColumn(Reserva::getCantidadPersonas)
+                .setSortable(true);
 
         GridListDataView<Reserva> dataView = pasadasGrid.setItems(reservasPasadasList);
         ReservaFilter reservaFilter = new ReservaFilter(dataView);
@@ -236,10 +278,25 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         pasadasGrid.getHeaderRows().clear();
         HeaderRow headerRow = pasadasGrid.appendHeaderRow();
 
-        headerRow.getCell(nombreUsuarioColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.nombreusuario"), reservaFilter::setNombre));
-        headerRow.getCell(diaColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.dia"), reservaFilter::setDia));
-        headerRow.getCell(horaColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.horario"), reservaFilter::setHorario));
-        headerRow.getCell(cantidadPersonasColumn).setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.cantidadpersonas"), reservaFilter::setCantidadPersonas));
+        headerRow
+                .getCell(nombreUsuarioColumn)
+                .setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.nombreusuario"),
+                        reservaFilter::setNombre
+                ));
+        headerRow
+                .getCell(diaColumn)
+                .setComponent(
+                        UiUtils.createFilterHeader(getTranslation("view.misreservas.dia"), reservaFilter::setDia));
+        headerRow
+                .getCell(horaColumn)
+                .setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.horario"),
+                        reservaFilter::setHorario
+                ));
+        headerRow
+                .getCell(cantidadPersonasColumn)
+                .setComponent(UiUtils.createFilterHeader(getTranslation("view.misreservas.cantidadpersonas"),
+                        reservaFilter::setCantidadPersonas
+                ));
         pasadasGrid.addColumn(new ComponentRenderer<>(Badge::new, (badge, reserva) -> {
             EstadoReserva estado = reserva.getEstado();
             badge.setText(getTranslation(estado.getTranslationKey()));
@@ -257,7 +314,10 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         })).setHeader(getTranslation("view.misreservas.estados"));
 
         pasadasGrid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
-        pasadasGrid.sort(List.of(new GridSortOrder<>(diaColumn, SortDirection.ASCENDING)));
+        pasadasGrid.sort(List.of(
+                new GridSortOrder<>(diaColumn, SortDirection.DESCENDING),
+                new GridSortOrder<>(horaColumn, SortDirection.DESCENDING)
+        ));
 
         return pasadasGrid;
     }
@@ -269,7 +329,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
 
         VerticalLayout dialogLayout = new VerticalLayout();
         dialogLayout.setClassName("concretar-content");
-        
+
         RestauranteInfoQR restauranteInfoQR = new RestauranteInfoQR(restaurante.getId());
         Gson gson = new Gson();
         String restauranteQR = gson.toJson(restauranteInfoQR);
@@ -292,9 +352,11 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
             });
 
             // Generate and Return Qr Code in Byte Array
-            byte[] image = QRCodeGenerator.getQRCodeImage(restauranteQR,300,300);
-            Anchor downloadLink = new Anchor(new StreamResource(restaurante.getNombre() + "QR.jpg",
-                    () -> new ByteArrayInputStream(image)), restaurante.getNombre() + "QR.jpg");
+            byte[] image = QRCodeGenerator.getQRCodeImage(restauranteQR, 300, 300);
+            Anchor downloadLink = new Anchor(new StreamResource(
+                    restaurante.getNombre() + "QR.jpg",
+                    () -> new ByteArrayInputStream(image)
+            ), restaurante.getNombre() + "QR.jpg");
             downloadLink.getElement().setAttribute("download", true);
             downloadLink.removeAll();
             downloadLink.add(imprimirQR);
@@ -337,7 +399,9 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
             this.updateGrids();
             dialog.close();
         });
-        boolean sePuedeConcretar = LocalDateTime.now().isAfter(LocalDateTime.of(reserva.getFecha(),reserva.getHorario().getHorario()).minusMinutes(30));
+        boolean sePuedeConcretar = LocalDateTime
+                .now()
+                .isAfter(LocalDateTime.of(reserva.getFecha(), reserva.getHorario().getHorario()).minusMinutes(30));
         concretarManualmenteButton.setEnabled(sePuedeConcretar);
 
         dialog.getFooter().add(cerrarButton, concretarManualmenteButton);
@@ -369,8 +433,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
             paragraph = new Paragraph(getTranslation("view.misreservas.hanpasado30min"));
             textoBotonSecundario = getTranslation("view.misreservas.esperarmastiempo");
             textoBotonPrimario = getTranslation("view.misreservas.marcarnocumplida");
-        }
-        else if (fechaActual.isAfter(fechaReserva) && fechaActual.isBefore(fechaMaxima)) {
+        } else if (fechaActual.isAfter(fechaReserva) && fechaActual.isBefore(fechaMaxima)) {
             String minutos;
             int minutosRestantes = (int) fechaActual.until(fechaMaxima, ChronoUnit.MINUTES);
             minutos = switch (minutosRestantes) {
@@ -384,8 +447,7 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
             iconColor = "#ff8300e3";
             paragraph = new Paragraph(getTranslation("view.misreservas.aunnopasaron30", minutos));
             textoBotonSecundario = getTranslation("view.misreservas.esperarmastiempo");
-        }
-        else {
+        } else {
             headerTitle = getTranslation("view.misreservas.marcarnocumplida");
             icon = VaadinIcon.INFO_CIRCLE_O.create();
             iconColor = "#079ee8";
@@ -406,7 +468,8 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
             botonPrimario.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
             botonPrimario.addClickListener(event -> {
-                Reserva reservaActualizada = this.reservaService.updateEstado(reserva.getId(), EstadoReserva.NO_ASISTIO.toString());
+                Reserva reservaActualizada = this.reservaService.updateEstado(
+                        reserva.getId(), EstadoReserva.NO_ASISTIO.toString());
                 this.reservasPendientesList.remove(reserva);
                 this.reservasPasadasList.add(reservaActualizada);
                 this.updateGrids();
@@ -464,7 +527,8 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
 
             cancelarButton.addClickListener(event -> {
                 // TODO: Enviar notificación al cliente
-                Reserva reservaActualizada = this.reservaService.cancelarReserva(reserva.getId(), EstadoReserva.CANCELADA_BAR.toString(), motivo.getValue());
+                Reserva reservaActualizada = this.reservaService.cancelarReserva(
+                        reserva.getId(), EstadoReserva.CANCELADA_BAR.toString(), motivo.getValue());
                 this.reservasPendientesList.remove(reserva);
                 this.reservasPasadasList.add(reservaActualizada);
                 this.updateGrids();
@@ -541,9 +605,12 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
     private VerticalLayout getEmptyState(String tipo) {
         Image emptyState = new Image();
         emptyState.setClassName("empty-state-image");
-        emptyState.setSrc(new StreamResource("empty-box.png", () -> getClass().getResourceAsStream("/META-INF.resources/images/empty-box.png")));
+        emptyState.setSrc(new StreamResource("empty-box.png",
+                () -> getClass().getResourceAsStream("/META-INF.resources/images/empty-box.png")
+        ));
 
-        H2 text = new H2(tipo.equals(getTranslation("view.misreservas.pendientes")) ? getTranslation("view.misreservas.notenespendientes") : getTranslation("view.misreservas.notenespasadas"));
+        H2 text = new H2(tipo.equals(getTranslation("view.misreservas.pendientes")) ? getTranslation(
+                "view.misreservas.notenespendientes") : getTranslation("view.misreservas.notenespasadas"));
         text.setClassName("empty-state-text");
         VerticalLayout emptyStateContainer = new VerticalLayout(emptyState, text);
 
@@ -604,9 +671,11 @@ public class MisReservasView extends VerticalLayout implements BeforeEnterObserv
         }
 
         public boolean test(Reserva reserva) {
-            boolean matchesNombre = matches(reserva.getUsuario().getNombre() + " " + reserva.getUsuario().getApellido(), nombre);
+            boolean matchesNombre = matches(
+                    reserva.getUsuario().getNombre() + " " + reserva.getUsuario().getApellido(), nombre);
             boolean matchesDia = matches(reserva.getFecha().format(DateTimeFormatter.ofPattern("dd/MM")), dia);
-            boolean matchesHora = matches(reserva.getHorario().getHorario().format(DateTimeFormatter.ofPattern("kk:mm")), horario);
+            boolean matchesHora = matches(
+                    reserva.getHorario().getHorario().format(DateTimeFormatter.ofPattern("kk:mm")), horario);
             boolean matchesCantidadPersonas = matches(reserva.getCantidadPersonas().toString(), cantidadPersonas);
 
             return matchesNombre && matchesDia && matchesHora && matchesCantidadPersonas;

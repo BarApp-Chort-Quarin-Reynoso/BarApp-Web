@@ -1,8 +1,10 @@
 package com.barapp.web.business.impl;
 
 import com.barapp.web.business.MobileNotification;
+import com.barapp.web.business.service.EstadisticaService;
 import com.barapp.web.business.service.NotificationService;
 import com.barapp.web.business.service.ReservaService;
+import com.barapp.web.data.QueryParams;
 import com.barapp.web.data.dao.*;
 import com.barapp.web.data.entities.ReservaEntity;
 import com.barapp.web.model.DetalleRestaurante;
@@ -12,6 +14,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.enums.EstadoReserva;
 import com.barapp.web.utils.FormatUtils;
 import com.google.cloud.firestore.Filter;
+import com.google.cloud.firestore.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,14 +29,18 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ReservaDao reservaDao;
-    private final NotificationService notificationService;
     private final OpinionDao opinionDao;
     private final RestauranteDao restauranteDao;
     private final RestauranteFavoritoDao restauranteFavoritoDao;
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
     private final DetalleRestauranteDao detalleRestauranteDao;
+    private final NotificationService notificationService;
+    private final EstadisticaService estadisticaService;
 
-    public ReservaServiceImpl(ReservaDao reservaDao, NotificationService notificationService, OpinionDao opinionDao, RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao, RestauranteVistoRecientementeDao restauranteVistoRecientementeDao, DetalleRestauranteDao detalleRestauranteDao) {
+    public ReservaServiceImpl(ReservaDao reservaDao, NotificationService notificationService, OpinionDao opinionDao,
+            RestauranteDao restauranteDao, RestauranteFavoritoDao restauranteFavoritoDao,
+            RestauranteVistoRecientementeDao restauranteVistoRecientementeDao,
+            DetalleRestauranteDao detalleRestauranteDao, EstadisticaService estadisticaService) {
         this.reservaDao = reservaDao;
         this.notificationService = notificationService;
         this.opinionDao = opinionDao;
@@ -41,10 +48,13 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
         this.detalleRestauranteDao = detalleRestauranteDao;
+        this.estadisticaService = estadisticaService;
     }
 
     @Override
-    public BaseDao<Reserva, ReservaEntity> getDao() {return reservaDao;}
+    public BaseDao<Reserva, ReservaEntity> getDao() {
+        return reservaDao;
+    }
 
     @Override
     public String save(Reserva dto, String id) throws Exception {
@@ -63,8 +73,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         notificationService.scheduleNotificacion(
                 dto.getUsuario(),
                 getReservaNotification(dto),
-                dto.getFecha().atTime(dto.getHorario().getHorario()).minusMinutes(30)
-        );
+                dto.getFecha().atTime(dto.getHorario().getHorario()).minusMinutes(30));
 
         return id;
     }
@@ -81,7 +90,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         try {
             List<Reserva> reservas = reservaDao.getFiltered(Filter.equalTo("idUsuario", idUsuario));
 
-            reservas.sort(Comparator.comparing(Reserva::getFechaHora).reversed());
+            reservas.sort(Comparator.comparing(Reserva::getFechaHora));
 
             return reservas;
         } catch (Exception e) {
@@ -89,7 +98,6 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         }
     }
 
-    @Override
     public List<Reserva> getReservasByRestaurante(String idRestaurante) {
         try {
             return reservaDao.getFiltered(Filter.equalTo("idRestaurante", idRestaurante));
@@ -103,8 +111,23 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
         try {
             return reservaDao.getFiltered(Filter.and(
                     Filter.equalTo("idRestaurante", idRestaurante),
-                    Filter.equalTo("estado", estado.toString())
-            ));
+                    Filter.equalTo("estado", estado.toString())));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Reserva> getReservasPendientesDeHoy(String idRestaurante, int limit) {
+        try {
+            QueryParams qp = new QueryParams();
+            qp.addFilter(Filter.and(
+                    Filter.equalTo("idRestaurante", idRestaurante),
+                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString()),
+                    Filter.equalTo("fecha", LocalDate.now().format(FormatUtils.persistenceDateFormatter()))));
+            qp.addOrder("horario", Query.Direction.DESCENDING);
+            qp.setLimit(limit);
+            return reservaDao.getByParams(qp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -126,8 +149,8 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                     Filter.equalTo("idRestaurante", idRestaurante),
                     Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString()),
                     Filter.greaterThanOrEqualTo("fecha", FormatUtils.persistenceDateFormatter().format(mes.atDay(1))),
-                    Filter.lessThanOrEqualTo("fecha", mes.atEndOfMonth().format(FormatUtils.persistenceDateFormatter()))
-            ));
+                    Filter.lessThanOrEqualTo("fecha",
+                            mes.atEndOfMonth().format(FormatUtils.persistenceDateFormatter()))));
 
             Map<LocalDate, List<Reserva>> reservasPorDia = new LinkedHashMap<>();
             reservas.forEach(reserva -> {
@@ -151,8 +174,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             List<Reserva> reservas = reservaDao.getFiltered(Filter.and(
                     Filter.equalTo("idRestaurante", idRestaurante),
                     Filter.equalTo("idUsuario", idUsuario),
-                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString())
-            ));
+                    Filter.equalTo("estado", EstadoReserva.PENDIENTE.toString())));
 
             return reservas.stream()
                     .sorted(Comparator.comparing(Reserva::getFecha).reversed())
@@ -224,12 +246,13 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
             reserva.setEstado(EstadoReserva.CONCRETADA);
             this.save(reserva, idReserva);
 
+            estadisticaService.sumarReservaConcretada(idRestaurante);
+
             notificationService.scheduleNotificacion(
                     reserva.getUsuario(),
                     getSolicitarOpinionNotification(reserva),
                     reserva.getFechaHora()
-                            .plusMinutes(2)
-            );
+                            .plusMinutes(2));
 
             return reserva;
         } catch (Exception e) {
@@ -295,8 +318,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                 notificationService.scheduleNotificacion(
                         reserva.getUsuario(),
                         notificacion,
-                        horaNotiReservaProxima
-                );
+                        horaNotiReservaProxima);
 
                 count++;
             }
@@ -306,8 +328,7 @@ public class ReservaServiceImpl extends BaseServiceImpl<Reserva> implements Rese
                 notificationService.scheduleNotificacion(
                         reserva.getUsuario(),
                         notificacion,
-                        horaNotiPedirOpinion
-                );
+                        horaNotiPedirOpinion);
 
                 count++;
             }

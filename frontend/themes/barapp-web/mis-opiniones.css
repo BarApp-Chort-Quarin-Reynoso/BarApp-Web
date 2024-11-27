@@ -5,6 +5,19 @@
     line-height: 5rem;
 }
 
+.estadisticas-dato {
+    font-size: 4rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 4rem;
+}
+
+.estadisticas-titulo {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1rem;
+}
+
 .estrellas-puntuacion {
     --lumo-text-field-size: 0;
 }
@@ -22,4 +35,11 @@
 
 .opiniones-opinionesLayout {
     flex-grow: 1;
+}
+
+.chart-titulo-eje {
+    font-weight: 500;
+    font-size: var(--lumo-font-size-m);
+    font-family: var(--lumo-font-family);
+    background-color: var(--lumo-base-color);
 }

@@ -33,7 +33,6 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final RestauranteDao restauranteDao;
     private final RestauranteFavoritoDao restauranteFavoritoDao;
     private final RestauranteVistoRecientementeDao restauranteVistoRecientementeDao;
-    private final ConfiguradorHorarioDao configuradorHorarioDao;
     private final DetalleUsuarioDao detalleUsuarioDao;
     private final OpinionDao opinionDao;
     private final DetalleRestauranteService detalleRestauranteService;
@@ -42,10 +41,10 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     private final StorageClient storageClient;
     private final ImageDao imageDao;
 
-    public RestauranteServiceImpl(RestauranteDao restauranteDao, DetalleRestauranteService detalleRestauranteService,
-                                  RestauranteFavoritoDao restauranteFavoritoDao,
+    public RestauranteServiceImpl(
+            RestauranteDao restauranteDao, DetalleRestauranteService detalleRestauranteService,
+            RestauranteFavoritoDao restauranteFavoritoDao,
             RestauranteVistoRecientementeDao restauranteVistoRecientementeDao,
-            ConfiguradorHorarioDao configuradorHorarioDao,
             DetalleUsuarioDao detalleUsuarioDao, OpinionDao opinionDao,
             HorarioPorRestauranteService horarioPorRestauranteService, ReservaService reservaService,
             StorageClient storageClient, ImageDao imageDao) {
@@ -53,7 +52,6 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
         this.detalleRestauranteService = detalleRestauranteService;
         this.restauranteFavoritoDao = restauranteFavoritoDao;
         this.restauranteVistoRecientementeDao = restauranteVistoRecientementeDao;
-        this.configuradorHorarioDao = configuradorHorarioDao;
         this.detalleUsuarioDao = detalleUsuarioDao;
         this.opinionDao = opinionDao;
         this.horarioPorRestauranteService = horarioPorRestauranteService;
@@ -63,7 +61,9 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public BaseDao<Restaurante, RestauranteEntity> getDao() {return restauranteDao;}
+    public BaseDao<Restaurante, RestauranteEntity> getDao() {
+        return restauranteDao;
+    }
 
     @Override
     public List<Restaurante> getAvailableOrPausedRestaurants() {
@@ -72,8 +72,7 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
                     .getFiltered(Filter
                             .or(
                                     Filter.equalTo("estado", EstadoRestaurante.HABILITADO),
-                                    Filter.equalTo("estado", EstadoRestaurante.PAUSADO)
-                            ));
+                                    Filter.equalTo("estado", EstadoRestaurante.PAUSADO)));
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
@@ -90,7 +89,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             }
 
             DetalleRestaurante detalle = detalleRestauranteService.getByIdRestaurante(restaurante.getId())
-                    .orElseThrow(() -> new RuntimeException("No existe detalle restaurante para el id de restaurante: " + restaurante.getId()));
+                    .orElseThrow(() -> new RuntimeException(
+                            "No existe detalle restaurante para el id de restaurante: " + restaurante.getId()));
 
             if (detalle == null) {
                 throw new RuntimeException("Detalle no existe");
@@ -104,7 +104,6 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public String saveLogo(InputStream inputStream, String id, String contentType) {
@@ -127,7 +126,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo, ImageContainer portada) {
+    public String registrarRestaurante(Restaurante restaurante, UsuarioWeb usuario, ImageContainer logo,
+            ImageContainer portada) {
         try {
             String logoUrl = imageDao
                     .saveImage(
@@ -230,7 +230,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     public Optional<Restaurante> getByCorreo(String correo) {
         try {
             List<Restaurante> restaurantes = restauranteDao.getFiltered(Filter.equalTo("correo", correo));
-            if (restaurantes.isEmpty()) return Optional.empty();
+            if (restaurantes.isEmpty())
+                return Optional.empty();
 
             return Optional.of(restaurantes.get(0));
         } catch (Exception e) {
@@ -239,7 +240,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horariosEnMesDisponiblesSegunDiaHoraActual(String correoRestaurante, YearMonth mesAnio) {
+    public Map<LocalDate, Map<String, HorarioConCapacidadDisponible>> horariosEnMesDisponiblesSegunDiaHoraActual(
+            String correoRestaurante, YearMonth mesAnio) {
         Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
                 .getByCorreoRestaurante(correoRestaurante);
 
@@ -347,7 +349,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(String correoRestaurante, YearMonth mesAnio) {
+    public Map<LocalDate, Tuple<List<Horario>, ConfiguradorHorario>> horariosEnMesDisponiblesSegunMesAnioConConfiguradorCoincidente(
+            String correoRestaurante, YearMonth mesAnio) {
         Optional<HorarioPorRestaurante> horarioPorRestaurante = horarioPorRestauranteService
                 .getByCorreoRestaurante(correoRestaurante);
         if (horarioPorRestaurante.isEmpty()) {
@@ -435,7 +438,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
     }
 
     @Override
-    public List<String> addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito, String idDetalleUsuario) {
+    public List<String> addFavorito(String idRestaurante, RestauranteUsuario restauranteFavorito,
+            String idDetalleUsuario) {
         try {
             if (restauranteDao.get(restauranteFavorito.getIdRestaurante()) == null) {
                 throw new IllegalStateException(
@@ -448,8 +452,10 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             if (!restauranteFavoritoDao.getByParams(queryParams).isEmpty()) {
                 throw new IllegalStateException(
                         "El restaurante con ID " + restauranteFavorito
-                                .getIdRestaurante() + " ya existe para el usuario con ID " + restauranteFavorito
-                                .getIdUsuario() + ".");
+                                .getIdRestaurante() + " ya existe para el usuario con ID "
+                                + restauranteFavorito
+                                        .getIdUsuario()
+                                + ".");
             }
 
             restauranteFavoritoDao.save(restauranteFavorito, idRestaurante);
@@ -472,7 +478,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
             List<RestauranteUsuario> restaurantesFavoritosUsuario = restauranteFavoritoDao
                     .getByParams(queryParamsForNormalRestaurants);
 
-            // Puede ser que la vista del usuario sea de un RestauranteUsuario en vez de un Restaurante común, por lo tanto hay que considerar ambos casos
+            // Puede ser que la vista del usuario sea de un RestauranteUsuario en vez de un
+            // Restaurante común, por lo tanto hay que considerar ambos casos
             if (restaurantesFavoritosUsuario.isEmpty()) {
                 QueryParams queryParamsForUserRestaurants = new QueryParams();
                 queryParamsForUserRestaurants.addFilter(Filter.equalTo("idUsuario", idUsuario));
@@ -485,7 +492,8 @@ public class RestauranteServiceImpl extends BaseServiceImpl<Restaurante> impleme
 
                 if (restaurantesFavoritosUsuario.isEmpty()) {
                     throw new IllegalStateException(
-                            "El restaurante con ID " + idRestaurante + " no existe para el usuario con ID " + idUsuario + ".");
+                            "El restaurante con ID " + idRestaurante + " no existe para el usuario con ID " + idUsuario
+                                    + ".");
                 }
             }
 

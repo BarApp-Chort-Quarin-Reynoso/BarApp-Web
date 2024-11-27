@@ -397,7 +397,6 @@ public class MiBarView extends VerticalLayout implements BeforeEnterObserver {
         botonesLayout = new HorizontalLayout(cancelarButton, guardarButton);
         botonesLayout.setId("registro-botones-layout");
         botonesLayout.setWidthFull();
-        botonesLayout.setJustifyContentMode(JustifyContentMode.EVENLY);
     }
 
     private void configurarLayout() {

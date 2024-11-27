@@ -106,7 +106,7 @@ public class MainLayout extends AppLayout {
         if (user
                 .getAuthorities()
                 .contains(new SimpleGrantedAuthority(ListaOpinionesView.rolAllowed.getGrantedAuthorityName()))) {
-            items.add(new MenuItemInfo(getTranslation("views.opiniones.titulo"), LineAwesomeIcon.STAR.create(),
+            items.add(new MenuItemInfo(getTranslation("views.opiniones.titulo"), LineAwesomeIcon.CHART_BAR_SOLID.create(),
                     ListaOpinionesView.class
             ));
         }
