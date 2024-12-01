@@ -9,6 +9,7 @@ import com.barapp.web.model.Restaurante;
 import com.barapp.web.model.UsuarioWeb;
 import com.barapp.web.model.enums.EstadoRestaurante;
 import com.barapp.web.model.enums.Rol;
+import com.barapp.web.utils.EmailService;
 import com.barapp.web.views.InicioView;
 import com.barapp.web.views.components.pageElements.CustomErrorWindow;
 import com.barapp.web.views.components.pageElements.MainElement;
@@ -26,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @AnonymousAllowed
 @PageTitle("Registro")
@@ -53,19 +56,20 @@ public class RegistroBarView extends VerticalLayout {
     UsuarioWebService usuarioWebService;
     RestauranteService restauranteService;
     DetalleRestauranteService detalleRestauranteService;
+    EmailService emailService;
 
     @Autowired
     public RegistroBarView(
             UbicacionService ubicacionService, UsuarioWebService usuarioWebService,
             RestauranteService restauranteService, PasswordEncoder passwordEncoder,
-            DetalleRestauranteService detalleRestauranteService
-    ) {
+            DetalleRestauranteService detalleRestauranteService, EmailService emailService) {
         this.binder = new Binder<>(Restaurante.class);
         this.usuarioWebService = usuarioWebService;
         this.ubicacionService = ubicacionService;
         this.restauranteService = restauranteService;
         this.detalleRestauranteService = detalleRestauranteService;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
         configurarElementos();
         configurarLayout();
     }
@@ -132,18 +136,25 @@ public class RegistroBarView extends VerticalLayout {
             // Crear usuario web e Image Containers con la info de las fotos a guardar
             UsuarioWeb usuarioWeb = new UsuarioWeb(
                     restaurante.getCorreo(), passwordEncoder.encode(formularioInformacionBasica.getContrasenia()),
-                    Rol.BAR
-            );
+                    Rol.BAR);
             ImageContainer logo = new ImageContainer(
                     new ByteArrayInputStream(formularioImagenes.getLogoByteArray()), restaurante.getId(),
-                    formularioImagenes.getLogoMimeType()
-            );
+                    formularioImagenes.getLogoMimeType());
             ImageContainer portada = new ImageContainer(
                     new ByteArrayInputStream(formularioImagenes.getPortadaByteArray()), restaurante.getId(),
-                    formularioImagenes.getPortadaMimeType()
-            );
+                    formularioImagenes.getPortadaMimeType());
             try {
                 restauranteService.registrarRestaurante(restaurante, usuarioWeb, logo, portada);
+                String templateId = "d-0bedc5852cea4d4cbf5f620df1ac758e";
+                Map<String, String> dynamicTemplateData = new HashMap<>();
+                dynamicTemplateData.put("nombreRestaurante", restaurante.getNombre());
+                dynamicTemplateData.put("correoRestaurante", restaurante.getCorreo());
+                dynamicTemplateData.put("telefonoRestaurante", restaurante.getTelefono());
+                dynamicTemplateData.put("cuitRestaurante", restaurante.getCuit());
+                dynamicTemplateData.put("calleRestaurante",
+                        restaurante.getUbicacion().getCalle() + " " + restaurante.getUbicacion().getNumero());
+                emailService.sendEmail("adminbarapp@yopmail.com", templateId,
+                        dynamicTemplateData);
             } catch (Exception e) {
                 CustomErrorWindow.showError(e);
             }

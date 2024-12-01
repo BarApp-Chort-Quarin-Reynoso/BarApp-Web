@@ -61,6 +61,13 @@
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- SendGrid -->
+        <dependency>
+          <groupId>com.sendgrid</groupId>
+          <artifactId>sendgrid-java</artifactId>
+          <version>4.9.3</version>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
