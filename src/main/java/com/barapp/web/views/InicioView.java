@@ -52,7 +52,8 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
 
     private Restaurante restaurante;
 
-    public InicioView(SecurityService securityService, RestauranteService restauranteService, ReservaService reservaService) {
+    public InicioView(SecurityService securityService, RestauranteService restauranteService,
+            ReservaService reservaService) {
         this.securityService = securityService;
         this.restauranteService = restauranteService;
         this.reservaService = reservaService;
@@ -72,7 +73,11 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
         MainElement mainElement = new MainElement();
         mainElement.addClassName("inicio-view");
 
-        configurarLandingPage();
+        try {
+            configurarLandingPage();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         add(contentLayout, new BarappFooter());
     }
@@ -126,20 +131,24 @@ public class InicioView extends VerticalLayout implements BeforeEnterObserver {
         contentLayout.add(reservasPausadasCard);
     }
 
-    private void configurarLandingPage() {
+    private void configurarLandingPage() throws FileNotFoundException {
         VerticalLayout landingLayout = new VerticalLayout();
 
         landingLayout.addClassName("landing-layout");
 
-        File htmlFile = new File("./frontend/landing.html");
+        InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("landing.html");
 
-        try {
-            Html landing = new Html(new FileInputStream(htmlFile));
-            landingLayout.add(landing);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        if (htmlStream == null) {
+            throw new FileNotFoundException("No se pudo encontrar el archivo landing.html");
         }
 
+        try {
+            Html landing = new Html(htmlStream);
+            landingLayout.add(landing);
+            landingLayout.add(landing);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         contentLayout.add(landingLayout);
     }
