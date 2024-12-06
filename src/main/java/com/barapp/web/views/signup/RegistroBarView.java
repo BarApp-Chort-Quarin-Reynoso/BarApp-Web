@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AnonymousAllowed
@@ -145,6 +146,12 @@ public class RegistroBarView extends VerticalLayout {
                     formularioImagenes.getPortadaMimeType());
             try {
                 restauranteService.registrarRestaurante(restaurante, usuarioWeb, logo, portada);
+                List<String> to = List.of(
+                    "adminbarapp@yopmail.com", 
+                    "chortjulio@gmail.com", 
+                    "federicoquarin2@gmail.com", 
+                    "valenreynoso17@gmail.com"
+                );
                 String templateId = "d-0bedc5852cea4d4cbf5f620df1ac758e";
                 Map<String, String> dynamicTemplateData = new HashMap<>();
                 dynamicTemplateData.put("nombreRestaurante", restaurante.getNombre());
@@ -153,7 +160,7 @@ public class RegistroBarView extends VerticalLayout {
                 dynamicTemplateData.put("cuitRestaurante", restaurante.getCuit());
                 dynamicTemplateData.put("calleRestaurante",
                         restaurante.getUbicacion().getCalle() + " " + restaurante.getUbicacion().getNumero());
-                emailService.sendEmail("adminbarapp@yopmail.com", templateId,
+                emailService.sendEmail(to, templateId,
                         dynamicTemplateData);
             } catch (Exception e) {
                 CustomErrorWindow.showError(e);
