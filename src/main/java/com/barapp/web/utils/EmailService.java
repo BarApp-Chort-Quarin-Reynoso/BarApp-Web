@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,16 +21,18 @@ public class EmailService {
     @Value("${SENDGRID_API_KEY}")
     private String sendGridApiKey;
 
-    public void sendEmail(String to, String templateId, Map<String, String> dynamicTemplateData)
+    public void sendEmail(List<String> to, String templateId, Map<String, String> dynamicTemplateData)
             throws IOException {
         Email from = new Email("barapp@yopmail.com");
-        Email toEmail = new Email(to);
         Mail mail = new Mail();
         mail.setFrom(from);
         mail.setTemplateId(templateId);
 
         Personalization personalization = new Personalization();
-        personalization.addTo(toEmail);
+        for (String recipient : to) {
+            Email toEmail = new Email(recipient);
+            personalization.addTo(toEmail);
+        }
         for (Map.Entry<String, String> entry : dynamicTemplateData.entrySet()) {
             personalization.addDynamicTemplateData(entry.getKey(), entry.getValue());
         }
